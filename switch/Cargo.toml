@@ -1,7 +1,7 @@
 [package]
-name = "switch"
+name = "hdr-launcher-react"
 version = "0.1.0"
-authors = []
+authors = ["techyCoder81"]
 edition = "2021"
 
 [package.metadata.skyline]
@@ -11,7 +11,9 @@ titleid = "01006A800016E000" # Smash Ultimate
 crate-type = ["cdylib"]
 
 [dependencies]
+skyline-config = { git = "https://github.com/skyline-rs/skyline-config" }
 skyline = { git = "https://github.com/ultimate-research/skyline-rs.git" }
+skyline-web = { git = "https://github.com/skyline-rs/skyline-web" }
 
 [profile.dev]
 panic = "abort"
