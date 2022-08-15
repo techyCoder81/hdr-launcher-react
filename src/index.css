@@ -1,0 +1,90 @@
+:root {
+  --main-bg-color: rgb(0, 0, 0);
+  --main-text-color: white;
+  --main-button-text-color: white;
+  --main-button-bg-color: rgb(54, 54, 54);
+  --main-button-bg-hover-color: #74be95;
+  --main-progress-download-color: rgb(28, 73, 110);
+  --main-button-text-hover-color: rgb(0, 0, 0);
+  --main-button-bg-focus-color: rgb(49, 119, 49);
+  --main-button-text-focus-color: black;
+  --main-button-hover-width: 500px;
+--main-button-height: 100px;
+  --main-button-hover-align: right;
+  --main-progress-background-color: rgb(49, 49, 49);
+  --main-progress-foreground-color: rgb(41, 109, 47);
+  --main-progress-text-color: white;
+--border-pad: 5px;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  transition: 1000ms linear;
+  -webkit-transition: 1000ms linear;
+}
+
+
+.main-menu {
+  transition: 1000ms linear;
+  -webkit-transition: 1000ms linear;
+}
+
+.main-buttons {
+  padding: 12px 26px;
+  margin: 10px 0;
+  display: block;
+  width: 400px;
+  height: var(--main-button-height);
+  border: none;
+  clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
+  -webkit-clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
+  position: relative;
+  z-index: 1;
+  transition:100ms linear;
+  -webkit-transition:100ms linear;
+  background-image: linear-gradient(215deg, rgb(38, 95, 38), rgb(68, 167, 68));
+}
+
+.main-buttons div {
+  position: absolute;
+  display: inline;
+  top: var(--border-pad);
+  left: 0px;
+bottom: var(--border-pad);
+right: var(--border-pad);
+height: calc(var(--main-button-height) - 2 * var(--border-pad));
+  background-color: var(--main-button-bg-color);
+  color: var(--main-text-color);
+  border: none;
+  clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
+  -webkit-clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
+  z-index: 1;
+  transition:100ms linear;
+  -webkit-transition:100ms linear;
+
+font-size: 3rem;
+  font-weight: bold;
+  font-style: italic;
+vertical-align: middle;
+text-align: right;
+line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
+}
+
+.main-buttons:hover {
+padding: 12px 26px;
+  width: var(--main-button-hover-width);
+  height: var(--main-button-height);
+  font-size: 3rem;
+}
+
+.main-buttons:active {
+background-image: linear-gradient(215deg, rgb(58, 125, 58), rgb(88, 207, 98));
+}
