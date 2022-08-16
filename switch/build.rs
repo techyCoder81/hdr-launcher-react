@@ -20,12 +20,10 @@ fn main() -> std::io::Result<()> {
     let mut src = File::open(HTML_FILE_PATH)?;
     let mut data = String::new();
     src.read_to_string(&mut data); 
-    println!("current data:\n{}", data);
-
-    let new_data = format!("{}<!-- this was written by the build script -->", data.replace("main_window/", ""));
+    let new_data = format!("{}", data.replace("../main_window/", "").replace("./main_window/", "").replace("/main_window", ""));
     let mut dest = File::create("web-build/index.html")?;
-    dest.write(new_data.as_bytes())?;
-    println!("\nnew data:\n{}", new_data);
+    dest.write(new_data.as_bytes())?; 
+    
     fs::copy(JS_FILE_PATH, "web-build/index.js")?;
     Ok(()) 
 } 
