@@ -17,13 +17,29 @@ fn main() -> std::io::Result<()> {
         fs::remove_dir_all("./web-build")?;
     }
     fs::create_dir_all("./web-build")?;
-    let mut src = File::open(HTML_FILE_PATH)?;
-    let mut data = String::new();
-    src.read_to_string(&mut data); 
-    let new_data = format!("{}", data.replace("../main_window/", "").replace("./main_window/", "").replace("/main_window", ""));
-    let mut dest = File::create("web-build/index.html")?;
-    dest.write(new_data.as_bytes())?; 
+
+    // read and transform the html file
+    let mut src_html = File::open(HTML_FILE_PATH)?;
+    let mut data_html = String::new();
+    src_html.read_to_string(&mut data_html); 
+    let new_data_html = format!("{}", data_html
+        .replace("../main_window/", "")
+        .replace("./main_window/", "")
+        .replace("/main_window", "")
+        .replace("const ", "var "));
+    let mut dest_html = File::create("web-build/index.html")?;
+    dest_html.write(new_data_html.as_bytes())?; 
     
-    fs::copy(JS_FILE_PATH, "web-build/index.js")?;
+    // read and transform the js file
+    let mut src_js = File::open(JS_FILE_PATH)?;
+    let mut data_js = String::new();
+    src_js.read_to_string(&mut data_js); 
+    let new_data_js = format!("{}", data_js
+        .replace("const ", "var ")
+        .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
+        .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"));
+    let mut dest_js = File::create("web-build/index.js")?;
+    dest_js.write(new_data_js.as_bytes())?; 
+
     Ok(()) 
 } 

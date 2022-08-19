@@ -3,13 +3,19 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Messages from "./messages";
 import * as Menus from "./menus/index";
-import { Backend, NodeBackend } from "./backend";
+import { Backend, NodeBackend, SwitchBackend } from "./backend";
 import './index.css';
-const node_backend = new NodeBackend();
 
+// determine which type of backend we want, switch or node
+var backend = new NodeBackend();
+try {
+  backend.send(new Messages.Ping("hello?"))
+} catch {
+  backend = new SwitchBackend();
+}
 
 export function App() {
   return (
-    new Menus.MainMenu(node_backend).render()
+    new Menus.MainMenu(backend).render()
   )
 }

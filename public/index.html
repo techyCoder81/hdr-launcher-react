@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <title>HDR Ryujinx Launcher</title>
-
+  <title>HDR Launcher</title>
   <script>
-    const global = globalThis;
+    var original = window.onerror;
+    window.onerror = function(msg, url, linenumber) {
+        alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
+        var box = document.getElementById("log-box");
+        if (box != null) {
+          box.innerHTML += "<p>ERROR: " + msg + "</p>";
+        }
+        return original(msg, url, linenumber);
+    }
   </script>
 </head>
 <body>

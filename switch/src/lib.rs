@@ -9,14 +9,19 @@ pub fn main() {
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
         let session = Webpage::new()
-            .htdocs_dir("launcher")
+            .htdocs_dir("hdr-launcher")
+            .file("index.html", &HTML_TEXT)
+            .file("index.js", &JS_TEXT)
             .background(skyline_web::Background::Default)
             .boot_display(skyline_web::BootDisplay::Black)
             .open_session(skyline_web::Visibility::InitiallyHidden).unwrap();
         session.show();
         loop {
-            std::thread::sleep(std::time::Duration::from_millis(2000));
-            println!("browser thread is alive still");
+            if let Some(msg) = session.try_recv() {
+                match msg.as_str() {
+                    _ => println!("Message received:\n{}", msg)
+                }
+            }
         }
     });
 

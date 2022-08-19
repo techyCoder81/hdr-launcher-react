@@ -50,10 +50,9 @@ export class ConsoleBackend implements Backend {
     send(message: Message) {
         console.log(JSON.stringify(message));
     }
-    
 }
 
-export class SkylineBackend implements Backend {
+export class SwitchBackend implements Backend {
     constructor() {
     }
     invoke(message: Messages.Message): Promise<Messages.Response> {
