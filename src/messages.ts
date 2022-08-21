@@ -1,60 +1,30 @@
 const NO_RESPONSE = "none";
 
-export interface Message {
-    message_name(): string;
-}
+/**
+ * base message class
+ */
+export class Message {
+    /** static counter for unique IDs */
+    static idCounter = 0;
 
-export interface Response {
-    response_name(): string;
-}
+    /** the unique ID for this message */
+    id: string;
 
-export class Ping implements Message {
-    message: string;
+    /** the name of the call to be made */
+    name: string;
 
-    /**
-     * creates a ping message
-     * @param message the message for this ping
-     */
-    constructor(message: string) {
-        this.message = message;
+    constructor(name: string) {
+        var id = Message.idCounter;
+        Message.idCounter++;
+        this.id = Message.idCounter.toString();
+        this.name = name;
     }
-    public message_name() {return "ping"};
-}
 
-export class Exit implements Message {
-
-    /**
-     * creates a ping message
-     * @param message the message for this ping
-     */
-    constructor() {
-        
+    getName(): string {
+        return this.name;
     }
-    public message_name() {return "exit"};
-}
 
-export class Play implements Message {
-
-    /**
-     * creates a ping message
-     * @param message the message for this ping
-     */
-    constructor() {
-        
+    getId(): string {
+        return this.id;
     }
-    public message_name() {return "play"};
 }
-
-export class Pong implements Response {
-    message: string;
-
-    /**
-     * creates a pong response
-     * @param message the response message
-     */
-    constructor(message: string) {
-        this.message = message;
-    }
-    public response_name() {return "pong"};
-}
-

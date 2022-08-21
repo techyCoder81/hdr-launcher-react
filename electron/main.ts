@@ -1,5 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as Messages from "../src/messages";
+import { RequestHandler } from './request_handler';
+import { MessageHandler } from './message_handler';
 
 let mainWindow: BrowserWindow | null
 
@@ -32,21 +34,20 @@ function createWindow () {
 }
 
 async function registerListeners () {
-  
-  /** 
-   * get all of the message types and listen to them
-  */
-  
-  ipcMain.on("ping", (event, message) => {
-    console.log("main thread received message: " + JSON.stringify(message))
-    var pong = new Messages.Pong("message was received and processed!");
-    console.log("Sending response: " + JSON.stringify(pong));
-    mainWindow?.webContents.send(pong.response_name(), pong);
+  let requestHandler = new RequestHandler();
+  let messageHandler = new MessageHandler();
+
+  // register listening to the request channel
+  ipcMain.on("request", (event, request) => {
+    console.log("main thread received message: " + JSON.stringify(request))
+    let response = requestHandler.handle(request);
+    mainWindow?.webContents.send(request.getId(), response);
   });
 
-  ipcMain.on("exit", (event, message) => {
+  // register listening to the message channel
+  ipcMain.on("message", (event, message) => {
     console.log("main thread received message: " + JSON.stringify(message))
-    app.quit();
+    messageHandler.handle(message);
   });
 
 }

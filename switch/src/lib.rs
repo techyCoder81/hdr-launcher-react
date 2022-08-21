@@ -18,7 +18,7 @@ pub fn main() {
         session.show();
         loop {
             if let Some(msg) = session.try_recv() {
-                println!("Message received:\n{}", msg);
+                handle(msg);
             }
         }
     });
@@ -26,4 +26,9 @@ pub fn main() {
     // End thread so match can actually start
     browser_thread.join();
 
+}
+
+pub fn handle(message: String) {
+    println!("Received from frontend: {}", message);
+    // TODO: actually handle the stuff here lol
 }

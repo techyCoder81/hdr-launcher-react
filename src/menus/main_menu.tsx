@@ -18,16 +18,13 @@ export class MainMenu {
         <div className="main-menu">
                 <div className="left-side">
                         <h1 className="header">HDR Launcher</h1>
-                        <button className="main-buttons" onClick={() => this.backend.send(new Messages.Play())}>
+                        <button className="main-buttons" onClick={() => this.backend.play()}>
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => {
-                                        this.backend.invoke(new Messages.Ping("do update!"))
-                                                .then(response => console.log("ping was responded with: " + JSON.stringify(response)))
-                                                .catch(rejection => console.error("Ping was rejected! Reason: " + JSON.stringify(rejection)));}}>
+                        <button className="main-buttons" onClick={() => this.backend.ping("update ping test")}>
                                 <div>Update&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => this.backend.send(new Messages.Exit())}>
+                        <button className="main-buttons" onClick={() => this.backend.quit()}>
                                 <div>Exit&nbsp;&nbsp;</div>
                         </button>
                 </div>    

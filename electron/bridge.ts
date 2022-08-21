@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import * as Messages from "../src/messages";
+import * as Responses from "../src/responses";
 
 export const api = {
   /**
@@ -14,7 +15,7 @@ export const api = {
     ipcRenderer.send(message, object)
   },
 
-  invoke: (message: string, object: Object): Promise<Messages.Response> => {
+  invoke: (message: string, object: Object): Promise<Responses.BaseResponse> => {
     return ipcRenderer.invoke(message, object)
   },
 
