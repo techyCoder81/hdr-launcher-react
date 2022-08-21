@@ -3,6 +3,7 @@ use std::env;
 use std::path::Path;
 use std::fs::File;
 use std::io::{self, Read, Write};
+use prettify_js::*;
 
 static JS_FILE_PATH: &str = "../.webpack/renderer/main_window/index.js";
 static HTML_FILE_PATH: &str = "../.webpack/renderer/main_window/index.html";
@@ -28,6 +29,8 @@ fn main() -> std::io::Result<()> {
         .replace("/main_window", "")
         .replace("const ", "var "));
     let mut dest_html = File::create("web-build/index.html")?;
+
+    //write the file
     dest_html.write(new_data_html.as_bytes())?; 
     
     // read and transform the js file
@@ -39,7 +42,10 @@ fn main() -> std::io::Result<()> {
         .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
         .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"));
     let mut dest_js = File::create("web-build/index.js")?;
-    dest_js.write(new_data_js.as_bytes())?; 
+
+    // prettyprint and then write the file
+    let (pretty, _) = prettify_js::prettyprint(&new_data_js);
+    dest_js.write(pretty.as_bytes())?; 
 
     Ok(()) 
 } 

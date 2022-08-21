@@ -9,7 +9,7 @@ import { resolve } from "../webpack/main.webpack";
  */
 export interface Backend {
     send(message: Message): any;
-    invoke(message: Message): Promise<Messages.Response>;
+    invoke(message: Message): Promise<string>;
 }
 
 /**
@@ -26,25 +26,25 @@ export class NodeBackend implements Backend {
         window.Main.send(message.message_name(), message)
     }
 
-    invoke(message: Message): Promise<Messages.Response> {
+    invoke(message: Message): Promise<string> {
         console.log("invoking on node backend:\n" + JSON.stringify(message));
         var retval = null;
         return new Promise((resolve) => {
             window.Main.send(message.message_name(), message);
             window.Main.once("pong", (value: Messages.Response) => {
                 console.log("got response: " + JSON.stringify(value));
-                resolve(value)
+                resolve(JSON.stringify(value));
             });
         });
     }
 }
 
 export class ConsoleBackend implements Backend {
-    invoke(message: Messages.Message): Promise<Messages.Response> {
+    invoke(message: Messages.Message): Promise<string> {
         return new Promise((resolve) => {
             console.log(JSON.stringify(message));
             var input = prompt("response?\n") + "";
-            resolve(JSON.parse(input) as Messages.Response)
+            resolve(input)
         });
     }
     send(message: Message) {
@@ -54,10 +54,28 @@ export class ConsoleBackend implements Backend {
 
 export class SwitchBackend implements Backend {
     constructor() {
+        try {
+            new Promise((resolve, reject) => {
+                this.invoke(new Messages.Ping("frontend has arrived lol"));
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
-    invoke(message: Messages.Message): Promise<Messages.Response> {
-        skyline.sendMessage(JSON.stringify(message))
-        return skyline.receive();
+    invoke(message: Messages.Message): Promise<string> {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log("sending message to skyline: " + JSON.stringify(message));
+                skyline.sendMessage(JSON.stringify(message));
+                console.log("waiting for response from skyline");
+                var response = skyline.receiveMessage();
+                console.log("Skyline response: " + response);
+                resolve(response);
+            } catch (e) {
+                console.log("Error while invoking on skyline: " + JSON.stringify(e))
+                reject("Error: " + JSON.stringify(e));
+            }
+        });
     }
 
     send(message: Message) {

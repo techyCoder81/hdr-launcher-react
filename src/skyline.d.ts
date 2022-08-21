@@ -1,4 +1,4 @@
 import * as Messages from "./messages";
 
-export const receive: any
+export const receiveMessage: any
 export const sendMessage: any

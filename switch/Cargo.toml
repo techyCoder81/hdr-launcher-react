@@ -15,6 +15,9 @@ skyline-config = { git = "https://github.com/skyline-rs/skyline-config" }
 skyline = { git = "https://github.com/ultimate-research/skyline-rs.git" }
 skyline-web = { git = "https://github.com/skyline-rs/skyline-web" }
 
+[build-dependencies]
+prettify-js = "0.1.0"
+
 [profile.dev]
 panic = "abort"
 

@@ -2,10 +2,16 @@ import * as React from 'react';
 import * as Messages from "../messages";
 import { Backend } from "../backend";
 
-const add_to_box = (...text: any[]) => {
-    var box = document.getElementById("log-box");
-    if (box != null) {
-        box.innerHTML += "<p>" + JSON.stringify(text) + "</p>";
+const add_to_box = (message?: any) => {
+    try {
+        var box = document.getElementById("log-box");
+        if (box != null) {
+            box.innerHTML += "<p>LOG: " + JSON.stringify(message) + "</p>"
+        } else {
+            console.error("log box was null!");
+        }
+    } catch (e) {
+        // yikes
     }
 }
 
@@ -18,39 +24,39 @@ export class LogWindow extends React.Component {
 
         super(props);
         const old_log = console.log;
-        console.log = (...data) => {
-            add_to_box(data);
-            old_log(data);
+        console.log = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_log(message);
         };
 
         const old_info = console.info;
-        console.info = (...data) => {
-            add_to_box(data);
-            old_info(data);
+        console.info = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_info(message);
         };
 
         const old_error = console.error;
-        console.error = (...data) => {
-            add_to_box(data);
-            old_error(data);
+        console.error = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_error(message);
         };
 
         const old_warn = console.warn;
-        console.warn = (...data) => {
-            add_to_box(data);
-            old_warn(data);
+        console.warn = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_warn(message);
         };
 
         const old_trace = console.trace;
-        console.trace = (...data) => {
-            add_to_box(data);
-            old_trace(data);
+        console.trace = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_trace(message);
         };
 
         const old_debug = console.debug;
-        console.debug = (...data) => {
-            add_to_box(data);
-            old_debug(data);
+        console.debug = (message?: any, ...optionalParams: any[]) => {
+            add_to_box(message);
+            old_debug(message);
         };
     }
 

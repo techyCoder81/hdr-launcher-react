@@ -93,6 +93,7 @@ dependencies = [
 name = "hdr-launcher-react"
 version = "0.1.0"
 dependencies = [
+ "prettify-js",
  "skyline",
  "skyline-config",
  "skyline-web",
@@ -120,6 +121,15 @@ checksum = "04c3b4822ccebfa39c02fc03d1534441b22ead323fa0f48bb7ddd8e6ba076a40"
 name = "libc-nnsdk"
 version = "0.0.1"
 source = "git+https://github.com/ultimate-research/libc-nnsdk.git#98c11e074317f2b45b6387840ff3c391275f4ad5"
+
+[[package]]
+name = "log"
+version = "0.4.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
+dependencies = [
+ "cfg-if",
+]
 
 [[package]]
 name = "logos"
@@ -157,6 +167,18 @@ version = "0.1.0"
 source = "git+https://github.com/ultimate-research/nnsdk-rs.git#c9b66a3423d86ead992370ed598edb434564dd6d"
 dependencies = [
  "libc-nnsdk",
+]
+
+[[package]]
+name = "prettify-js"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7ff18ec712649921186715eeee7d880c3c5fb41c86a5a3524057da346e27771"
+dependencies = [
+ "log",
+ "ress",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -229,6 +251,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
 
 [[package]]
+name = "ress"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fb1cedc0fd02351568b53be91c4ba2f94beb31ff730bd7df1e54e9b19169b9b"
+dependencies = [
+ "log",
+ "unicode-xid",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -239,6 +271,20 @@ name = "serde"
 version = "1.0.143"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "53e8e5d5b70924f74ff5c6d64d9a5acd91422117c60f48c4e07855238a254553"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.143"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3d8e8de557aee63c26b85b947f5e59b690d0454c753f3adeb5cd7835ab88391"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "serde_json"
@@ -355,6 +401,12 @@ name = "unicode-width"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ed742d4ea2bd1176e236172c8429aaf54486e7ac098db29ffe6529e0ce50973"
+
+[[package]]
+name = "unicode-xid"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "957e51f3646910546462e67d5f7599b9e4fb8acdd304b087a6494730f9eebf04"
 
 [[package]]
 name = "utf8-ranges"

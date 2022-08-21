@@ -17,25 +17,22 @@ export class MainMenu {
         return (
         <div className="main-menu">
                 <div className="left-side">
-                        <h1 className="header">HDR Ryujinx Launcher</h1>
+                        <h1 className="header">HDR Launcher</h1>
                         <button className="main-buttons" onClick={() => this.backend.send(new Messages.Play())}>
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => this.backend.invoke(new Messages.Ping("do update!"))}>
+                        <button className="main-buttons" onClick={() => {
+                                        this.backend.invoke(new Messages.Ping("do update!"))
+                                                .then(response => console.log("ping was responded with: " + JSON.stringify(response)))
+                                                .catch(rejection => console.error("Ping was rejected! Reason: " + JSON.stringify(rejection)));}}>
                                 <div>Update&nbsp;&nbsp;</div>
-                        </button>
-                        <button className="main-buttons" onClick={() => this.backend.invoke(new Messages.Ping("do verify!"))}>
-                                <div>Verify&nbsp;&nbsp;</div>
-                        </button>
-                        <button className="main-buttons" onClick={() => this.backend.invoke(new Messages.Ping("do options!"))}>
-                                <div>Options&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => this.backend.send(new Messages.Exit())}>
                                 <div>Exit&nbsp;&nbsp;</div>
                         </button>
                 </div>    
                 <div className="right-side">
-                        <LogWindow/>
+                        {/*<LogWindow/>*/}
                 </div>
         </div>
         );

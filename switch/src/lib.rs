@@ -18,9 +18,7 @@ pub fn main() {
         session.show();
         loop {
             if let Some(msg) = session.try_recv() {
-                match msg.as_str() {
-                    _ => println!("Message received:\n{}", msg)
-                }
+                println!("Message received:\n{}", msg);
             }
         }
     });
