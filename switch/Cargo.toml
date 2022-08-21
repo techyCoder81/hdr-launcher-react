@@ -14,6 +14,8 @@ crate-type = ["cdylib"]
 skyline-config = { git = "https://github.com/skyline-rs/skyline-config" }
 skyline = { git = "https://github.com/ultimate-research/skyline-rs.git" }
 skyline-web = { git = "https://github.com/skyline-rs/skyline-web", features = ["json"] }
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = "1.0.79"
 
 [build-dependencies]
 prettify-js = "0.1.0"

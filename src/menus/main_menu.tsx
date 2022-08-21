@@ -21,7 +21,7 @@ export class MainMenu {
                         <button className="main-buttons" onClick={() => this.backend.play()}>
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => this.backend.ping("update ping test")}>
+                        <button className="main-buttons" onClick={() => this.backend.ping()}>
                                 <div>Update&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => this.backend.quit()}>
@@ -29,7 +29,7 @@ export class MainMenu {
                         </button>
                 </div>    
                 <div className="right-side">
-                        {/*<LogWindow/>*/}
+                        <LogWindow/>
                 </div>
         </div>
         );

@@ -94,6 +94,8 @@ name = "hdr-launcher-react"
 version = "0.1.0"
 dependencies = [
  "prettify-js",
+ "serde",
+ "serde_json",
  "skyline",
  "skyline-config",
  "skyline-web",

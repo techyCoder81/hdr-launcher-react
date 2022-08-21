@@ -9,7 +9,7 @@ export class MessageHandler {
     }
 
     handle(message: Messages.Message) {
-        let name = message.getName();
+        let name = message.call_name;
         switch (name) {
             case "quit":
                 app.quit();

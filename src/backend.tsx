@@ -17,19 +17,19 @@ export abstract class Backend {
 
     /**
      * pings the backend with a message.
-     * @param message the message for the ping
      * @returns whether the backend responded.
      */
-    ping(message: string): boolean {
-        this.invoke(new Messages.Message("ping")).then(value => {
-            let response = JSON.parse(value) as Responses.StringResponse;
-            console.info("Frontend got response: " + response.getMessage());
+    async ping(): Promise<boolean> {
+        console.info("beginning ping");
+        return await this.invoke(new Messages.Message("ping")).then((value: string) => {
+            console.info("Frontend got response: " + value);
+            let response = JSON.parse(value);
+            console.info("Response message type: " + response.message);
             return true;
-        }).catch(e => {
-            console.error("Error while performing ping: " + JSON.stringify(e));
+        }).catch((e: string) => {
+            console.error("Error while performing ping: " + e);
             return false;
         });
-        return false;
     }
 
     /** sends the play message to the backend */
@@ -50,50 +50,44 @@ export class NodeBackend extends Backend {
 
     override send(message: Messages.Message) {
         console.log("sending to node backend:\n" + JSON.stringify(message));
-        window.Main.send("message", message)
+        window.Main.send("message", message);
     }
 
     override invoke(message: Messages.Message): Promise<string> {
         console.log("invoking on node backend:\n" + JSON.stringify(message));
         var retval = null;
-        return new Promise((resolve) => {
+        return new Promise<string>((resolve, reject) => {
             // send the request
-            window.Main.send("request", message);
+            window.Main.invoke("request", message).then(response => {
+                console.log("got response: " + JSON.stringify(response));
+                let output = JSON.stringify(response);
+                console.log("resolving with: " + output);
+                resolve(output);
+                return;
+            }).catch(e => {
+                console.error("error while invoking on node backend. " + JSON.stringify(e));
+                throw e;
+            });
+            /*console.info("request sent!");
 
             // listen for the message ID's response
             window.Main.once(message.getId(), (value: Responses.BaseResponse) => {
                 console.log("got response: " + JSON.stringify(value));
                 resolve(JSON.stringify(value));
             });
+            console.info("listener registered for ID: " + message.getId());
+            */
         });
-    }
-}
-
-export class ConsoleBackend extends Backend {
-    override invoke(message: Messages.Message): Promise<string> {
-        return new Promise((resolve) => {
-            console.log(JSON.stringify(message));
-            var input = prompt("response?\n") + "";
-            resolve(input)
-        });
-    }
-    override send(message: Messages.Message) {
-        console.log(JSON.stringify(message));
     }
 }
 
 export class SwitchBackend extends Backend {
     constructor() {
         super();
-        try {
-            new Promise((resolve, reject) => {
-                this.invoke(new Messages.Message("frontend has arrived lol"));
-            });
-        } catch (e) {
-            console.error(e);
-        }
     }
+
     override invoke(message: Messages.Message): Promise<string> {
+        console.log("trying to invoke on nx: " + JSON.stringify(message));
         return new Promise((resolve, reject) => {
             try {
                 console.log("sending message to skyline: " + JSON.stringify(message));
@@ -103,13 +97,15 @@ export class SwitchBackend extends Backend {
                 console.log("Skyline response: " + response);
                 resolve(response);
             } catch (e) {
-                console.log("Error while invoking on skyline: " + JSON.stringify(e))
+                console.error("Error while invoking on skyline: " + e + ", object data: " + JSON.stringify(e))
                 reject("Error: " + JSON.stringify(e));
             }
         });
     }
 
     override send(message: Messages.Message) {
+        skyline.printData();
+        console.log("trying to send to nx: " + JSON.stringify(message));
         skyline.sendMessage(JSON.stringify(message));
     }
 }

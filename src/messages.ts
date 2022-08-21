@@ -1,4 +1,3 @@
-const NO_RESPONSE = "none";
 
 /**
  * base message class
@@ -11,20 +10,20 @@ export class Message {
     id: string;
 
     /** the name of the call to be made */
-    name: string;
+    call_name: string;
 
     constructor(name: string) {
         var id = Message.idCounter;
         Message.idCounter++;
         this.id = Message.idCounter.toString();
-        this.name = name;
+        this.call_name = name;
     }
 
-    getName(): string {
-        return this.name;
+    public getName(): string {
+        return this.call_name;
     }
 
-    getId(): string {
+    public getId(): string {
         return this.id;
     }
 }

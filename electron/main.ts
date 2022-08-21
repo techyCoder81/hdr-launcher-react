@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as Messages from "../src/messages";
+import * as Responses from "../src/responses";
 import { RequestHandler } from './request_handler';
 import { MessageHandler } from './message_handler';
 
@@ -38,16 +39,18 @@ async function registerListeners () {
   let messageHandler = new MessageHandler();
 
   // register listening to the request channel
-  ipcMain.on("request", (event, request) => {
-    console.log("main thread received message: " + JSON.stringify(request))
+  ipcMain.handle("request", (event, request): Responses.BaseResponse => {
+    console.log("main thread received request: " + JSON.stringify(request));
     let response = requestHandler.handle(request);
-    mainWindow?.webContents.send(request.getId(), response);
+    console.info("responding to request " + request.id 
+      + " with response: " + JSON.stringify(response));
+    return response;
   });
 
   // register listening to the message channel
   ipcMain.on("message", (event, message) => {
-    console.log("main thread received message: " + JSON.stringify(message))
-    messageHandler.handle(message);
+    console.log("main thread received message: " + JSON.stringify(message));
+    messageHandler.handle(message as Messages.Message);
   });
 
 }

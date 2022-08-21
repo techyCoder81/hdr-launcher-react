@@ -1,8 +1,39 @@
 use skyline_web::{Webpage, WebSession};
 use std::thread::{self};
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+use std::fmt;
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
+
+#[derive(Serialize, Deserialize)]
+struct Message {
+    id: String,
+    call_name: String,
+}
+
+impl fmt::Display for Message {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "(id: {}, call_name: {})", self.id, self.call_name)
+    }
+}
+
+trait Handleable {
+    fn handle(&self, session: &WebSession) -> bool;
+}
+
+impl Handleable for Message {
+    /// return: true, if we should keep going, false if we should not
+    fn handle(&self, session: &WebSession) -> bool {
+        match self.call_name.as_str() {
+            "play" => {session.exit(); return false;},
+            "quit" => unsafe { skyline::nn::oe::ExitApplication(); return false; },
+            _ => println!("doing nothing for message {}", self)
+        }
+        return true;
+    }
+}
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
@@ -16,19 +47,19 @@ pub fn main() {
             .boot_display(skyline_web::BootDisplay::Black)
             .open_session(skyline_web::Visibility::InitiallyHidden).unwrap();
         session.show();
+
+        println!("session is open");
         loop {
             if let Some(msg) = session.try_recv() {
-                handle(msg);
+                let message: Message = serde_json::from_str(&msg).unwrap();
+                println!("received a message: {}" , message);
+                if !message.handle(&session) {
+                    break;
+                }
             }
         }
     });
 
     // End thread so match can actually start
     browser_thread.join();
-
-}
-
-pub fn handle(message: String) {
-    println!("Received from frontend: {}", message);
-    // TODO: actually handle the stuff here lol
 }

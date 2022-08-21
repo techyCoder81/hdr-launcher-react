@@ -12,7 +12,7 @@
         alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
         var box = document.getElementById("log-box");
         if (box != null) {
-          box.innerHTML += "<p>ERROR: " + msg + "</p>";
+          box.innerHTML += "<p>UNHANDLED ERROR: " + msg + "</p>";
         }
         return original(msg, url, linenumber);
     }
