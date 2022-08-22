@@ -43,6 +43,7 @@ impl Handleable for Message {
             "quit" => unsafe { skyline::nn::oe::ExitApplication();},
             "ping" => send_string_response(session, self.id.clone(), "pong from switch!".to_string()),
             "platform" => send_string_response(session, self.id.clone(), "Switch".to_string()),
+            "sdcard_root" => send_string_response(session, self.id.clone(), "sd:/".to_string()),
             _ => println!("doing nothing for message {}", self)
         }
         return true;

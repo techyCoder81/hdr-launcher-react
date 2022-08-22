@@ -27,7 +27,11 @@ export class MainMenu {
                         <button className="main-buttons" onClick={() => this.backend.play()}>
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => this.backend.ping()}>
+                        <button className="main-buttons" onClick={() => 
+                                this.backend.getSdRoot()
+                                        .then((value) => console.info("SD root is " + value))
+                                        .catch((e) => console.error(e))
+                        }>
                                 <div>Ping&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => this.backend.quit()}>

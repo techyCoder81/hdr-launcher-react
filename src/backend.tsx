@@ -53,6 +53,12 @@ export abstract class Backend {
         return this.stringRequest("platform");
     }
 
+    /** gets the platform of the current backend, 
+     * according to the backend itself. */
+     async getSdRoot() {
+        return this.stringRequest("sdcard_root");
+    }
+
     /** sends the play message to the backend */
     play() {
         this.send(new Messages.Message("play"));

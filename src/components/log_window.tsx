@@ -6,8 +6,16 @@ import { Backend } from "../backend";
  * log window implementation
  */
 export class LogWindow extends React.Component {
+    /** the selected log level */
     static selected: string = "LOG";
 
+    /** whether the console logging functions have been redirected yet */
+    static logRedirected: boolean = false;
+
+    /** 
+     * adds the given message with the given level
+     * to the log div.
+     */
     add_to_log(level: string, message: string) {
         var box = document.getElementById("log-box");
         if (box == null) {
@@ -24,8 +32,20 @@ export class LogWindow extends React.Component {
         box.scrollTop = box.scrollHeight;
     }
 
+    /** constructor */
     constructor(props: {} | Readonly<{}>) {
         super(props);
+        this.redirectLogs();
+    }
+
+    /**
+     * redirects the console.log, console.error, console.info, etc
+     * to the log window, if it hasnt already been done.
+     */
+    redirectLogs() {
+        if (LogWindow.logRedirected) {
+            return;
+        }
         var old_log = console.log;
         console.log = (...data) => {
             try {
@@ -63,6 +83,10 @@ export class LogWindow extends React.Component {
         }
     }
 
+    /**
+     * the list of log levels
+     * TODO: make this an enum instead.
+     */
     static LOG_LEVELS = [
         "LOG",
         "INFO",
@@ -71,15 +95,14 @@ export class LogWindow extends React.Component {
         "TRACE"
     ]
 
-    updateSelected(item: { target: { value: any; }; }) {
-        LogWindow.selected = item.target.value;
-    }
-
     render() {
         return (
         <div>
             <label htmlFor="loglevels">Log level:</label>
-            <select name="loglevels" id="loglevels" onChange={this.updateSelected}>
+            <select name="loglevels" id="loglevels" onChange={
+                (item: { target: { value: any; }; }) => {
+                    LogWindow.selected = item.target.value;
+                }}>
                 {
                 LogWindow.LOG_LEVELS.map((level) => <option value={level} key={level}>{level}</option>)
                 } 
