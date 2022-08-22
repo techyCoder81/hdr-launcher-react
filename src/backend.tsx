@@ -50,13 +50,23 @@ export abstract class Backend {
     /** gets the platform of the current backend, 
      * according to the backend itself. */
     async getPlatform() {
-        return this.stringRequest("platform");
+        return this.stringRequest("get_platform");
     }
 
     /** gets the platform of the current backend, 
      * according to the backend itself. */
      async getSdRoot() {
-        return this.stringRequest("sdcard_root");
+        return this.stringRequest("get_sdcard_root");
+    }
+
+    /** gets whether hdr is installed */
+     async isInstalled() {
+        return this.stringRequest("is_installed");
+    }
+
+    /** gets the hdr version installed */
+    async getVersion() {
+        return this.stringRequest("get_version");
     }
 
     /** sends the play message to the backend */

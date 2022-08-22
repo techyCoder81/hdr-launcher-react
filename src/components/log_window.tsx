@@ -107,6 +107,12 @@ export class LogWindow extends React.Component {
                 LogWindow.LOG_LEVELS.map((level) => <option value={level} key={level}>{level}</option>)
                 } 
             </select>
+            <button onClick={() => {
+                var box = document.getElementById("log-box");
+                if (box != null) {
+                    box.innerHTML = "";
+                }
+            }}>Clear Logs</button>
             <div className="scroll-box" id="log-box"></div>
         </div>
         );
