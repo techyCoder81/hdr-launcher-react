@@ -9,7 +9,7 @@ export class RequestHandler {
         var response;
         switch (name) {
             case "ping":
-                response = new Responses.StringResponse("request was received and processed!");
+                response = new Responses.StringResponse("ping was received and processed!");
                 break;
             default:
                 console.error("Could not handle request with name: " + name);
