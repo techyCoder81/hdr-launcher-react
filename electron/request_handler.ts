@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import * as Messages from "../src/messages";
 import * as Responses from "../src/responses";
+import { StringResponse } from '../src/responses';
 
 export class RequestHandler {
     handle(request: Messages.Message): Responses.BaseResponse {
@@ -9,7 +10,10 @@ export class RequestHandler {
         var response;
         switch (name) {
             case "ping":
-                response = new Responses.StringResponse("ping was received and processed!");
+                response = new StringResponse("ping was received and processed!", request.id);
+                break;
+            case "platform":
+                response = new StringResponse("Ryujinx", request.id);
                 break;
             default:
                 console.error("Could not handle request with name: " + name);

@@ -24,12 +24,33 @@ export abstract class Backend {
         return await this.invoke(new Messages.Message("ping")).then((value: string) => {
             console.info("Frontend got response: " + value);
             let response = JSON.parse(value);
-            console.info("Response message type: " + response.message);
             return true;
         }).catch((e: string) => {
             console.error("Error while performing ping: " + e);
             return false;
         });
+    }
+
+    /**
+     * pings the backend with a message.
+     * @returns whether the backend responded.
+     */
+    private async stringRequest(name: string): Promise<string> {
+        console.info("beginning " + name);
+        return await this.invoke(new Messages.Message(name)).then((value: string) => {
+            console.info("Frontend got response: " + value);
+            let response = JSON.parse(value);
+            return response.message;
+        }).catch((e: string) => {
+            console.error("Error while performing ping: " + e);
+            return "Unknown";
+        });
+    }
+
+    /** gets the platform of the current backend, 
+     * according to the backend itself. */
+    async getPlatform() {
+        return this.stringRequest("platform");
     }
 
     /** sends the play message to the backend */
@@ -68,34 +89,47 @@ export class NodeBackend extends Backend {
                 console.error("error while invoking on node backend. " + JSON.stringify(e));
                 throw e;
             });
-            /*console.info("request sent!");
-
-            // listen for the message ID's response
-            window.Main.once(message.getId(), (value: Responses.BaseResponse) => {
-                console.log("got response: " + JSON.stringify(value));
-                resolve(JSON.stringify(value));
-            });
-            console.info("listener registered for ID: " + message.getId());
-            */
         });
     }
 }
 
 export class SwitchBackend extends Backend {
+
+    /// the map of callbacks that have been registered
+    /// Map<ID, function(received object){}>
+    callbacks: Map<string, {(object: string): void}> = new Map();
+
     constructor() {
         super();
+        // add listener for all messages from window.nx
+        var retval = skyline.addEventListener("message", (event: any) => {
+            // add the newly returned object to the responses list
+            var response = JSON.parse(event.data);
+            var id: string = response.id;
+
+            var callback = this.callbacks.get(id);
+            if (callback != undefined) {
+                callback(response);
+            } else {
+                console.error("Received response for unknown ID: " + JSON.stringify(response));
+            }
+        });
     }
 
     override invoke(message: Messages.Message): Promise<string> {
         console.log("trying to invoke on nx: " + JSON.stringify(message));
         return new Promise((resolve, reject) => {
             try {
+                console.log("setting callback for skyline invocation");
+                // set a callback for when that ID is returned
+                this.callbacks.set(message.id, (response) => {
+                    console.log("response called back for id " + message.id + " with response: " + JSON.stringify(response));
+                    this.callbacks.delete(message.id);
+                    resolve(JSON.stringify(response));
+                });
                 console.log("sending message to skyline: " + JSON.stringify(message));
                 skyline.sendMessage(JSON.stringify(message));
                 console.log("waiting for response from skyline");
-                var response = skyline.receiveMessage();
-                console.log("Skyline response: " + response);
-                resolve(response);
             } catch (e) {
                 console.error("Error while invoking on skyline: " + e + ", object data: " + JSON.stringify(e))
                 reject("Error: " + JSON.stringify(e));

@@ -3,9 +3,12 @@ export function sendMessage(object) {
     window.nx.sendMessage(object);
 }
 
-export function receiveMessage() {
-    console.log("attempting to receive...")
-    return window.nx.receiveMessage();
+export function addEventListener(eventName, callback) {
+    return window.nx.addEventListener(eventName, callback);
+}
+
+export function removeEventListener(listener) {
+    return window.nx.removeEventListener(listener);
 }
 
 export function printData() {

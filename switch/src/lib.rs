@@ -13,9 +13,21 @@ struct Message {
     call_name: String,
 }
 
+#[derive(Serialize, Deserialize)]
+struct StringResponse {
+    id: String,
+    message: String,
+}
+
 impl fmt::Display for Message {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "(id: {}, call_name: {})", self.id, self.call_name)
+    }
+}
+
+impl fmt::Display for StringResponse {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "(id: {}, message: {})", self.id, self.message)
     }
 }
 
@@ -28,11 +40,21 @@ impl Handleable for Message {
     fn handle(&self, session: &WebSession) -> bool {
         match self.call_name.as_str() {
             "play" => {session.exit(); return false;},
-            "quit" => unsafe { skyline::nn::oe::ExitApplication(); return false; },
+            "quit" => unsafe { skyline::nn::oe::ExitApplication();},
+            "ping" => send_string_response(session, self.id.clone(), "pong from switch!".to_string()),
+            "platform" => send_string_response(session, self.id.clone(), "Switch".to_string()),
             _ => println!("doing nothing for message {}", self)
         }
         return true;
     }
+}
+
+pub fn send_string_response(session: &WebSession, msgId: String, responseMsg: String) {
+    let response = &StringResponse{ 
+        id: msgId, message: responseMsg
+    };
+    println!("Sending string response: {}", response);
+    session.send_json(response);
 }
 
 #[skyline::main(name = "hdr-launcher-react")]
