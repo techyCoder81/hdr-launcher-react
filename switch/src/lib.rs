@@ -1,66 +1,18 @@
 use skyline_web::{Webpage, WebSession};
 use std::thread::{self};
 use serde::{Deserialize, Serialize};
+use arcropolis_api::{self, ApiVersion, get_api_version};
 use serde_json::Result;
 use std::fmt;
+use std::path::Path;
+
+mod response;
+mod message;
+use response::*;
+use message::*;
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
-
-#[derive(Serialize, Deserialize)]
-struct Message {
-    id: String,
-    call_name: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct StringResponse {
-    id: String,
-    message: String,
-}
-
-impl fmt::Display for Message {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "(id: {}, call_name: {})", self.id, self.call_name)
-    }
-}
-
-impl fmt::Display for StringResponse {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "(id: {}, message: {})", self.id, self.message)
-    }
-}
-
-trait Handleable {
-    fn handle(&self, session: &WebSession) -> bool;
-}
-
-impl Handleable for Message {
-    /// return: true, if we should keep going, false if we should not
-    fn handle(&self, session: &WebSession) -> bool {
-        match self.call_name.as_str() {
-            "play" => {session.exit(); return false;},
-            "quit" => unsafe { skyline::nn::oe::ExitApplication();},
-            "ping" => send_string_response(session, self.id.clone(), "pong from switch!".to_string()),
-            "get_platform" => send_string_response(session, self.id.clone(), "Switch".to_string()),
-            "get_sdcard_root" => send_string_response(session, self.id.clone(), "sd:/".to_string()),
-            "is_installed" => {
-                let exists = Path::new("sd:/ultimate/mods/hdr").exists();
-                send_string_response(session, self.id.clone(), format!("{}", exists));
-            },
-            _ => println!("doing nothing for message {}", self)
-        }
-        return true;
-    }
-}
-
-pub fn send_string_response(session: &WebSession, msgId: String, responseMsg: String) {
-    let response = &StringResponse{ 
-        id: msgId, message: responseMsg
-    };
-    println!("Sending string response: {}", response);
-    session.send_json(response);
-}
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
@@ -76,17 +28,47 @@ pub fn main() {
         session.show();
 
         println!("session is open");
-        loop {
-            if let Some(msg) = session.try_recv() {
-                let message: Message = serde_json::from_str(&msg).unwrap();
-                println!("received a message: {}" , message);
-                if !message.handle(&session) {
-                    break;
-                }
-            }
-        }
+        listen_for_messages(&session);
     });
 
     // End thread so match can actually start
     browser_thread.join();
+}
+
+fn listen_for_messages(session: &WebSession) {
+    loop {
+        if let Some(msg) = session.try_recv() {
+            println!("received a message: {}" , msg);
+            let keep_listening = match serde_json::from_str::<Message>(&msg) {
+                Ok(message) => message.handle(&session),
+                Err(e) => {
+                    println!("This is not a valid Message: {}", msg);
+                    true
+                }
+            };
+            
+            // if the handling of one of our messages said to stop listening, then break.
+            if !keep_listening {
+                return;
+            }
+        }
+    }
+}
+
+/// tries to open the main arcropolis configuration ui
+pub fn try_open_arcropolis() {
+    let exists = Path::new("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/libarcropolis.nro").exists();
+    if !exists {
+        println!("Error: We cannot open arcrop because you do not have arcropolis!");
+        skyline_web::DialogOk::ok("Error: Cannot open arcropolis menu because you do not have arcropolis!");
+        return;
+    }
+    let api_version = arcropolis_api::get_api_version();
+    println!("opening arcrop menu...");
+    if api_version.major >= 1 && api_version.minor >= 7 {
+        arcropolis_api::show_main_menu();
+    } else {
+        println!("Error: We cannot open arcrop because arcrop is out of date!");
+        skyline_web::DialogOk::ok("Error: Cannot open arcropolis menu because your arcropolis is out of date! You may want to update in the launcher.");
+    }
 }

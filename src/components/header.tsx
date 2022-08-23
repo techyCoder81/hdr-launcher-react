@@ -16,10 +16,18 @@ export class Header {
                     title.innerHTML = "HDR " + value + " Launcher";
             }
         });
-        backend.isInstalled().then(version => {
-            var versionText = document.getElementById("installed");
+        backend.isInstalled().then(installed => {
+            var installedText = document.getElementById("installed");
+            if (installedText != null) {
+                installedText.innerHTML = "Installed : " + String(installed);
+            }
+        }).catch(e => {
+            console.error(e);
+        });
+        backend.getVersion().then(version => {
+            var versionText = document.getElementById("version");
             if (versionText != null) {
-                versionText.innerHTML = "Installed : " + version;
+                versionText.innerHTML = "Version : " + String(version);
             }
         }).catch(e => {
             console.error(e);
@@ -31,6 +39,7 @@ export class Header {
         <div id="header">
             <h1 id="title">HDR Launcher</h1>
             <h1 id="installed">Installed: Unknown</h1>
+            <h1 id="version">Version: Unknown</h1>
         </div>
         );
     }

@@ -27,3 +27,4 @@ export class Message {
         return this.id;
     }
 }
+

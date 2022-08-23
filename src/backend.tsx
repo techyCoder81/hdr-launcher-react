@@ -3,6 +3,7 @@ import * as Messages from "./messages";
 import * as Responses from "./responses";
 import { resolve } from "../webpack/main.webpack";
 import { lutimes } from "original-fs";
+import { BooleanResponse, OkOrError, StringResponse } from "./responses";
 
 /**
  * this will represent the backend interface, which
@@ -19,15 +20,51 @@ export abstract class Backend {
      * pings the backend with a message.
      * @returns whether the backend responded.
      */
-    async ping(): Promise<boolean> {
-        console.info("beginning ping");
-        return await this.invoke(new Messages.Message("ping")).then((value: string) => {
-            console.info("Frontend got response: " + value);
-            let response = JSON.parse(value);
-            return true;
+    private async stringRequest(name: string): Promise<string> {
+        console.info("beginning " + name);
+        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+            console.info("response for " + name + ": " + json);
+            return StringResponse.from(json).getMessage();
         }).catch((e: string) => {
-            console.error("Error while performing ping: " + e);
-            return false;
+            console.error("Error while performing " + name + ": " + e);
+            throw e;
+        });
+    }
+
+    /**
+     * performs a request of the given name and awaits a BooleanResponse
+     * @param name the name of the request
+     * @returns a boolean
+     */
+    private async booleanRequest(name: string): Promise<boolean> {
+        console.info("beginning " + name);
+        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+            console.info("response for " + name + ": " + json);
+            let response = BooleanResponse.from(json);
+            return response.isOk();
+        }).catch((e: string) => {
+            console.error("Error while performing " + name +": " + e);
+            throw e;
+        });
+    }
+
+    /**
+     * performs a request of the given name and awaits a OkOrError response()
+     * @param name the name of the request
+     * @returns a promise which resolves if the result is Ok, and rejects if the result is a failure
+     */
+    private async okOrErrorRequest(name: string): Promise<string> {
+        console.info("beginning " + name);
+        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+            console.info("response for " + name + ": " + json);
+            let response = OkOrError.from(json);
+            if (response.isOk()) {
+                return response.getMessage();
+            } else {
+                throw new Error("Operation failed on the backend, reason: " + response.message);
+            }
+        }).catch((e: string) => {
+            return e;
         });
     }
 
@@ -35,43 +72,46 @@ export abstract class Backend {
      * pings the backend with a message.
      * @returns whether the backend responded.
      */
-    private async stringRequest(name: string): Promise<string> {
-        console.info("beginning " + name);
-        return await this.invoke(new Messages.Message(name)).then((value: string) => {
-            console.info("Frontend got response: " + value);
-            let response = JSON.parse(value);
-            return response.message;
-        }).catch((e: string) => {
-            console.error("Error while performing ping: " + e);
-            return "Unknown";
+    async ping(): Promise<boolean> {
+        return this.stringRequest("ping").then((response) => {
+            console.log("Ping got response: " + response);
+            return true;
+        }).catch(e => {
+            console.log("Ping failed: " + e);
+            throw e;
         });
     }
 
     /** gets the platform of the current backend, 
      * according to the backend itself. */
-    async getPlatform() {
+    async getPlatform(): Promise<string> {
         return this.stringRequest("get_platform");
     }
 
     /** gets the platform of the current backend, 
      * according to the backend itself. */
-     async getSdRoot() {
+     async getSdRoot(): Promise<string> {
         return this.stringRequest("get_sdcard_root");
     }
 
     /** gets whether hdr is installed */
-     async isInstalled() {
-        return this.stringRequest("is_installed");
+     async isInstalled(): Promise<boolean> {
+        return this.booleanRequest("is_installed");
     }
 
     /** gets the hdr version installed */
-    async getVersion() {
-        return this.stringRequest("get_version");
+    async getVersion(): Promise<string> {
+        return this.okOrErrorRequest("get_version");
     }
 
     /** sends the play message to the backend */
     play() {
         this.send(new Messages.Message("play"));
+    }
+
+    /** sends the mod manager message to the backend */
+    openModManager() {
+        this.send(new Messages.Message("open_mod_manager"));
     }
 
     /** sends the quit message to the backend */

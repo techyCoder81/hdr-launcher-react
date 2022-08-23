@@ -81,6 +81,7 @@ export class LogWindow extends React.Component {
             } catch (e) {}
             data.forEach(item => this.add_to_log("TRACE", item));
         }
+        LogWindow.logRedirected = true;
     }
 
     /**
@@ -96,6 +97,14 @@ export class LogWindow extends React.Component {
     ]
 
     render() {
+        function getOption(level: string) {
+            if (level == LogWindow.selected) {
+                return <option value={level} key={level} selected>{level}</option>
+            } else {
+                return <option value={level} key={level}>{level}</option>
+            }
+        }
+
         return (
         <div>
             <label htmlFor="loglevels">Log level:</label>
@@ -104,7 +113,7 @@ export class LogWindow extends React.Component {
                     LogWindow.selected = item.target.value;
                 }}>
                 {
-                LogWindow.LOG_LEVELS.map((level) => <option value={level} key={level}>{level}</option>)
+                LogWindow.LOG_LEVELS.map((level) => getOption(level))
                 } 
             </select>
             <button onClick={() => {

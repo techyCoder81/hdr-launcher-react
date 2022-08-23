@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as Messages from "../messages";
 import { Backend } from "../backend";
 import { LogWindow } from './log_window';
+import ReactDOM from 'react-dom';
+import { Options } from './options';
 
 /**
  * main menu implementation
@@ -26,6 +28,9 @@ export class MainMenu {
                                         .catch((e) => console.error(e))
                         }>
                                 <div>Ping&nbsp;&nbsp;</div>
+                        </button>
+                        <button className="main-buttons" onClick={() => ReactDOM.render(new Options(this.backend).render(), document.getElementById("root"))}>
+                                <div>Options&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => this.backend.quit()}>
                                 <div>Exit&nbsp;&nbsp;</div>
