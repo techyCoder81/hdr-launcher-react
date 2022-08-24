@@ -18,18 +18,20 @@ export class Options {
     render() {
         return (
         <div id="options">
-            <h1>Options</h1>
-            <div className="left-side">
-                <button className="main-buttons" onClick={() => this.backend.openModManager()}>
-                    <div>Mod Manager&nbsp;&nbsp;</div>
-                </button>
-                <button className="main-buttons" onClick={() => ReactDOM.render(new MainMenu(this.backend).render(), document.getElementById("root"))}>
-                    <div>Back&nbsp;&nbsp;</div>
-                </button>
+            <div className="main-menu">
+                <div className="left-side">
+                    <h1>Options</h1>
+                    <button className="main-buttons" onClick={() => this.backend.openModManager()}>
+                        <div>Mod Manager&nbsp;&nbsp;</div>
+                    </button>
+                    <button className="main-buttons" onClick={() => ReactDOM.render(new MainMenu(this.backend).render(), document.getElementById("root"))}>
+                        <div>Back&nbsp;&nbsp;</div>
+                    </button>
+                </div>
+                <div className="right-side">
+                    <LogWindow/>
+                </div> 
             </div>
-            <div className="right-side">
-                <LogWindow/>
-            </div> 
         </div>
         );
     }

@@ -23,14 +23,12 @@
   padding: 0;
 }
 
-
 body {
   background-color: var(--main-bg-color);
   color: var(--main-text-color);
   transition: 1000ms linear;
   -webkit-transition: 1000ms linear;
 }
-
 
 .main-menu {
   transition: 1000ms linear;
