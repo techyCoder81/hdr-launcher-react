@@ -7,7 +7,7 @@ Desktop application is an electron app for use with Ryujinx.
 Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
 
 ```bash
-yarn
+yarn install
 ```
 
 ## Usage
