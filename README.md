@@ -12,15 +12,19 @@ yarn
 
 ## Usage
 
-Just run `start` script.
+Just run `start` script to run as electron app.
 
 ```bash
 yarn start
 ```
+To package the electron app, and then compile the skyline plugin, use:
+```bash
+python3 build.py package <optionally, ip=0.0.0.0> <optionally, listen>
+```
 
 ## Packaging
 
-To generate the project package based on the OS you're running on, just run:
+To generate the electron project package based on the OS you're running on, just run:
 
 ```bash
 yarn package
