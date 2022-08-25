@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class RequestHandler {
-    handle(request: Messages.Message): Responses.BaseResponse {
+    handle(request: any): Responses.BaseResponse {
         let name = request.call_name;
         console.info("handling request: " + name);
         var response;
@@ -44,6 +44,10 @@ export class RequestHandler {
                     response = new OkOrError(false, String(e), request.id);
                     break;
                 }
+            case "download_file":
+                // TODO: handle file download
+                response = new OkOrError(false, "nah, I don't feel like it.", request.id);
+                break;
             default:
                 console.error("Could not handle request with name: " + name);
                 throw new Error("unable to handle request " + name);

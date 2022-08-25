@@ -23,6 +23,21 @@ impl fmt::Display for Message {
     }
 }
 
+/// message, with two arguments, which may warrant a response
+#[derive(Serialize, Deserialize)]
+pub struct MessageStringString {
+    id: String,
+    call_name: String,
+    arg1: String,
+    arg2: String,
+}
+
+impl fmt::Display for MessageStringString {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "(id: {}, call_name: {}, arg1: {}, arg2: {})", self.id, self.call_name, self.arg1, self.arg2)
+    }
+}
+
 impl Handleable for Message {
     
     fn handle(&self, session: &WebSession) -> bool {
@@ -36,22 +51,22 @@ impl Handleable for Message {
                 try_open_arcropolis();
                 unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
             },
-            "ping" => self.respond_string("Pong from switch!", session),
-            "get_platform" => self.respond_string("Switch", session),
-            "get_sdcard_root" => self.respond_string("sd:/", session),
+            "ping" => session.respond_string("Pong from switch!", &self.id),
+            "get_platform" => session.respond_string("Switch", &self.id),
+            "get_sdcard_root" => session.respond_string("sd:/", &self.id),
             "is_installed" => {
                 let exists = Path::new("sd:/ultimate/mods/hdr").exists();
-                self.respond_bool(exists, session)
+                session.respond_bool(exists, &self.id)
             },
             "get_version" => {
                 let path = "sd:/ultimate/mods/hdr/ui/hdr_version.txt";
                 let exists = Path::new(path).exists();
                 if !exists {
-                    self.error("Version file does not exist!", session);
+                    session.error("Version file does not exist!", &self.id);
                 } else {
                     match fs::read_to_string(path) {
-                        Ok(version) => self.ok(&version, session),
-                        Err(e) => self.error(format!("{:?}", e).as_str(), session)
+                        Ok(version) => session.ok(&version, &self.id),
+                        Err(e) => session.error(format!("{:?}", e).as_str(), &self.id)
                     }
                 }
             },
@@ -61,27 +76,42 @@ impl Handleable for Message {
     }
 }
 
-impl BoolRespond for Message {
-    fn respond_bool(&self, result: bool, session: &WebSession) {
-        session.send_json(&BooleanResponse{id: self.id.clone(), result: result});
+impl Handleable for MessageStringString {
+    fn handle(&self, session: &WebSession) -> bool {
+        println!("Handling MessageStringString {}", self.call_name);
+        match self.call_name.as_str() {
+            "download_file" => {
+                println!("downloading file");
+                // TODO: handle the file download
+                session.error("nah, I don't feel like it.", &self.id);
+            },
+            _ => println!("ERROR: doing nothing for unknown MessageStringString {}", self)
+        }
+        return true;
     }
 }
 
-impl StringRespond for Message {
-    fn respond_string(&self, message: &str, session: &WebSession) {
-        session.send_json(&StringResponse{id: self.id.clone(), message: message.to_string()});
+impl BoolRespond for WebSession {
+    fn respond_bool(&self, result: bool, id: &String) {
+        self.send_json(&BooleanResponse{id: id.clone(), result: result});
     }
 }
 
-impl OkOrError for Message {
-    fn ok(&self, message: &str, session: &WebSession) {
-        session.send_json(&OkOrErrorResponse{ 
-            id: self.id.clone(), ok: true, message: message.to_string()
+impl StringRespond for WebSession {
+    fn respond_string(&self, message: &str, id: &String) {
+        self.send_json(&StringResponse{id: id.clone(), message: message.to_string()});
+    }
+}
+
+impl OkOrError for WebSession {
+    fn ok(&self, message: &str, id: &String) {
+        self.send_json(&OkOrErrorResponse{ 
+            id: id.clone(), ok: true, message: message.to_string()
         });
     }
-    fn error(&self, message: &str, session: &WebSession) {
-        session.send_json(&OkOrErrorResponse{ 
-            id: self.id.clone(), ok: false, message: message.to_string()
+    fn error(&self, message: &str, id: &String) {
+        self.send_json(&OkOrErrorResponse{ 
+            id: id.clone(), ok: false, message: message.to_string()
         });
     }
 }

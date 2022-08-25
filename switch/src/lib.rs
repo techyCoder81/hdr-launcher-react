@@ -43,7 +43,14 @@ fn listen_for_messages(session: &WebSession) {
                 Ok(message) => message.handle(&session),
                 Err(e) => {
                     println!("This is not a valid Message: {}", msg);
-                    true
+                    // try to parse as a MessageStringString instead
+                    return match serde_json::from_str::<MessageStringString>(&msg) {
+                        Ok(message) => message.handle(&session),
+                        Err(e) => {
+                            println!("This is not a valid Message: {}", msg);
+                            true
+                        }
+                    };
                 }
             };
             

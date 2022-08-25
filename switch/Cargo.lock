@@ -168,6 +168,7 @@ dependencies = [
  "skyline",
  "skyline-config",
  "skyline-web",
+ "smashnet",
 ]
 
 [[package]]
@@ -533,6 +534,14 @@ dependencies = [
  "parking_lot",
  "ruzstd",
  "thiserror",
+]
+
+[[package]]
+name = "smashnet"
+version = "0.1.0"
+source = "git+https://github.com/techyCoder81/smashnet.git#9b96f750683513704c58a8069888c28c9fc0fdca"
+dependencies = [
+ "skyline",
 ]
 
 [[package]]

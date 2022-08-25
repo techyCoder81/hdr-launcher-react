@@ -159,7 +159,7 @@ export class SwitchBackend extends Backend {
         super();
         // add listener for all messages from window.nx
         var retval = skyline.addEventListener("message", (event: any) => {
-            // add the newly returned object to the responses list
+            // call any registered callbacks for this ID
             var response = JSON.parse(event.data);
             var id: string = response.id;
 
@@ -194,7 +194,6 @@ export class SwitchBackend extends Backend {
     }
 
     override send(message: Messages.Message) {
-        skyline.printData();
         console.log("trying to send to nx: " + JSON.stringify(message));
         skyline.sendMessage(JSON.stringify(message));
     }

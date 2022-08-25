@@ -30,16 +30,16 @@ impl fmt::Display for BooleanResponse {
 }
 
 pub trait BoolRespond {
-    fn respond_bool(&self, result: bool, session: &WebSession);
+    fn respond_bool(&self, result: bool, id: &String);
 }
 
 pub trait StringRespond {
-    fn respond_string(&self, message: &str, session: &WebSession);
+    fn respond_string(&self, message: &str, id: &String);
 }
 
 pub trait OkOrError {
-    fn ok(&self, message: &str, session: &WebSession);
-    fn error(&self, message: &str, session: &WebSession);
+    fn ok(&self, message: &str, id: &String);
+    fn error(&self, message: &str, id: &String);
 }
 
 /// a response that contains a flag for whether the
