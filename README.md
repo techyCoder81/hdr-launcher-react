@@ -30,10 +30,6 @@ To generate the electron project package based on the OS you're running on, just
 yarn package
 ```
 
-## Contributing
-
-Pull requests are always welcome 😃.
-
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
