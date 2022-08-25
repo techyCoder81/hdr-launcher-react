@@ -1,6 +1,6 @@
-## Electron + TypeScript + React
-
-Boilerplate for a project using Electron, React and Typescript.
+The HDR Launcher, this time written in the React framework with TypeScript with both a Switch and Desktop backend.
+Switch backend runs as a skyline plugin using skyline-web.
+Desktop application is an electron app for use with Ryujinx.
 
 ## Installation
 
