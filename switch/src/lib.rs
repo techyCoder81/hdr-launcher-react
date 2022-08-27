@@ -6,6 +6,10 @@ use serde_json::Result;
 use std::fmt;
 use std::path::Path;
 
+pub fn is_emulator() -> bool {
+    return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
+}
+
 mod response;
 mod message;
 use response::*;
@@ -16,6 +20,11 @@ static JS_TEXT: &str = include_str!("../web-build/index.js");
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
+    if is_emulator() {
+        println!("HDR Launcher nro cannot run on emulator! Exiting launcher nro!");
+        return;
+    }
+
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
         let session = Webpage::new()
@@ -41,16 +50,9 @@ fn listen_for_messages(session: &WebSession) {
             println!("received a message: {}" , msg);
             let keep_listening = match serde_json::from_str::<Message>(&msg) {
                 Ok(message) => message.handle(&session),
-                Err(e) => {
+                Err(_) => {
                     println!("This is not a valid Message: {}", msg);
-                    // try to parse as a MessageStringString instead
-                    return match serde_json::from_str::<MessageStringString>(&msg) {
-                        Ok(message) => message.handle(&session),
-                        Err(e) => {
-                            println!("This is not a valid Message: {}", msg);
-                            true
-                        }
-                    };
+                    true
                 }
             };
             

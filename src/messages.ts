@@ -12,11 +12,15 @@ export class Message {
     /** the name of the call to be made */
     call_name: string;
 
-    constructor(name: string) {
+    /** potentially a structure of arguments */
+    arguments: string[] | null;
+
+    constructor(name: string, args: string[] | null) {
         var id = Message.idCounter;
         Message.idCounter++;
         this.id = Message.idCounter.toString();
         this.call_name = name;
+        this.arguments = args;
     }
 
     public getName(): string {

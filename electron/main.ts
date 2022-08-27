@@ -152,12 +152,9 @@ async function registerListeners () {
   let messageHandler = new MessageHandler();
 
   // register listening to the request channel
-  ipcMain.handle("request", (event, request): Responses.BaseResponse => {
+  ipcMain.handle("request", (event, request): Promise<Responses.BaseResponse> => {
     console.log("main thread received request: " + JSON.stringify(request));
-    let response = requestHandler.handle(request);
-    console.info("responding to request " + request.id 
-      + " with response: " + JSON.stringify(response));
-    return response;
+    return requestHandler.handle(request);
   });
 
   // register listening to the message channel

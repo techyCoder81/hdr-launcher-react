@@ -23,8 +23,10 @@ export class MainMenu {
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => 
-                                this.backend.getSdRoot()
-                                        .then((value) => console.info("SD root is " + value))
+                                this.backend.downloadFile(
+                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.4/switch-package.zip", 
+                                                "switch-package.zip")
+                                        .then((message) => console.info(message))
                                         .catch((e) => console.error(e))
                         }>
                                 <div>Ping&nbsp;&nbsp;</div>

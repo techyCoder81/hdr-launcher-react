@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export default class Config {
-    static CONFIG_FILE = "launcher-config.json"
+    private static CONFIG_FILE = "launcher-config.json"
     ryuPath: string = "";   
     romPath: string = "";
     sdcardPath: string = "";

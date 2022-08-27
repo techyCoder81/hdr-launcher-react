@@ -4,6 +4,7 @@ use skyline_web::{Webpage, WebSession};
 use std::path::Path;
 use crate::*;
 use std::fs;
+use smashnet::*;
 
 /// trait to handle a message
 pub trait Handleable {
@@ -14,7 +15,8 @@ pub trait Handleable {
 #[derive(Serialize, Deserialize)]
 pub struct Message {
     id: String,
-    call_name: String
+    call_name: String,
+    arguments: Option<Vec<String>>
 }
 
 impl fmt::Display for Message {
@@ -23,27 +25,12 @@ impl fmt::Display for Message {
     }
 }
 
-/// message, with two arguments, which may warrant a response
-#[derive(Serialize, Deserialize)]
-pub struct MessageStringString {
-    id: String,
-    call_name: String,
-    arg1: String,
-    arg2: String,
-}
-
-impl fmt::Display for MessageStringString {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "(id: {}, call_name: {}, arg1: {}, arg2: {})", self.id, self.call_name, self.arg1, self.arg2)
-    }
-}
-
 impl Handleable for Message {
     
     fn handle(&self, session: &WebSession) -> bool {
         println!("Handling message {}", self.call_name);
         match self.call_name.as_str() {
-            "play" => {session.exit(); return true;},
+            "play" => {session.exit(); return false;},
             "quit" => unsafe { skyline::nn::oe::ExitApplication();},
             "open_mod_manager" => {
                 session.exit();
@@ -70,22 +57,52 @@ impl Handleable for Message {
                     }
                 }
             },
-            _ => println!("ERROR: doing nothing for unknown message {}", self)
-        }
-        return true;
-    }
-}
+            "read_file" => {
+                let args = match &self.arguments {
+                    Some(args) => args,
+                    None => {session.error("No arguments were provided to read_file!", &self.id); return true;}
+                };
 
-impl Handleable for MessageStringString {
-    fn handle(&self, session: &WebSession) -> bool {
-        println!("Handling MessageStringString {}", self.call_name);
-        match self.call_name.as_str() {
-            "download_file" => {
-                println!("downloading file");
-                // TODO: handle the file download
-                session.error("nah, I don't feel like it.", &self.id);
+                if args.len() < 1 {
+                    session.error("Not enough arguments provided to read_file!", &self.id);
+                    return true;
+                }
+
+                let path = format!("sd:/{}", args[0].clone());
+                let exists = Path::new(path).exists();
+                if !exists {
+                    session.error("requested file does not exist!", &self.id);
+                } else {
+                    match fs::read_to_string(path) {
+                        Ok(version) => session.ok(&version, &self.id),
+                        Err(e) => session.error(format!("{:?}", e).as_str(), &self.id)
+                    }
+                }
             },
-            _ => println!("ERROR: doing nothing for unknown MessageStringString {}", self)
+            "download_file" => {
+                let args = match &self.arguments {
+                    Some(args) => args,
+                    None => {session.error("No arguments were provided to download_file!", &self.id); return true;}
+                };
+
+                if args.len() < 2 {
+                    session.error("Not enough arguments provided to download_file!", &self.id);
+                    return true;
+                }
+
+                let url = args[0].clone();
+                let location = format!("sd:/{}", args[1].clone());
+
+                let result = Curler::new()
+                    //.progress_callback(|total, current| session.progress(current/total, &self.id))
+                    .download(url, location);
+
+                match result {
+                    Ok(()) => session.ok("File downloaded successfully!", &self.id),
+                    Err(e) => session.error(format!("Error during download, error code: {}", e).as_str(), &self.id)
+                }
+            }
+            _ => println!("ERROR: doing nothing for unknown message {}", self)
         }
         return true;
     }

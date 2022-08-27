@@ -20,9 +20,9 @@ export abstract class Backend {
      * pings the backend with a message.
      * @returns whether the backend responded.
      */
-    private async stringRequest(name: string): Promise<string> {
+    private async stringRequest(name: string, args: string[] | null): Promise<string> {
         console.info("beginning " + name);
-        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+        return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
             console.info("response for " + name + ": " + json);
             return StringResponse.from(json).getMessage();
         }).catch((e: string) => {
@@ -36,9 +36,9 @@ export abstract class Backend {
      * @param name the name of the request
      * @returns a boolean
      */
-    private async booleanRequest(name: string): Promise<boolean> {
+    private async booleanRequest(name: string, args: string[] | null): Promise<boolean> {
         console.info("beginning " + name);
-        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+        return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
             console.info("response for " + name + ": " + json);
             let response = BooleanResponse.from(json);
             return response.isOk();
@@ -53,9 +53,9 @@ export abstract class Backend {
      * @param name the name of the request
      * @returns a promise which resolves if the result is Ok, and rejects if the result is a failure
      */
-    private async okOrErrorRequest(name: string): Promise<string> {
+    private async okOrErrorRequest(name: string, args: string[] | null): Promise<string> {
         console.info("beginning " + name);
-        return await this.invoke(new Messages.Message(name)).then((json: string) => {
+        return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
             console.info("response for " + name + ": " + json);
             let response = OkOrError.from(json);
             if (response.isOk()) {
@@ -73,7 +73,7 @@ export abstract class Backend {
      * @returns whether the backend responded.
      */
     async ping(): Promise<boolean> {
-        return this.stringRequest("ping").then((response) => {
+        return this.stringRequest("ping", null).then((response) => {
             console.log("Ping got response: " + response);
             return true;
         }).catch(e => {
@@ -82,41 +82,52 @@ export abstract class Backend {
         });
     }
 
+    /** downloads the requested file to the requested 
+     * location relative to sdcard root */
+     async downloadFile(url: string, location: string): Promise<string> {
+        return this.stringRequest("download_file", [url, location]);
+    }
+
     /** gets the platform of the current backend, 
      * according to the backend itself. */
     async getPlatform(): Promise<string> {
-        return this.stringRequest("get_platform");
+        return this.stringRequest("get_platform", null);
     }
 
     /** gets the platform of the current backend, 
      * according to the backend itself. */
      async getSdRoot(): Promise<string> {
-        return this.stringRequest("get_sdcard_root");
+        return this.stringRequest("get_sdcard_root", null);
     }
 
     /** gets whether hdr is installed */
      async isInstalled(): Promise<boolean> {
-        return this.booleanRequest("is_installed");
+        return this.booleanRequest("is_installed", null);
     }
 
     /** gets the hdr version installed */
     async getVersion(): Promise<string> {
-        return this.okOrErrorRequest("get_version");
+        return this.okOrErrorRequest("get_version", null);
+    }
+
+    /** returns the text contents of a file */
+    async readFile(filepath: string): Promise<string> {
+        return this.okOrErrorRequest("read_file", [filepath]);
     }
 
     /** sends the play message to the backend */
     play() {
-        this.send(new Messages.Message("play"));
+        this.send(new Messages.Message("play", null));
     }
 
     /** sends the mod manager message to the backend */
     openModManager() {
-        this.send(new Messages.Message("open_mod_manager"));
+        this.send(new Messages.Message("open_mod_manager", null));
     }
 
     /** sends the quit message to the backend */
     quit() {
-        this.send(new Messages.Message("quit"));
+        this.send(new Messages.Message("quit", null));
     }
 }
 
