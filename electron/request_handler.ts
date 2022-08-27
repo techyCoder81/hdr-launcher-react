@@ -8,10 +8,27 @@ import * as path from 'path';
 import * as dl from 'electron-dl';
 const webrequest = require('request');
 import { mainWindow } from './main';
+import * as  md5 from 'md5-file';
 
 export class RequestHandler {
     async handle(request: any): Promise<Responses.BaseResponse> {
-        return new Promise<Responses.BaseResponse>(async (resolve, reject) => {
+        return new Promise<Responses.BaseResponse>(async (resolve) => {
+
+            // define the argument check "macro"
+            function argcheck(count: number): boolean {
+                if (request.arguments == 0 || request.arguments === undefined) {
+                    console.error("no arguments were provided for request" + request.call_name);
+                    resolve(new OkOrError(false, "no arguments were provided for request " + request.call_name, request.id));
+                    return false;
+                }
+                if (request.arguments.length < 1) {
+                    console.error("not enough args passed for request " + request.call_name);
+                    resolve(new OkOrError(false, "not enough args passed for request" + request.call_name, request.id));
+                    return false;
+                }
+                return true;
+            }
+
             let name = request.call_name;
             console.info("handling request: " + name);
             switch (name) {
@@ -49,17 +66,9 @@ export class RequestHandler {
                     }
                 case "read_file":
                     try {
+                        if (!argcheck(1)) {break;}
+
                         let args = request.arguments;
-                        if (args == 0 || args === undefined) {
-                            console.error("no arguments were provided for read_file");
-                            resolve(new OkOrError(false, "no arguments were provided for read_file", request.id));
-                            break;
-                        }
-                        if (args.length < 1) {
-                            console.error("not enough args passed for read_file!");
-                            resolve(new OkOrError(false, "not enough args passed for read_file!", request.id));
-                            break;
-                        }
                         // read the given file path
                         let file: string = path.join(Config.getSdcardPath(), args[0]);
                         let exists = fs.existsSync(file);
@@ -68,7 +77,7 @@ export class RequestHandler {
                             break;
                         }
 
-                        // read the version
+                        // read the file
                         let text = fs.readFileSync(file, 'utf-8');
                         resolve(new OkOrError(true, text, request.id));
                         break;
@@ -77,17 +86,9 @@ export class RequestHandler {
                         break;
                     }
                 case "download_file":
+                    if (!argcheck(2)) {break;}
+
                     let args = request.arguments;
-                    if (args == 0 || args === undefined) {
-                        console.error("no arguments were provided for download_file");
-                        resolve(new OkOrError(false, "no arguments were provided for download_file", request.id));
-                        break;
-                    }
-                    if (args.length < 2) {
-                        console.error("not enough args passed for download_file!");
-                        resolve(new OkOrError(false, "not enough args passed for download_file!", request.id));
-                        break;
-                    }
                     let url = args[0];
                     let location = args[1];
                     console.log("preparing to download...\nurl: " + url + "\nlocation: " + location);
@@ -140,9 +141,47 @@ export class RequestHandler {
                     });
 
                     break;
+                case "get_md5":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        let args = request.arguments;
+                        // read the given file path
+                        let file: string = path.join(Config.getSdcardPath(), args[0]);
+                        let exists = fs.existsSync(file);
+                        if (!exists) {
+                            resolve(new OkOrError(false, "specified file for md5 does not exist!", request.id));
+                            break;
+                        }
+
+                        // get the md5
+                        let hash = md5.sync(file);
+                        resolve(new OkOrError(true, hash, request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
+                case "file_exists":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        // read the given file path
+                        let file: string = path.join(
+                            Config.getSdcardPath(), 
+                            request.arguments[0]);
+
+                        resolve(new BooleanResponse(
+                            fs.existsSync(file), 
+                            request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new BooleanResponse(false, request.id));
+                        break;
+                    }
                 default:
                     console.error("Could not handle request with name: " + name);
-                    reject(new Error("unable to handle request " + name));
+                    resolve(new Error("unable to handle request " + name));
             }
         });
     }

@@ -7,7 +7,7 @@ import { Backend } from "../backend";
  */
 export class LogWindow extends React.Component {
     /** the selected log level */
-    static selected: string = "LOG";
+    static selected: string = "INFO";
 
     /** whether the console logging functions have been redirected yet */
     static logRedirected: boolean = false;
@@ -46,12 +46,19 @@ export class LogWindow extends React.Component {
         if (LogWindow.logRedirected) {
             return;
         }
+        var old_debug = console.debug;
+        console.debug = (...data) => {
+            try {
+                old_debug(...data);
+            } catch (e) {}
+            data.forEach(item => this.add_to_log("DEBUG", item));
+        }
         var old_log = console.log;
         console.log = (...data) => {
             try {
                 old_log(...data);
             } catch (e) {}
-            data.forEach(item => this.add_to_log("LOG", item));
+            data.forEach(item => this.add_to_log("INFO", item));
         }
         var old_info = console.info;
         console.info = (...data) => {
@@ -89,7 +96,7 @@ export class LogWindow extends React.Component {
      * TODO: make this an enum instead.
      */
     static LOG_LEVELS = [
-        "LOG",
+        "DEBUG",
         "INFO",
         "WARNING",
         "ERROR",

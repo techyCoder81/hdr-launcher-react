@@ -22,12 +22,17 @@ export class MainMenu {
                         <button className="main-buttons" onClick={() => this.backend.play()}>
                                 <div>Play&nbsp;&nbsp;</div>
                         </button>
-                        <button className="main-buttons" onClick={() => 
+                        <button className="main-buttons" onClick={() => {
                                 this.backend.downloadFile(
                                                 "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.4/CHANGELOG.md", 
                                                 "CHANGELOG.md")
                                         .then((message) => console.info(message))
+                                        .then(() => this.backend.getMd5("CHANGELOdG.md"))
+                                        .then((hash) => console.log("md5: " + hash))
+                                        .then(() => this.backend.fileExists("CHANGELOG.md"))
+                                        .then(result => console.log("file exist: " + result))
                                         .catch((e) => console.error(e))
+                                }
                         }>
                                 <div>Ping&nbsp;&nbsp;</div>
                         </button>

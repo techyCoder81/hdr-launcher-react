@@ -5,6 +5,47 @@ import { resolve } from "../webpack/main.webpack";
 import { lutimes } from "original-fs";
 import { BooleanResponse, OkOrError, StringResponse } from "./responses";
 
+export class PathEntry {
+    public static readonly FILE = 0;
+    public static readonly DIRECTORY = 1;
+
+    path: string;
+    type: number;
+
+    constructor(path: string, type: number) {
+        this.path = path;
+        this.type = type;
+    }
+
+    /** parse the given string as a PathEntry */
+    public static from(str: string): PathEntry {
+        let obj = JSON.parse(str);
+        if (obj.path === undefined) {
+            throw new TypeError("string object could not be parsed as PathEntry: " + str);
+        }
+        if (obj.type === undefined) {
+            throw new TypeError("string object could not be parsed as PathEntry: " + str);
+        }
+
+        return new PathEntry(obj.path, obj.type);
+    }
+}
+
+export class PathList {
+    list: PathEntry[];
+    constructor(list: PathEntry[]) {
+        this.list = list;
+    }
+    public static from(str: string) {
+        let obj = JSON.parse(str);
+        if (obj.list === undefined) {
+            throw new TypeError("string could not be parsed as PathList: " + str);
+        }
+
+        return new PathList(obj.list);
+    }
+}
+
 /**
  * this will represent the backend interface, which
  * could eventually be both node.js and also Skyline web.
@@ -21,9 +62,9 @@ export abstract class Backend {
      * @returns whether the backend responded.
      */
     private async stringRequest(name: string, args: string[] | null): Promise<string> {
-        console.info("beginning " + name);
+        console.debug("beginning " + name);
         return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
-            console.info("response for " + name + ": " + json);
+            console.debug("response for " + name + ": " + json);
             return StringResponse.from(json).getMessage();
         }).catch((e: string) => {
             console.error("Error while performing " + name + ": " + e);
@@ -37,9 +78,9 @@ export abstract class Backend {
      * @returns a boolean
      */
     private async booleanRequest(name: string, args: string[] | null): Promise<boolean> {
-        console.info("beginning " + name);
+        console.debug("beginning " + name);
         return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
-            console.info("response for " + name + ": " + json);
+            console.debug("response for " + name + ": " + json);
             let response = BooleanResponse.from(json);
             return response.isOk();
         }).catch((e: string) => {
@@ -54,17 +95,17 @@ export abstract class Backend {
      * @returns a promise which resolves if the result is Ok, and rejects if the result is a failure
      */
     private async okOrErrorRequest(name: string, args: string[] | null): Promise<string> {
-        console.info("beginning " + name);
+        console.debug("beginning " + name);
         return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
-            console.info("response for " + name + ": " + json);
+            console.debug("response for " + name + ": " + json);
             let response = OkOrError.from(json);
             if (response.isOk()) {
                 return response.getMessage();
             } else {
                 throw new Error("Operation failed on the backend, reason: " + response.message);
             }
-        }).catch((e: string) => {
-            return e;
+        }).catch((e) => {
+            throw e
         });
     }
 
@@ -74,10 +115,10 @@ export abstract class Backend {
      */
     async ping(): Promise<boolean> {
         return this.stringRequest("ping", null).then((response) => {
-            console.log("Ping got response: " + response);
+            console.debug("Ping got response: " + response);
             return true;
         }).catch(e => {
-            console.log("Ping failed: " + e);
+            console.debug("Ping failed: " + e);
             throw e;
         });
     }
@@ -115,6 +156,53 @@ export abstract class Backend {
         return this.okOrErrorRequest("read_file", [filepath]);
     }
 
+    /** returns the md5 checksum of a file */
+    async getMd5(filepath: string): Promise<string> {
+        return this.okOrErrorRequest("get_md5", [filepath]);
+    }
+
+    /** returns whether a file exists with the given absolute path */
+    async fileExists(filepath: string): Promise<boolean> {
+        return this.booleanRequest("file_exists", [filepath]);
+    }
+
+    /** returns whether a directory exists with the given absolute path */
+    async dirExists(filepath: string): Promise<boolean> {
+        return this.booleanRequest("dir_exists", [filepath]);
+    }
+
+    /** returns a list of all files and directories recursively under the given path */
+    async listDirAll(filepath: string): Promise<PathList> {
+        return new Promise<PathList>((resolve, reject) => {
+            this.okOrErrorRequest("list_dir_all", [filepath])
+                .then(result => {
+                    let retval = PathList.from(result);
+                    console.debug("parsed directory list as PathList!");
+                    resolve(retval);
+                })
+                .catch(e => {
+                    console.error("Error while parsing result as PathEntry! " + e);
+                    reject(e);
+                });
+        });
+    }
+
+    /** returns a list of all files and directories in the given path */
+    async listDir(filepath: string): Promise<PathList> {
+        return new Promise<PathList>((resolve, reject) => {
+            this.okOrErrorRequest("list_dir", [filepath])
+                .then(result => {
+                    let retval = PathList.from(result);
+                    console.debug("parsed directory list as PathList!");
+                    resolve(retval);
+                })
+                .catch(e => {
+                    console.error("Error while parsing result as PathEntry! " + e);
+                    reject(e);
+                });
+        });
+    }
+
     /** sends the play message to the backend */
     play() {
         this.send(new Messages.Message("play", null));
@@ -137,19 +225,19 @@ export abstract class Backend {
 export class NodeBackend extends Backend {
 
     override send(message: Messages.Message) {
-        console.log("sending to node backend:\n" + JSON.stringify(message));
+        console.debug("sending to node backend:\n" + JSON.stringify(message));
         window.Main.send("message", message);
     }
 
     override invoke(message: Messages.Message): Promise<string> {
-        console.log("invoking on node backend:\n" + JSON.stringify(message));
+        console.debug("invoking on node backend:\n" + JSON.stringify(message));
         var retval = null;
         return new Promise<string>((resolve, reject) => {
             // send the request
             window.Main.invoke("request", message).then(response => {
-                console.log("got response: " + JSON.stringify(response));
+                console.debug("got response: " + JSON.stringify(response));
                 let output = JSON.stringify(response);
-                console.log("resolving with: " + output);
+                console.debug("resolving with: " + output);
                 resolve(output);
                 return;
             }).catch(e => {
@@ -184,19 +272,19 @@ export class SwitchBackend extends Backend {
     }
 
     override invoke(message: Messages.Message): Promise<string> {
-        console.log("trying to invoke on nx: " + JSON.stringify(message));
+        console.debug("trying to invoke on nx: " + JSON.stringify(message));
         return new Promise((resolve, reject) => {
             try {
-                console.log("setting callback for skyline invocation");
+                console.debug("setting callback for skyline invocation");
                 // set a callback for when that ID is returned
                 this.callbacks.set(message.id, (response) => {
-                    console.log("response called back for id " + message.id + " with response: " + JSON.stringify(response));
+                    console.debug("response called back for id " + message.id + " with response: " + JSON.stringify(response));
                     this.callbacks.delete(message.id);
                     resolve(JSON.stringify(response));
                 });
-                console.log("sending message to skyline: " + JSON.stringify(message));
+                console.debug("sending message to skyline: " + JSON.stringify(message));
                 skyline.sendMessage(JSON.stringify(message));
-                console.log("waiting for response from skyline");
+                console.debug("waiting for response from skyline");
             } catch (e) {
                 console.error("Error while invoking on skyline: " + e + ", object data: " + JSON.stringify(e))
                 reject("Error: " + JSON.stringify(e));
@@ -205,7 +293,7 @@ export class SwitchBackend extends Backend {
     }
 
     override send(message: Messages.Message) {
-        console.log("trying to send to nx: " + JSON.stringify(message));
+        console.debug("trying to send to nx: " + JSON.stringify(message));
         skyline.sendMessage(JSON.stringify(message));
     }
 }

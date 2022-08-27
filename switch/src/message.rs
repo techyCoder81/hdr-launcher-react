@@ -6,6 +6,27 @@ use crate::*;
 use std::fs;
 use smashnet::*;
 
+macro_rules! args {
+    // this macro ensures that the required arguments are present, and returns if they are not
+    ($self:ident,$session:ident,$argument_count:literal) => {
+        let arguments = match &$self.arguments {
+            Some(argvec) => argvec,
+            None => {
+                $session.error(
+                    format!("No arguments were provided! This operation requires {} arguments.", $argument_count).as_str(), 
+                    &$self.id); 
+                return true;
+            }
+        };
+
+        if arguments.len() < $argument_count {
+            $session.error(format!("Not enough arguments provided! This operation requires {} arguments.", $argument_count).as_str(), 
+                &$self.id); 
+            return true;
+        }
+    };
+}
+
 /// trait to handle a message
 pub trait Handleable {
     fn handle(&self, session: &WebSession) -> bool;
@@ -58,18 +79,11 @@ impl Handleable for Message {
                 }
             },
             "read_file" => {
-                let args = match &self.arguments {
-                    Some(args) => args,
-                    None => {session.error("No arguments were provided to read_file!", &self.id); return true;}
-                };
-
-                if args.len() < 1 {
-                    session.error("Not enough arguments provided to read_file!", &self.id);
-                    return true;
-                }
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
 
                 let path = format!("sd:/{}", args[0].clone());
-                let exists = Path::new(path).exists();
+                let exists = Path::new(&path).exists();
                 if !exists {
                     session.error("requested file does not exist!", &self.id);
                 } else {
@@ -80,15 +94,8 @@ impl Handleable for Message {
                 }
             },
             "download_file" => {
-                let args = match &self.arguments {
-                    Some(args) => args,
-                    None => {session.error("No arguments were provided to download_file!", &self.id); return true;}
-                };
-
-                if args.len() < 2 {
-                    session.error("Not enough arguments provided to download_file!", &self.id);
-                    return true;
-                }
+                args!(self, session, 2);
+                let args = &self.arguments.as_ref().expect("args!() failure");
 
                 let url = args[0].clone();
                 let location = format!("sd:/{}", args[1].clone());
@@ -102,6 +109,33 @@ impl Handleable for Message {
                     Err(e) => session.error(format!("Error during download, error code: {}", e).as_str(), &self.id)
                 }
             }
+            "get_md5" => {
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = format!("sd:/{}", args[0].clone());
+                let exists = Path::new(&path).exists();
+                if !exists {
+                    session.error("requested file does not exist!", &self.id);
+                } else {
+                    // read the file
+                    let data = match fs::read(path) {
+                        Ok(data) => data,
+                        Err(e) => {session.error(format!("{:?}", e).as_str(), &self.id); return true;}
+                    };
+                    // compute the md5 and return the value
+                    let digest = md5::compute(data);
+                    session.ok(format!("{:x}", digest).as_str(), &self.id);
+                }
+            },
+            "file_exists" => {
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = format!("sd:/{}", args[0].clone());
+                let exists = Path::new(&path).exists();
+                session.respond_bool(exists, &self.id);
+            },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }
         return true;

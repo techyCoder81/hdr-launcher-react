@@ -1,5 +1,5 @@
 export function sendMessage(object) {
-    console.log("sending to nx: \n" + object)
+    console.debug("sending to nx: \n" + object)
     window.nx.sendMessage(object);
 }
 
@@ -12,6 +12,6 @@ export function removeEventListener(listener) {
 }
 
 export function printData() {
-    console.log("window.nx names:");
-    console.log(Object.getOwnPropertyNames(window.nx));
+    console.debug("window.nx names:");
+    console.debug(Object.getOwnPropertyNames(window.nx));
 }
