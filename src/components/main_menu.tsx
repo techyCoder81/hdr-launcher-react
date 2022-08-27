@@ -24,8 +24,8 @@ export class MainMenu {
                         </button>
                         <button className="main-buttons" onClick={() => 
                                 this.backend.downloadFile(
-                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.4/switch-package.zip", 
-                                                "switch-package.zip")
+                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.4/CHANGELOG.md", 
+                                                "CHANGELOG.md")
                                         .then((message) => console.info(message))
                                         .catch((e) => console.error(e))
                         }>

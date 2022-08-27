@@ -97,12 +97,13 @@ export class RequestHandler {
                         break;
                     }
 
-                    let absolute = Config.getSdcardPath() + location;
+                    let absolute = path.join(Config.getSdcardPath(), location);
                     if (fs.existsSync(absolute)) {
                         fs.unlinkSync(absolute);
                     }
 
                     console.info("beginning download.");
+                    console.info("Absolute path: " + absolute);
                     var out = fs.createWriteStream(absolute);
 
                     var req = webrequest({
@@ -130,6 +131,7 @@ export class RequestHandler {
 
                     req.on('end', function() {
                         resolve(new OkOrError(true, "download finished successfully", request.id));
+                        out.close();
                     });                    
                     
                     req.on("error", function(e: any){
