@@ -172,7 +172,24 @@ export class RequestHandler {
                             request.arguments[0]);
 
                         resolve(new BooleanResponse(
-                            fs.existsSync(file), 
+                            fs.existsSync(file) && fs.statSync(file).isFile(), 
+                            request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new BooleanResponse(false, request.id));
+                        break;
+                    }
+                case "dir_exists":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        // read the given dir path
+                        let dir: string = path.join(
+                            Config.getSdcardPath(), 
+                            request.arguments[0]);
+
+                        resolve(new BooleanResponse(
+                            fs.existsSync(dir) && fs.statSync(dir).isDirectory(), 
                             request.id));
                         break;
                     } catch (e) {

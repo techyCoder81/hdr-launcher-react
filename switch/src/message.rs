@@ -133,7 +133,15 @@ impl Handleable for Message {
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
                 let path = format!("sd:/{}", args[0].clone());
-                let exists = Path::new(&path).exists();
+                let exists = Path::new(&path).exists() && Path::new(&path).is_file();
+                session.respond_bool(exists, &self.id);
+            },
+            "dir_exists" => {
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = format!("sd:/{}", args[0].clone());
+                let exists = Path::new(&path).exists() && Path::new(&path).is_dir();
                 session.respond_bool(exists, &self.id);
             },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
