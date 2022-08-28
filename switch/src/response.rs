@@ -56,3 +56,23 @@ impl fmt::Display for OkOrErrorResponse {
         write!(f, "(id: {}, ok: {}, message: {})", self.id, self.ok, self.message)
     }
 }
+
+pub const FILE:i32 = 0;
+pub const DIRECTORY:i32 = 1;
+
+/**
+ * represents a single Path entry, which may be a file or directory
+ */
+#[derive(Serialize, Deserialize)]
+pub struct PathEntry {
+    pub path: String,
+    pub kind: i32
+}
+
+/**
+ * represents a list of paths
+ */
+#[derive(Serialize, Deserialize)]
+pub struct PathList {
+    pub list: Vec<PathEntry>
+}

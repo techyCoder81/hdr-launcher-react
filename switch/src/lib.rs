@@ -38,6 +38,9 @@ pub fn main() {
 
         println!("session is open");
         listen_for_messages(&session);
+        println!("waiting for session to close");
+        session.wait_for_exit();
+        println!("session has closed!");
     });
 
     // End thread so match can actually start
@@ -46,7 +49,8 @@ pub fn main() {
 
 fn listen_for_messages(session: &WebSession) {
     loop {
-        if let Some(msg) = session.try_recv() {
+        println!("trying to receive...");
+        let msg = session.recv();
             println!("received a message: {}" , msg);
             let keep_listening = match serde_json::from_str::<Message>(&msg) {
                 Ok(message) => message.handle(&session),
@@ -58,9 +62,10 @@ fn listen_for_messages(session: &WebSession) {
             
             // if the handling of one of our messages said to stop listening, then break.
             if !keep_listening {
+                println!("STOPPING LISTENING FOR MESSAGES.");
                 return;
             }
-        }
+        
     }
 }
 

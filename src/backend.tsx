@@ -3,48 +3,9 @@ import * as Messages from "./messages";
 import * as Responses from "./responses";
 import { resolve } from "../webpack/main.webpack";
 import { lutimes } from "original-fs";
-import { BooleanResponse, OkOrError, StringResponse } from "./responses";
+import { BooleanResponse, OkOrError, StringResponse, PathList } from "./responses";
 
-export class PathEntry {
-    public static readonly FILE = 0;
-    public static readonly DIRECTORY = 1;
 
-    path: string;
-    type: number;
-
-    constructor(path: string, type: number) {
-        this.path = path;
-        this.type = type;
-    }
-
-    /** parse the given string as a PathEntry */
-    public static from(str: string): PathEntry {
-        let obj = JSON.parse(str);
-        if (obj.path === undefined) {
-            throw new TypeError("string object could not be parsed as PathEntry: " + str);
-        }
-        if (obj.type === undefined) {
-            throw new TypeError("string object could not be parsed as PathEntry: " + str);
-        }
-
-        return new PathEntry(obj.path, obj.type);
-    }
-}
-
-export class PathList {
-    list: PathEntry[];
-    constructor(list: PathEntry[]) {
-        this.list = list;
-    }
-    public static from(str: string) {
-        let obj = JSON.parse(str);
-        if (obj.list === undefined) {
-            throw new TypeError("string could not be parsed as PathList: " + str);
-        }
-
-        return new PathList(obj.list);
-    }
-}
 
 /**
  * this will represent the backend interface, which
@@ -181,7 +142,7 @@ export abstract class Backend {
                     resolve(retval);
                 })
                 .catch(e => {
-                    console.error("Error while parsing result as PathEntry! " + e);
+                    console.error("Error while parsing result as PathList! " + e);
                     reject(e);
                 });
         });
@@ -192,12 +153,13 @@ export abstract class Backend {
         return new Promise<PathList>((resolve, reject) => {
             this.okOrErrorRequest("list_dir", [filepath])
                 .then(result => {
+                    console.debug("parsing as PathList: " + result);
                     let retval = PathList.from(result);
                     console.debug("parsed directory list as PathList!");
                     resolve(retval);
                 })
                 .catch(e => {
-                    console.error("Error while parsing result as PathEntry! " + e);
+                    console.error("Error while parsing result as PathList! " + e);
                     reject(e);
                 });
         });
@@ -259,6 +221,8 @@ export class SwitchBackend extends Backend {
         // add listener for all messages from window.nx
         var retval = skyline.addEventListener("message", (event: any) => {
             // call any registered callbacks for this ID
+            console.debug("Received event from nx: " + event);
+            console.debug("Event data: " + event.data);
             var response = JSON.parse(event.data);
             var id: string = response.id;
 
@@ -270,7 +234,7 @@ export class SwitchBackend extends Backend {
             }
         });
     }
-
+    
     override invoke(message: Messages.Message): Promise<string> {
         console.debug("trying to invoke on nx: " + JSON.stringify(message));
         return new Promise((resolve, reject) => {

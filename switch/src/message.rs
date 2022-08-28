@@ -82,7 +82,7 @@ impl Handleable for Message {
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
-                let path = format!("sd:/{}", args[0].clone());
+                let path = args[0].clone();
                 let exists = Path::new(&path).exists();
                 if !exists {
                     session.error("requested file does not exist!", &self.id);
@@ -98,7 +98,7 @@ impl Handleable for Message {
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
                 let url = args[0].clone();
-                let location = format!("sd:/{}", args[1].clone());
+                let location = args[1].clone();
 
                 let result = Curler::new()
                     //.progress_callback(|total, current| session.progress(current/total, &self.id))
@@ -113,7 +113,7 @@ impl Handleable for Message {
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
-                let path = format!("sd:/{}", args[0].clone());
+                let path = args[0].clone();
                 let exists = Path::new(&path).exists();
                 if !exists {
                     session.error("requested file does not exist!", &self.id);
@@ -132,7 +132,7 @@ impl Handleable for Message {
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
-                let path = format!("sd:/{}", args[0].clone());
+                let path = args[0].clone();
                 let exists = Path::new(&path).exists() && Path::new(&path).is_file();
                 session.respond_bool(exists, &self.id);
             },
@@ -140,9 +140,47 @@ impl Handleable for Message {
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
-                let path = format!("sd:/{}", args[0].clone());
+                let path = args[0].clone();
                 let exists = Path::new(&path).exists() && Path::new(&path).is_dir();
                 session.respond_bool(exists, &self.id);
+            },
+            "list_dir" => {
+                println!("handling list_dir");
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = args[0].clone();
+                if !Path::new(&path).exists() {
+                    session.error(format!("path {} does not exist!", path).as_str(), &self.id);
+                    return true;
+                }
+                if !Path::new(&path).is_dir() {
+                    session.error(format!("path {} is not a directory!", path).as_str(), &self.id);
+                    return true;
+                }
+
+                let paths = fs::read_dir(path).unwrap();
+                println!("Paths...");
+                let mut vec = Vec::new();
+                for entry in paths {
+                    let fullpath = entry.unwrap().path().display().to_string();
+                    println!("Path: {}", fullpath);
+                    let md = fs::metadata(fullpath.clone()).unwrap();
+                    let kind = match md.is_file() {
+                        true => 0,
+                        false => 1
+                    };
+                    let mut path_entry = PathEntry{path: fullpath, kind: kind};
+                    vec.push(path_entry);
+                }
+                let path_list = PathList{list: vec};
+                let json = match serde_json::to_string(&path_list) {
+                    Ok(val) => val,
+                    Err(e) => {session.error(format!("Could not serialize to json PathList. Error: {}", e).as_str(), &self.id); return true;}
+                };
+                let json = json.replace("\"", "\\\"");
+                println!("replying to list_dir with: {}", &json);
+                session.ok(&json, &self.id);
             },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }

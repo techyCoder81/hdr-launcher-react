@@ -140,7 +140,7 @@ async function findSdcard() {
 
   if (fs.existsSync(configDir)) {
     console.info("setting sdcard root to " + path.join(configDir, "sdcard"));
-    Config.setSdcardPath(path.join(configDir, "sdcard"));
+    Config.setSdcardPath(path.join(configDir, "sdcard/"));
   } else {
     console.error("sdcard directory not found in " + configDir + "!");
     app.quit();

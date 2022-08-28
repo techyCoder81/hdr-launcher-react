@@ -1,7 +1,7 @@
 import { BrowserWindow, contextBridge, ipcRenderer } from 'electron'
 import * as Messages from "../src/messages";
 import * as Responses from "../src/responses";
-import { BaseResponse, BooleanResponse, OkOrError, StringResponse } from '../src/responses';
+import { BaseResponse, BooleanResponse, OkOrError, PathEntry, PathList, StringResponse } from '../src/responses';
 import Config from './config';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -70,7 +70,7 @@ export class RequestHandler {
 
                         let args = request.arguments;
                         // read the given file path
-                        let file: string = path.join(Config.getSdcardPath(), args[0]);
+                        let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
                             resolve(new OkOrError(false, "specified file does not exist! HDR may not be installed.", request.id));
@@ -98,14 +98,13 @@ export class RequestHandler {
                         break;
                     }
 
-                    let absolute = path.join(Config.getSdcardPath(), location);
-                    if (fs.existsSync(absolute)) {
-                        fs.unlinkSync(absolute);
+                    if (fs.existsSync(location)) {
+                        fs.unlinkSync(location);
                     }
 
                     console.info("beginning download.");
-                    console.info("Absolute path: " + absolute);
-                    var out = fs.createWriteStream(absolute);
+                    console.info("Absolute path: " + location);
+                    var out = fs.createWriteStream(location);
 
                     var req = webrequest({
                         method: 'GET',
@@ -147,7 +146,7 @@ export class RequestHandler {
 
                         let args = request.arguments;
                         // read the given file path
-                        let file: string = path.join(Config.getSdcardPath(), args[0]);
+                        let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
                             resolve(new OkOrError(false, "specified file for md5 does not exist!", request.id));
@@ -167,9 +166,7 @@ export class RequestHandler {
                         if (!argcheck(1)) {break;}
 
                         // read the given file path
-                        let file: string = path.join(
-                            Config.getSdcardPath(), 
-                            request.arguments[0]);
+                        let file: string = request.arguments[0];
 
                         resolve(new BooleanResponse(
                             fs.existsSync(file) && fs.statSync(file).isFile(), 
@@ -184,9 +181,7 @@ export class RequestHandler {
                         if (!argcheck(1)) {break;}
 
                         // read the given dir path
-                        let dir: string = path.join(
-                            Config.getSdcardPath(), 
-                            request.arguments[0]);
+                        let dir: string = request.arguments[0];
 
                         resolve(new BooleanResponse(
                             fs.existsSync(dir) && fs.statSync(dir).isDirectory(), 
@@ -194,6 +189,40 @@ export class RequestHandler {
                         break;
                     } catch (e) {
                         resolve(new BooleanResponse(false, request.id));
+                        break;
+                    }
+                case "list_dir":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        // read the given dir path
+                        let dir: string = request.arguments[0];
+
+                        if (!fs.existsSync(dir)) {
+                            resolve(new OkOrError(false, "path does not exist!", request.id));
+                            break;
+                        } 
+                        if (!fs.statSync(dir).isDirectory()) {
+                            resolve(new OkOrError(false, "path was not a directory!", request.id));
+                            break;
+                        }
+                        
+                        let items = fs.readdirSync(dir);
+                        let entries: Responses.PathEntry[] = [];
+                        items.forEach(item => {
+                            let fullpath = path.join(dir, item);
+                            if (fs.statSync(fullpath).isDirectory()) {
+                                entries.push(new PathEntry(fullpath, PathEntry.DIRECTORY));
+                            } else {
+                                entries.push(new PathEntry(fullpath, PathEntry.FILE));
+                            }
+                        });
+                        
+                        let list = new PathList(entries);
+                        resolve(new OkOrError(true, JSON.stringify(list), request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
                         break;
                     }
                 default:
