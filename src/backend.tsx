@@ -135,7 +135,7 @@ export abstract class Backend {
     /** returns a list of all files and directories recursively under the given path */
     async listDirAll(filepath: string): Promise<PathList> {
         return new Promise<PathList>((resolve, reject) => {
-            this.okOrErrorRequest("list_dir_all", [filepath])
+            this.okOrErrorRequest("list_all_files", [filepath])
                 .then(result => {
                     let retval = PathList.from(result);
                     console.debug("parsed directory list as PathList!");
@@ -221,8 +221,8 @@ export class SwitchBackend extends Backend {
         // add listener for all messages from window.nx
         var retval = skyline.addEventListener("message", (event: any) => {
             // call any registered callbacks for this ID
-            console.debug("Received event from nx: " + event);
-            console.debug("Event data: " + event.data);
+            //console.debug("Received event from nx: ");
+            //console.debug("Event data: " + event.data);
             var response = JSON.parse(event.data);
             var id: string = response.id;
 
@@ -242,7 +242,7 @@ export class SwitchBackend extends Backend {
                 console.debug("setting callback for skyline invocation");
                 // set a callback for when that ID is returned
                 this.callbacks.set(message.id, (response) => {
-                    console.debug("response called back for id " + message.id + " with response: " + JSON.stringify(response));
+                    console.debug("response called back for id " + message.id + " with response");
                     this.callbacks.delete(message.id);
                     resolve(JSON.stringify(response));
                 });

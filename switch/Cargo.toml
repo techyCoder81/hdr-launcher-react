@@ -19,6 +19,7 @@ serde_json = "1.0.79"
 arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
 smashnet = { git = "https://github.com/techyCoder81/smashnet.git" }
 md5 = "0.7.0"
+walkdir = "2"
 
 [build-dependencies]
 prettify-js = "0.1.0"

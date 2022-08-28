@@ -36,9 +36,9 @@ export class MainMenu {
                                         .then((hash) => console.log("md5: " + hash))
                                         .then(() => this.backend.fileExists(sdroot + "CHANGELOG.md"))
                                         .then(result => console.log("file exist: " + result))
-                                        .then(() => this.backend.listDir(sdroot + "ultimate"))
+                                        .then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr-assets"))
                                         .then(list => {
-                                                list.list.forEach(entry => console.log("path: " + entry.path + ", type: " + entry.kind));
+                                                console.log("got the list. Size: " + list.list.length);
                                         })
                                         .catch((e) => console.error(e))
                                 }

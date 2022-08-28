@@ -5,6 +5,7 @@ use std::path::Path;
 use crate::*;
 use std::fs;
 use smashnet::*;
+use walkdir::*;
 
 macro_rules! args {
     // this macro ensures that the required arguments are present, and returns if they are not
@@ -181,6 +182,45 @@ impl Handleable for Message {
                 let json = json.replace("\"", "\\\"");
                 println!("replying to list_dir with: {}", &json);
                 session.ok(&json, &self.id);
+            },
+            "list_all_files" => {
+                println!("handling list_all_files");
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = args[0].clone();
+                if !Path::new(&path).exists() {
+                    session.error(format!("path {} does not exist!", path).as_str(), &self.id);
+                    return true;
+                }
+                if !Path::new(&path).is_dir() {
+                    session.error(format!("path {} is not a directory!", path).as_str(), &self.id);
+                    return true;
+                }
+
+                let paths = WalkDir::new(path);
+                println!("Paths...");
+                let mut vec = Vec::new();
+                for entry in paths {
+                    let fullpath = entry.unwrap().path().display().to_string();
+                    println!("Path: {}", fullpath);
+                    let md = fs::metadata(fullpath.clone()).unwrap();
+                    let kind = match md.is_file() {
+                        true => 0,
+                        false => 1
+                    };
+                    let mut path_entry = PathEntry{path: fullpath, kind: kind};
+                    vec.push(path_entry);
+                }
+                let path_list = PathList{list: vec};
+                let json = match serde_json::to_string(&path_list) {
+                    Ok(val) => val,
+                    Err(e) => {session.error(format!("Could not serialize to json PathList. Error: {}", e).as_str(), &self.id); return true;}
+                };
+                let json = json.replace("\"", "\\\"");
+                println!("replying to list_all_files with a string of size: {}", json.len());
+                session.ok(&json, &self.id);
+                println!("done sending.");
             },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }

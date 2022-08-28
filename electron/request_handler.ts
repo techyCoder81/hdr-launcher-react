@@ -10,6 +10,21 @@ const webrequest = require('request');
 import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
 
+function readDirAll(dir: string, allitems: string[]) {
+    let here = fs.readdirSync(dir);
+    console.debug("Checking dir: " + dir);
+    here.forEach(thispath => {
+        console.debug("\tSubpath: " + thispath);
+        let fullpath = path.join(dir, thispath);
+        if (fs.statSync(fullpath).isFile()) {
+            allitems.push(fullpath)
+        } else {
+            readDirAll(fullpath, allitems);
+        }
+    });
+    
+}
+
 export class RequestHandler {
     async handle(request: any): Promise<Responses.BaseResponse> {
         return new Promise<Responses.BaseResponse>(async (resolve) => {
@@ -215,6 +230,40 @@ export class RequestHandler {
                                 entries.push(new PathEntry(fullpath, PathEntry.DIRECTORY));
                             } else {
                                 entries.push(new PathEntry(fullpath, PathEntry.FILE));
+                            }
+                        });
+                        
+                        let list = new PathList(entries);
+                        resolve(new OkOrError(true, JSON.stringify(list), request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
+                case "list_all_files":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        // read the given dir path
+                        let dir: string = request.arguments[0];
+
+                        if (!fs.existsSync(dir)) {
+                            resolve(new OkOrError(false, "path does not exist!", request.id));
+                            break;
+                        } 
+                        if (!fs.statSync(dir).isDirectory()) {
+                            resolve(new OkOrError(false, "path was not a directory!", request.id));
+                            break;
+                        }
+                        
+                        let items: string[] = [];
+                        readDirAll(dir, items);
+                        let entries: Responses.PathEntry[] = [];
+                        items.forEach(item => {
+                            if (fs.statSync(item).isDirectory()) {
+                                entries.push(new PathEntry(item, PathEntry.DIRECTORY));
+                            } else {
+                                entries.push(new PathEntry(item, PathEntry.FILE));
                             }
                         });
                         

@@ -24,7 +24,7 @@ pub fn main() {
         println!("HDR Launcher nro cannot run on emulator! Exiting launcher nro!");
         return;
     }
-
+    
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
         let session = Webpage::new()
