@@ -132,3 +132,36 @@ export class PathList {
         return new PathList(obj.list);
     }
 }
+
+export class DirTree {
+    name: string;
+    dirs: DirTree[];
+    files: string[];
+
+    constructor(name: string) {
+        this.dirs = [];
+        this.files = [];
+        this.name = name;
+    }
+
+    public static fromStr(str: string): DirTree {
+        let obj = JSON.parse(str);
+        return DirTree.from(obj);
+    }
+
+    public static from(obj: any): DirTree {
+        let tree = new DirTree(obj.name);
+        obj.dirs.forEach((element: DirTree) => {
+            tree.dirs.push(DirTree.from(element));
+        });
+        tree.files = obj.files;
+        return tree;
+    }
+
+    public toList(root: string, list: string[]): string[] {
+        this.files.forEach(file => list.push(root + "/" + file));
+        this.dirs.forEach(dir => dir.toList(root + "/" + dir.name, list))
+        return list;
+    }
+
+}

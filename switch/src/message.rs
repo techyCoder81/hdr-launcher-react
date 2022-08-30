@@ -6,6 +6,7 @@ use crate::*;
 use std::fs;
 use smashnet::*;
 use walkdir::*;
+use std::io::Read;
 
 macro_rules! args {
     // this macro ensures that the required arguments are present, and returns if they are not
@@ -144,6 +145,60 @@ impl Handleable for Message {
                 let path = args[0].clone();
                 let exists = Path::new(&path).exists() && Path::new(&path).is_dir();
                 session.respond_bool(exists, &self.id);
+            },
+            "unzip" => {
+                args!(self, session, 2);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let filepath = args[0].clone();
+                let destination = args[1].clone();
+
+                if !Path::new(&filepath).exists() {
+                    session.error(format!("file {} does not exist!", filepath).as_str(), &self.id);
+                    return true;
+                }
+                if !Path::new(&filepath).is_file() {
+                    session.error(format!("path {} is not a file!", filepath).as_str(), &self.id);
+                    return true;
+                }
+
+                if !Path::new(&destination).exists() {
+                    session.error(format!("path {} does not exist!", destination).as_str(), &self.id);
+                    return true;
+                }
+                if !Path::new(&destination).is_dir() {
+                    session.error(format!("path {} is not a directory!", destination).as_str(), &self.id);
+                    return true;
+                }
+
+                let mut zip = match unzipper::get_zip_archive(&filepath) {
+                    Ok(zip) => zip,
+                    Err(_) => {
+                        session.error("Could not parse zip file!", &self.id);
+                        return true;
+                    }
+                };
+            
+                let count = zip.len();
+            
+                for file_no in 0..count {
+                    let mut file = zip.by_index(file_no).unwrap();
+                    if !file.is_file() {
+                        continue;
+                    }
+            
+                    println!("progress: {}", file_no as f32/count as f32);
+            
+                    let path = Path::new(&destination).join(file.name());
+                    if let Some(parent) = path.parent() {
+                        std::fs::create_dir_all(parent);
+                    }
+            
+                    let mut file_data = vec![];
+                    file.read_to_end(&mut file_data).unwrap();
+                    std::fs::write(path, file_data).unwrap();
+                }
+
             },
             "list_dir" => {
                 println!("handling list_dir");

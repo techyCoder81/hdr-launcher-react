@@ -4,6 +4,7 @@ import { Backend } from "../backend";
 import { LogWindow } from './log_window';
 import ReactDOM from 'react-dom';
 import { Options } from './options';
+import { DirTree } from '../responses';
 
 /**
  * main menu implementation
@@ -29,17 +30,16 @@ export class MainMenu {
                                         .catch(e => {console.error("Could not get SD root. " + e);return;});
 
                                 await this.backend.downloadFile(
-                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.4/CHANGELOG.md", 
-                                                sdroot + "CHANGELOG.md")
+                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.10/to-beta.zip", 
+                                                sdroot + "downloads/to-beta.zip")
                                         .then((message) => console.info(message))
-                                        .then(() => this.backend.getMd5(sdroot + "CHANGELOG.md"))
+                                        .then(() => this.backend.getMd5(sdroot + "downloads/to-beta.zip"))
                                         .then((hash) => console.log("md5: " + hash))
-                                        .then(() => this.backend.fileExists(sdroot + "CHANGELOG.md"))
+                                        .then(() => this.backend.fileExists(sdroot + "downloads/to-beta.zip"))
                                         .then(result => console.log("file exist: " + result))
-                                        .then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr-assets"))
-                                        .then(list => {
-                                                console.log("got the list. Size: " + list.list.length);
-                                        })
+                                        .then(() => this.backend.listDirAll(sdroot + "ultimate"))
+                                        .then(result => console.info(JSON.stringify(result.toList(sdroot + "ultimate", []))))
+                                        .then(() => this.backend.unzip(sdroot + "downloads/to-beta.zip", sdroot + "downloads"))
                                         .catch((e) => console.error(e))
                                 }
                         }>

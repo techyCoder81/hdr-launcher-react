@@ -3,7 +3,7 @@ import * as Messages from "./messages";
 import * as Responses from "./responses";
 import { resolve } from "../webpack/main.webpack";
 import { lutimes } from "original-fs";
-import { BooleanResponse, OkOrError, StringResponse, PathList } from "./responses";
+import { BooleanResponse, OkOrError, StringResponse, PathList, DirTree } from "./responses";
 
 
 
@@ -122,6 +122,11 @@ export abstract class Backend {
         return this.okOrErrorRequest("get_md5", [filepath]);
     }
 
+    /** unzips the file at the given path to the given destination */
+    async unzip(filepath: string, destination: string): Promise<string> {
+        return this.okOrErrorRequest("unzip", [filepath, destination]);
+    }
+
     /** returns whether a file exists with the given absolute path */
     async fileExists(filepath: string): Promise<boolean> {
         return this.booleanRequest("file_exists", [filepath]);
@@ -133,11 +138,11 @@ export abstract class Backend {
     }
 
     /** returns a list of all files and directories recursively under the given path */
-    async listDirAll(filepath: string): Promise<PathList> {
-        return new Promise<PathList>((resolve, reject) => {
+    async listDirAll(filepath: string): Promise<DirTree> {
+        return new Promise<DirTree>((resolve, reject) => {
             this.okOrErrorRequest("list_all_files", [filepath])
                 .then(result => {
-                    let retval = PathList.from(result);
+                    let retval = DirTree.fromStr(result);
                     console.debug("parsed directory list as PathList!");
                     resolve(retval);
                 })

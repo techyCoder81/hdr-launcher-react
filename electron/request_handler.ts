@@ -1,7 +1,7 @@
 import { BrowserWindow, contextBridge, ipcRenderer } from 'electron'
 import * as Messages from "../src/messages";
 import * as Responses from "../src/responses";
-import { BaseResponse, BooleanResponse, OkOrError, PathEntry, PathList, StringResponse } from '../src/responses';
+import { BaseResponse, BooleanResponse, DirTree, OkOrError, PathEntry, PathList, StringResponse } from '../src/responses';
 import Config from './config';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -9,17 +9,22 @@ import * as dl from 'electron-dl';
 const webrequest = require('request');
 import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
+import * as extract from 'extract-zip';
 
-function readDirAll(dir: string, allitems: string[]) {
+function readDirAll(dir: string, tree: DirTree, depth: number) {
+    let tabs = "";
+    for (let i = 0; i < depth; ++i) {tabs += "\t";}
     let here = fs.readdirSync(dir);
-    console.debug("Checking dir: " + dir);
     here.forEach(thispath => {
-        console.debug("\tSubpath: " + thispath);
         let fullpath = path.join(dir, thispath);
         if (fs.statSync(fullpath).isFile()) {
-            allitems.push(fullpath)
+            console.debug(tabs + "File: " + thispath);
+            tree.files.push(thispath);
         } else {
-            readDirAll(fullpath, allitems);
+            console.debug(tabs + "Directory: " + thispath);
+            let subtree = new DirTree(thispath);
+            tree.dirs.push(subtree)
+            readDirAll(fullpath, subtree, depth + 1);
         }
     });
     
@@ -256,19 +261,46 @@ export class RequestHandler {
                             break;
                         }
                         
-                        let items: string[] = [];
-                        readDirAll(dir, items);
-                        let entries: Responses.PathEntry[] = [];
-                        items.forEach(item => {
-                            if (fs.statSync(item).isDirectory()) {
-                                entries.push(new PathEntry(item, PathEntry.DIRECTORY));
-                            } else {
-                                entries.push(new PathEntry(item, PathEntry.FILE));
-                            }
-                        });
+                        let tree = new DirTree(dir);
+                        readDirAll(dir, tree, 0);
+
+                        resolve(new OkOrError(true, JSON.stringify(tree), request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
+
+                case "unzip":
+                    try {
+                        if (!argcheck(2)) {break;}
+
+                        // read the given file path
+                        let filepath: string = request.arguments[0];
+
+                        // read the given dir path
+                        let destination: string = request.arguments[1];
+
+                        if (!fs.existsSync(destination)) {
+                            resolve(new OkOrError(false, "destination does not exist!", request.id));
+                            break;
+                        } 
+                        if (!fs.statSync(destination).isDirectory()) {
+                            resolve(new OkOrError(false, "destination was not a directory!", request.id));
+                            break;
+                        }
+
+                        if (!fs.existsSync(filepath)) {
+                            resolve(new OkOrError(false, "filepath does not exist!", request.id));
+                            break;
+                        } 
+                        if (!fs.statSync(filepath).isFile()) {
+                            resolve(new OkOrError(false, "filepath was not a file!", request.id));
+                            break;
+                        }
                         
-                        let list = new PathList(entries);
-                        resolve(new OkOrError(true, JSON.stringify(list), request.id));
+                        await extract.default(filepath, {dir: destination});
+                        resolve(new OkOrError(true, "file extracted successfully!", request.id));
                         break;
                     } catch (e) {
                         resolve(new OkOrError(false, String(e), request.id));

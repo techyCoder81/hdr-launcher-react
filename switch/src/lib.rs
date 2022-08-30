@@ -12,8 +12,10 @@ pub fn is_emulator() -> bool {
 
 mod response;
 mod message;
+mod unzipper;
 use response::*;
 use message::*;
+use unzipper::*;
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
