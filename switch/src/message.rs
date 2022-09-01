@@ -253,24 +253,12 @@ impl Handleable for Message {
                     return true;
                 }
 
-                let paths = WalkDir::new(path);
-                println!("Paths...");
-                let mut vec = Vec::new();
-                for entry in paths {
-                    let fullpath = entry.unwrap().path().display().to_string();
-                    println!("Path: {}", fullpath);
-                    let md = fs::metadata(fullpath.clone()).unwrap();
-                    let kind = match md.is_file() {
-                        true => 0,
-                        false => 1
-                    };
-                    let mut path_entry = PathEntry{path: fullpath, kind: kind};
-                    vec.push(path_entry);
-                }
-                let path_list = PathList{list: vec};
-                let json = match serde_json::to_string(&path_list) {
+                let mut subtree = DirTree{name: path.clone(), files: Vec::new(), dirs: Vec::new()};
+                readDirAll(path, &mut subtree);
+                
+                let json = match serde_json::to_string(&subtree) {
                     Ok(val) => val,
-                    Err(e) => {session.error(format!("Could not serialize to json PathList. Error: {}", e).as_str(), &self.id); return true;}
+                    Err(e) => {session.error(format!("Could not serialize to json DirTree. Error: {}", e).as_str(), &self.id); return true;}
                 };
                 let json = json.replace("\"", "\\\"");
                 println!("replying to list_all_files with a string of size: {}", json.len());
@@ -281,6 +269,27 @@ impl Handleable for Message {
         }
         return true;
     }
+}
+
+fn readDirAll(dir: String, tree: &mut DirTree) {
+    //let tabs = "";
+    //for (let i = 0; i < depth; ++i) {tabs += "\t";}
+    let paths = fs::read_dir(dir).unwrap();
+    for pathmaybe in paths {
+        let path = pathmaybe.unwrap();
+        let fullpath = path.path();
+        let file_name = format!("{}", path.file_name().into_string().unwrap());
+        if path.metadata().unwrap().is_file() {
+            println!("File: {}", file_name);
+            tree.files.push(file_name);
+        } else {
+            println!("Directory: {}", file_name);
+            let mut subtree = DirTree{name: file_name, files: Vec::new(), dirs: Vec::new()};
+            readDirAll(fullpath.into_os_string().into_string().unwrap(), &mut subtree);
+            tree.dirs.push(subtree);
+        }
+    }
+    
 }
 
 impl BoolRespond for WebSession {

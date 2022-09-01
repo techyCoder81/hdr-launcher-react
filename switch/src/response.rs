@@ -76,3 +76,13 @@ pub struct PathEntry {
 pub struct PathList {
     pub list: Vec<PathEntry>
 }
+
+/**
+ * represents a directory tree
+ */
+#[derive(Serialize, Deserialize)]
+pub struct DirTree {
+    pub name: String,
+    pub dirs: Vec<DirTree>,
+    pub files: Vec<String>
+}

@@ -37,8 +37,8 @@ export class MainMenu {
                                         .then((hash) => console.log("md5: " + hash))
                                         .then(() => this.backend.fileExists(sdroot + "downloads/to-beta.zip"))
                                         .then(result => console.log("file exist: " + result))
-                                        .then(() => this.backend.listDirAll(sdroot + "ultimate"))
-                                        .then(result => console.info(JSON.stringify(result.toList(sdroot + "ultimate", []))))
+                                        .then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr"))
+                                        .then(result => {console.info();console.info(JSON.stringify(result.toList(sdroot + "ultimate/mods/hdr", [])));})
                                         .then(() => this.backend.unzip(sdroot + "downloads/to-beta.zip", sdroot + "downloads"))
                                         .catch((e) => console.error(e))
                                 }

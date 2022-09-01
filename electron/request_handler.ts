@@ -12,16 +12,16 @@ import * as  md5 from 'md5-file';
 import * as extract from 'extract-zip';
 
 function readDirAll(dir: string, tree: DirTree, depth: number) {
-    let tabs = "";
-    for (let i = 0; i < depth; ++i) {tabs += "\t";}
+    //let tabs = "";
+    //for (let i = 0; i < depth; ++i) {tabs += "\t";}
     let here = fs.readdirSync(dir);
     here.forEach(thispath => {
         let fullpath = path.join(dir, thispath);
         if (fs.statSync(fullpath).isFile()) {
-            console.debug(tabs + "File: " + thispath);
+            //console.debug(tabs + "File: " + thispath);
             tree.files.push(thispath);
         } else {
-            console.debug(tabs + "Directory: " + thispath);
+            //console.debug(tabs + "Directory: " + thispath);
             let subtree = new DirTree(thispath);
             tree.dirs.push(subtree)
             readDirAll(fullpath, subtree, depth + 1);
