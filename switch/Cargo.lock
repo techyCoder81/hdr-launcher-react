@@ -192,7 +192,7 @@ dependencies = [
  "prettify-js",
  "serde",
  "serde_json",
- "skyline",
+ "skyline 0.2.1 (git+https://github.com/ultimate-research/skyline-rs.git)",
  "skyline-config",
  "skyline-web",
  "smashnet",
@@ -223,20 +223,21 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.131"
+version = "0.2.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04c3b4822ccebfa39c02fc03d1534441b22ead323fa0f48bb7ddd8e6ba076a40"
+checksum = "8371e4e5341c3a96db127eb2465ac681ced4c433e01dd0e938adbef26ba93ba5"
 
 [[package]]
 name = "libc-nnsdk"
-version = "0.0.1"
-source = "git+https://github.com/ultimate-research/libc-nnsdk.git#98c11e074317f2b45b6387840ff3c391275f4ad5"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6823e4bff6dee10a75dfee95afe1c5a7f93a1b99a20013663e0cb04b3a64f867"
 
 [[package]]
 name = "lock_api"
-version = "0.4.7"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "327fa5b6a6940e4699ec49a9beae1ea4845c6bab9314e4f84ac68742139d8c53"
+checksum = "9f80bf5aacaf25cbfc8210d1cfb718f2bf3b11c4c54e5afe36c236853a8ec390"
 dependencies = [
  "autocfg",
  "scopeguard",
@@ -325,17 +326,18 @@ checksum = "c7f9b803c6f1ce4f231ae4bd0c065dcc2f3c93db33da58e439ce66259e3167cf"
 
 [[package]]
 name = "nnsdk"
-version = "0.1.0"
-source = "git+https://github.com/ultimate-research/nnsdk-rs.git#c9b66a3423d86ead992370ed598edb434564dd6d"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0f4537c7470ba25f406d42c8cbfe26f64099af4b613e715c6bcb3d25856896c"
 dependencies = [
  "libc-nnsdk",
 ]
 
 [[package]]
 name = "once_cell"
-version = "1.13.1"
+version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "074864da206b4973b84eb91683020dbefd6a8c3f0f38e054d93954e891935e4e"
+checksum = "2f7254b99e31cad77da24b08ebf628882739a608578bb1bcdfc1f9c21260d7c0"
 
 [[package]]
 name = "owo-colors"
@@ -501,18 +503,18 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "serde"
-version = "1.0.143"
+version = "1.0.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53e8e5d5b70924f74ff5c6d64d9a5acd91422117c60f48c4e07855238a254553"
+checksum = "0f747710de3dcd43b88c9168773254e809d8ddbdf9653b84e2554ab219f17860"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.143"
+version = "1.0.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3d8e8de557aee63c26b85b947f5e59b690d0454c753f3adeb5cd7835ab88391"
+checksum = "94ed3a816fb1d101812f83e789f888322c34e291f894f19590dc310963e87a00"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -521,9 +523,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.83"
+version = "1.0.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38dd04e3c8279e75b31ef29dbdceebfe5ad89f4d0937213c53f7d49d01b3d5a7"
+checksum = "e55a28e3aaef9d5ce0506d0a14dbba8054ddc7e499ef522dd8b26859ec9d4a44"
 dependencies = [
  "itoa",
  "ryu",
@@ -532,41 +534,64 @@ dependencies = [
 
 [[package]]
 name = "skyline"
-version = "0.1.0"
-source = "git+https://github.com/ultimate-research/skyline-rs.git#12920d76ac3f014a3f879595e5b35a895ce2fb10"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9950fc129490cff3f4755aa523df16aeeb80130699abfc59cc7c6df8fc5802ad"
 dependencies = [
  "libc-nnsdk",
  "nnsdk",
- "skyline_macro",
+ "skyline_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "skyline"
+version = "0.2.1"
+source = "git+https://github.com/ultimate-research/skyline-rs.git#5d7894e33fd12b4d58436c20706a1a11877a1d45"
+dependencies = [
+ "libc-nnsdk",
+ "nnsdk",
+ "skyline_macro 0.2.0 (git+https://github.com/ultimate-research/skyline-rs.git)",
 ]
 
 [[package]]
 name = "skyline-config"
 version = "0.3.0"
-source = "git+https://github.com/skyline-rs/skyline-config#65d8f52629a754318f0f24657eda69539c40b0d8"
+source = "git+https://github.com/skyline-rs/skyline-config#3d27e982b3c3d8d5b8841197514a0e23c5f15bd1"
 dependencies = [
  "serde",
  "serde_json",
- "skyline",
+ "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
 ]
 
 [[package]]
 name = "skyline-web"
 version = "0.1.0"
-source = "git+https://github.com/skyline-rs/skyline-web#6cbb04eeebc191cb824211568a591c00a5ab9de8"
+source = "git+https://github.com/skyline-rs/skyline-web#ec2534eacdcebd4f079755df8366c3633968bc16"
 dependencies = [
  "nnsdk",
  "ramhorns",
  "serde",
  "serde_json",
- "skyline",
+ "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "skyline_macro"
-version = "0.1.0"
-source = "git+https://github.com/ultimate-research/skyline-rs.git#12920d76ac3f014a3f879595e5b35a895ce2fb10"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9194b20ee17c1de2ed299cfd9b8b56160a35b5579b3273c416ab4e5c058844dc"
+dependencies = [
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "skyline_macro"
+version = "0.2.0"
+source = "git+https://github.com/ultimate-research/skyline-rs.git#5d7894e33fd12b4d58436c20706a1a11877a1d45"
 dependencies = [
  "lazy_static",
  "proc-macro2",
@@ -598,9 +623,9 @@ dependencies = [
 [[package]]
 name = "smashnet"
 version = "0.1.0"
-source = "git+https://github.com/techyCoder81/smashnet.git#9b96f750683513704c58a8069888c28c9fc0fdca"
+source = "git+https://github.com/techyCoder81/smashnet.git#aebcf09714ac0a6f72d476835f8837c018c13e31"
 dependencies = [
- "skyline",
+ "skyline 0.2.1 (git+https://github.com/ultimate-research/skyline-rs.git)",
 ]
 
 [[package]]
@@ -622,18 +647,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.32"
+version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5f6586b7f764adc0231f4c79be7b920e766bb2f3e51b3661cdb263828f19994"
+checksum = "3d0a539a918745651435ac7db7a18761589a94cd7e94cd56999f828bf73c8a57"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.32"
+version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12bafc5b54507e0149cdf1b145a5d80ab80a90bcd9275df43d4fff68460f6c21"
+checksum = "c251e90f708e16c49a16f4917dc2131e75222b72edfa9cb7f7c58ae56aae0c09"
 dependencies = [
  "proc-macro2",
  "quote",

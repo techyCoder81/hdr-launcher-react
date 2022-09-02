@@ -320,7 +320,7 @@ export class RequestHandler {
                                     resolve(new OkOrError(false, "Response code was not successful: " + res.status, request.id));
                                     return;
                                 }
-                                console.info(res.data);
+                                console.info(JSON.stringify(res.data));
                                 resolve(new OkOrError(true, JSON.stringify(res.data), request.id));
                             })
                             .catch(e => {

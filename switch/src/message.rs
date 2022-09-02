@@ -265,6 +265,23 @@ impl Handleable for Message {
                 session.ok(&json, &self.id);
                 println!("done sending.");
             },
+            "get_request" => {
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let url = args[0].clone();
+
+                let result = Curler::new()
+                    //.progress_callback(|total, current| session.progress(current/total, &self.id))
+                    .get(url);
+
+                println!("got result from GET");
+
+                match result {
+                    Ok(body) => {println!("Result: {}", body);session.ok(&body.replace("\\", "\\\\").replace("\"", "\\\""), &self.id);},
+                    Err(e) => {println!("Error: {}", e);session.error(format!("Error during download: {}", e).as_str(), &self.id);}
+                }
+            }
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }
         return true;

@@ -40,7 +40,7 @@ export class MainMenu {
                                         //.then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr"))
                                         //.then(result => {console.info(JSON.stringify(result.toList(sdroot + "ultimate/mods/hdr", [])));})
                                         //.then(() => this.backend.unzip(sdroot + "downloads/to-beta.zip", sdroot + "downloads"))
-                                        .then(() => this.backend.getJson("https://api.github.com/repos/HDR-Development/HDR-Nightlies/releases?per_page=10"))
+                                        .then(() => this.backend.getJson("https://api.github.com/repos/HDR-Development/HDR-bightlies/releases?per_page=1"))
                                         .then(result => console.info(result[0].url))
                                         .catch((e) => console.error(e))
                                 }
