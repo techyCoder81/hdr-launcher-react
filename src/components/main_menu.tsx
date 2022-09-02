@@ -30,16 +30,18 @@ export class MainMenu {
                                         .catch(e => {console.error("Could not get SD root. " + e);return;});
 
                                 await this.backend.downloadFile(
-                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.10/to-beta.zip", 
-                                                sdroot + "downloads/to-beta.zip")
+                                                "https://github.com/HDR-Development/HDR-Nightlies/releases/download/v0.19.10/CHANGELOG.md", 
+                                                sdroot + "downloads/CHANGELOG.md")
                                         .then((message) => console.info(message))
-                                        .then(() => this.backend.getMd5(sdroot + "downloads/to-beta.zip"))
-                                        .then((hash) => console.log("md5: " + hash))
-                                        .then(() => this.backend.fileExists(sdroot + "downloads/to-beta.zip"))
-                                        .then(result => console.log("file exist: " + result))
-                                        .then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr"))
-                                        .then(result => {console.info();console.info(JSON.stringify(result.toList(sdroot + "ultimate/mods/hdr", [])));})
-                                        .then(() => this.backend.unzip(sdroot + "downloads/to-beta.zip", sdroot + "downloads"))
+                                        //.then(() => this.backend.getMd5(sdroot + "downloads/to-beta.zip"))
+                                        //.then((hash) => console.log("md5: " + hash))
+                                        //.then(() => this.backend.fileExists(sdroot + "downloads/to-beta.zip"))
+                                        //.then(result => console.log("file exist: " + result))
+                                        //.then(() => this.backend.listDirAll(sdroot + "ultimate/mods/hdr"))
+                                        //.then(result => {console.info(JSON.stringify(result.toList(sdroot + "ultimate/mods/hdr", [])));})
+                                        //.then(() => this.backend.unzip(sdroot + "downloads/to-beta.zip", sdroot + "downloads"))
+                                        .then(() => this.backend.getJson("https://api.github.com/repos/HDR-Development/HDR-Nightlies/releases?per_page=10"))
+                                        .then(result => console.info(result[0].url))
                                         .catch((e) => console.error(e))
                                 }
                         }>

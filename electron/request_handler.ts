@@ -10,6 +10,7 @@ const webrequest = require('request');
 import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
 import * as extract from 'extract-zip';
+import * as axios from 'axios';
 
 function readDirAll(dir: string, tree: DirTree, depth: number) {
     //let tabs = "";
@@ -301,6 +302,32 @@ export class RequestHandler {
                         
                         await extract.default(filepath, {dir: destination});
                         resolve(new OkOrError(true, "file extracted successfully!", request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
+                case "get_request":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        // read the given url
+                        let url: string = request.arguments[0];
+
+                        axios.default.get(url)
+                            .then(res => {
+                                if (res.status >= 300) {
+                                    resolve(new OkOrError(false, "Response code was not successful: " + res.status, request.id));
+                                    return;
+                                }
+                                console.info(res.data);
+                                resolve(new OkOrError(true, JSON.stringify(res.data), request.id));
+                            })
+                            .catch(e => {
+                                console.error("Error during get: " + e);
+                                resolve(new OkOrError(false, String("Error during get: " + e), request.id));
+                            })
+                        
                         break;
                     } catch (e) {
                         resolve(new OkOrError(false, String(e), request.id));

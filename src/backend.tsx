@@ -170,6 +170,41 @@ export abstract class Backend {
         });
     }
 
+    /**
+     * performs a get request and returns the body as a string
+     * @param url the url
+     * @returns the body of the returned data
+     */
+    async getRequest(url: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            this.okOrErrorRequest("get_request", [url])
+                .then(result => {
+                    console.debug("get request result: " + result);
+                    resolve(result);
+                })
+                .catch(e => {
+                    console.error("Error while performing GET request: " + e);
+                    reject(e);
+                });
+        });
+    }
+
+    /**
+     * performs a GET request and returns the json body as a parsed object
+     * @param url the url
+     * @returns the parsed object the json represented
+     */
+    async getJson(url: string): Promise<any> {
+        return new Promise<PathList>((resolve, reject) => {
+            this.getRequest(url).then(result => {
+                resolve(JSON.parse(result));
+            })
+            .catch(e => {
+                reject(e);
+            });
+        });
+    }
+
     /** sends the play message to the backend */
     play() {
         this.send(new Messages.Message("play", null));
