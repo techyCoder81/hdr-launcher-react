@@ -282,6 +282,21 @@ impl Handleable for Message {
                     Err(e) => {println!("Error: {}", e);session.error(format!("Error during download: {}", e).as_str(), &self.id);}
                 }
             }
+            "delete_file" => {
+                args!(self, session, 1);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = args[0].clone();
+                let exists = Path::new(&path).exists();
+                if !exists {
+                    session.error("requested file already does not exist.", &self.id);
+                } else {
+                    match fs::remove_file(path) {
+                        Ok(version) => session.ok("The file was removed successfully", &self.id),
+                        Err(e) => session.error(format!("{:?}", e).as_str(), &self.id)
+                    }
+                }
+            },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }
         return true;
@@ -311,25 +326,29 @@ fn readDirAll(dir: String, tree: &mut DirTree) {
 
 impl BoolRespond for WebSession {
     fn respond_bool(&self, result: bool, id: &String) {
-        self.send_json(&BooleanResponse{id: id.clone(), result: result});
+        println!("Sending {}", result);
+        self.send(&serde_json::to_string(&BooleanResponse{id: id.clone(), result: result}).unwrap());
     }
 }
 
 impl StringRespond for WebSession {
     fn respond_string(&self, message: &str, id: &String) {
-        self.send_json(&StringResponse{id: id.clone(), message: message.to_string()});
+        println!("Sending string response: {}", message);
+        self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.to_string()}).unwrap());
     }
 }
 
 impl OkOrError for WebSession {
     fn ok(&self, message: &str, id: &String) {
-        self.send_json(&OkOrErrorResponse{ 
+        println!("Sending OK");
+        self.send(&serde_json::to_string(&OkOrErrorResponse{ 
             id: id.clone(), ok: true, message: message.to_string()
-        });
+        }).unwrap());
     }
     fn error(&self, message: &str, id: &String) {
-        self.send_json(&OkOrErrorResponse{ 
+        println!("Sending ERROR");
+        self.send(&serde_json::to_string(&OkOrErrorResponse{ 
             id: id.clone(), ok: false, message: message.to_string()
-        });
+        }).unwrap());
     }
 }

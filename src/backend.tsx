@@ -117,6 +117,11 @@ export abstract class Backend {
         return this.okOrErrorRequest("read_file", [filepath]);
     }
 
+    /** deletes the given file if it exists */
+    async deleteFile(filepath: string): Promise<string> {
+        return this.okOrErrorRequest("delete_file", [filepath]);
+    }
+
     /** returns the md5 checksum of a file */
     async getMd5(filepath: string): Promise<string> {
         return this.okOrErrorRequest("get_md5", [filepath]);

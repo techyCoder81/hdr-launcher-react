@@ -333,6 +333,27 @@ export class RequestHandler {
                         resolve(new OkOrError(false, String(e), request.id));
                         break;
                     }
+                case "delete_file":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        let args = request.arguments;
+                        // read the given file path
+                        let file: string = args[0];
+                        let exists = fs.existsSync(file);
+                        if (!exists) {
+                            resolve(new OkOrError(false, "specified file already does not exist", request.id));
+                            break;
+                        }
+
+                        // delete the file
+                        let text = fs.unlinkSync(file);
+                        resolve(new OkOrError(true, "File deleted successfully.", request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
                 default:
                     console.error("Could not handle request with name: " + name);
                     resolve(new Error("unable to handle request " + name));
