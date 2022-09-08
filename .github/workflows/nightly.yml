@@ -20,11 +20,18 @@ jobs:
       with:
         python-version: '3.9' # Version range or exact version of a Python version to use, using SemVer's version range syntax
     
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
 
     - name: install node.js and npm
       run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
-        && sudo apt-get update -y && sudo apt-get install nodejs -y && sudo apt-get install npm -y  && sudo npm install && sudo python3 build.py package
+        && npm install \
+        && npm make \
+        && cd switch \
+        && cargo skyline build --release
+        && cd ..
       env:
         HOME: /root
 
