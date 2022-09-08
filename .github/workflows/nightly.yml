@@ -70,8 +70,11 @@ jobs:
         overwrite: true
         body: Nightly build of hdr-launcher-react
 
+    - run: ls
+    - run: ls out
+
     # upload desktop app
-    - name: Upload checksum to release
+    - name: Upload outfiles to release
       uses: svenstaro/upload-release-action@v2
       with:
         file: 'out/*'
