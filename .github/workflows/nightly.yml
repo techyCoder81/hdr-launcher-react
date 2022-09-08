@@ -110,11 +110,11 @@ jobs:
 
     - run: npm run make
     
-    - run: ls out/*
+    - run: ls out/hdr-launcher-win32-x64
 
     - uses: vimtor/action-zip@v1
       with:
-        files: hdr-launcher-win32-x64
+        files: hdr-launcher-win32-x64/
         dest: hdr-launcher-win32-x64.zip
 
     # upload desktop app
