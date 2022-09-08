@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  plugin_build:
+  build_all:
     env:
       PLUGIN_NAME: smashnet
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
     - name: install node.js and npm
       run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
-        && apt update && apt install nodejs && apt install npm && npm install && python3 build.py package
+        && apt-get update -y && apt-get install nodejs -y && apt-get install npm -y  && npm install && python3 build.py package
       env:
         HOME: /root
 
