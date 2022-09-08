@@ -35,7 +35,7 @@ jobs:
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \
-        && cargo skyline build --release
+        && cargo skyline build --release \
         && cd ..
       env:
         HOME: /root
@@ -68,6 +68,19 @@ jobs:
         release_name: nightly
         tag: nightly
         overwrite: true
-        body: Nightly build of smashnet.nro
+        body: Nightly build of hdr-launcher-react
+
+    # upload desktop app
+    - name: Upload checksum to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: 'out/*'
+        prerelease: true
+        file_glob: true
+        asset_name: desktop_app
+        release_name: nightly
+        tag: nightly
+        overwrite: true
+        body: Nightly build of hdr-launcher-react
     
 
