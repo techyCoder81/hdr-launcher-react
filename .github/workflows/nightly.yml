@@ -7,7 +7,7 @@ on:
 jobs:
   build_all:
     env:
-      PLUGIN_NAME: smashnet
+      PLUGIN_NAME: hdr-launcher
     runs-on: ubuntu-latest
     container: 
       image: jugeeya/cargo-skyline:3.0.0-dkp-beta
@@ -24,11 +24,10 @@ jobs:
       with:
         node-version: 16
 
-    - name: install node.js and npm
-      run: |
+    - run: npm install
+    - run: npm make
+    - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
-        && npm install \
-        && npm make \
         && cd switch \
         && cargo skyline build --release
         && cd ..
