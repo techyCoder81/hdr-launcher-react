@@ -5,30 +5,29 @@ import { Backend } from "../backend";
 /**
  * header implementation
  */
-export class Header {
-    backend: Backend;
+ export default class Header extends React.Component {
 
-    constructor(backend: Backend) {
-        this.backend = backend;
-        this.backend.getPlatform().then(value => {
-            var title = document.getElementById("title");
-            if (title!=null) {
-                    title.innerHTML = "HDR " + value + " Launcher";
-            }
+    state = {
+        version: "unknown",
+        installed: "unknown",
+        platform: "",
+    };
+
+    componentDidMount() {
+        var backend = Backend.instance();
+        backend.getPlatform().then(value => {
+            this.state.platform = value;
+            this.setState(this.state);
         });
         backend.isInstalled().then(installed => {
-            var installedText = document.getElementById("installed");
-            if (installedText != null) {
-                installedText.innerHTML = "Installed : " + String(installed);
-            }
+            this.state.installed = String(installed);
+            this.setState(this.state);
         }).catch(e => {
             console.error(e);
         });
         backend.getVersion().then(version => {
-            var versionText = document.getElementById("version");
-            if (versionText != null) {
-                versionText.innerHTML = "Version : " + String(version);
-            }
+            this.state.version = version;
+            this.setState(this.state);
         }).catch(e => {
             console.error(e);
         });
@@ -37,9 +36,9 @@ export class Header {
     render() {
         return (
         <div id="header" className='header'>
-            <h1 id="title" className='header-item'>HDR Launcher</h1>
-            <h1 id="installed" className='header-item'>Installed: Unknown</h1>
-            <h1 id="version" className='header-item'>Version: Unknown</h1>
+            <h1 id="title" className='header-item'>HDR {this.state.platform} Launcher</h1>
+            <h1 id="installed" className='header-item'>Installed: {this.state.installed}</h1>
+            <h1 id="version" className='header-item'>Version: {this.state.version}</h1>
         </div>
         );
     }

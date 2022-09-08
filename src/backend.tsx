@@ -12,6 +12,20 @@ import { BooleanResponse, OkOrError, StringResponse, PathList, DirTree } from ".
  * could eventually be both node.js and also Skyline web.
  */
 export abstract class Backend {
+    /** singleton instance of the backend */
+    private static backend_instance: Backend | null = null;
+
+    public static instance(): Backend {
+        if (Backend.backend_instance == null) {
+            if (window.Main == undefined) {
+                Backend.backend_instance = new SwitchBackend();
+            } else {
+                Backend.backend_instance = new NodeBackend();
+            }
+        }
+        return Backend.backend_instance;
+    }
+
     /** sends an async message to the backend instance */
     protected abstract send(message: Messages.Message): any;
 

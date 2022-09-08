@@ -3,30 +3,25 @@ import * as Messages from "../messages";
 import { Backend } from "../backend";
 import { LogWindow } from './log_window';
 import ReactDOM from 'react-dom';
-import { Options } from './options';
+import Options from './options';
 import { DirTree } from '../responses';
 
 /**
  * main menu implementation
  */
-export class MainMenu {
-    backend: Backend;
-
-    constructor(backend: Backend) {
-        this.backend = backend;
-    }
-
+ export default class MainMenu extends React.Component {
+    
     render() {
+        var backend = Backend.instance();
         return (
         <div className="main-menu">
-                <button className="main-buttons" onClick={() => this.backend.play()}>
+                <button className="main-buttons" onClick={() => backend.play()}>
                         <div>Play&nbsp;&nbsp;</div>
                 </button>
                 <button className="main-buttons" onClick={
                         async () => {
                                 var sdroot = "";
-                                var backend = this.backend;
-                                await this.backend.getSdRoot()
+                                await backend.getSdRoot()
                                         .then(value => {sdroot = value;})
                                         .catch(e => {console.error("Could not get SD root. " + e);return;});
 
@@ -50,7 +45,7 @@ export class MainMenu {
                                                 })
                                                 .then(() => backend.downloadFile("https://github.com/HDR-Development/HDR-Nightlies/releases/download/" + version_stripped + "/upgrade.zip", downloads + "upgrade.zip"))
                                                 .then(result => console.info("Result:" + result))
-                                                .then(() => this.backend.unzip(downloads + "upgrade.zip", sdroot))
+                                                .then(() => backend.unzip(downloads + "upgrade.zip", sdroot))
                                                 .then(result => console.info(result))
                                                 .then(() => backend.getRequest("https://github.com/HDR-Development/HDR-Nightlies/releases/download/" + version_stripped + "/CHANGELOG.md"))
                                                 .then(changelog => console.info("Changelog: " + changelog));
@@ -66,8 +61,7 @@ export class MainMenu {
 
                 <button className="main-buttons" onClick={async () => {
                         var sdroot = "";
-                        var backend = this.backend;
-                        await this.backend.getSdRoot()
+                        await backend.getSdRoot()
                                 .then(value => {sdroot = value;})
                                 .catch(e => {console.error("Could not get SD root. " + e);return;});
 
@@ -123,10 +117,10 @@ export class MainMenu {
                 }}>
                         <div>Verify&nbsp;&nbsp;</div>
                 </button>
-                <button className="main-buttons" onClick={() => ReactDOM.render(new Options(this.backend).render(), document.getElementById("left-side"))}>
+                <button className="main-buttons" onClick={() => ReactDOM.render(<Options/>, document.getElementById("left-side"))}>
                         <div>Options&nbsp;&nbsp;</div>
                 </button>
-                <button className="main-buttons" onClick={() => this.backend.quit()}>
+                <button className="main-buttons" onClick={() => backend.quit()}>
                         <div>Exit&nbsp;&nbsp;</div>
                 </button>
         </div>    
