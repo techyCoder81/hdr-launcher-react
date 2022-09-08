@@ -24,7 +24,7 @@ jobs:
     - name: install node.js and npm
       run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
-        && apt-get update -y && apt-get install nodejs -y && apt-get install npm -y  && npm install && python3 build.py package
+        && sudo apt-get update -y && sudo apt-get install nodejs -y && sudo apt-get install npm -y  && sudo npm install && sudo python3 build.py package
       env:
         HOME: /root
 
