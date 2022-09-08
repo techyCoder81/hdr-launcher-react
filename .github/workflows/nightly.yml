@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  build_all:
+  build_plugin_and_linux:
     env:
       PLUGIN_NAME: hdr-launcher
     runs-on: ubuntu-latest
@@ -80,6 +80,45 @@ jobs:
         prerelease: true
         file_glob: true
         asset_name: hdr-launcher-linux-x64
+        release_name: nightly
+        tag: nightly
+        overwrite: true
+        body: Nightly build of hdr-launcher-react
+    
+
+  build_windows:
+    env:
+      PLUGIN_NAME: hdr-launcher
+    runs-on: windows-latest
+    steps:
+    - name: checkout version
+      uses: actions/checkout@v2
+
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - run: npm install
+
+    - run: npm install -g yarn
+
+    - run: npm run make
+    
+    - run: zip -r hdr-launcher-win32-x64.zip out/hdr-launcher-win32-x64
+
+    # upload desktop app
+    - name: Upload outfiles to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: 'hdr-launcher-win32-x64.zip'
+        prerelease: true
+        file_glob: true
+        asset_name: hdr-launcher-win32-x64
         release_name: nightly
         tag: nightly
         overwrite: true
