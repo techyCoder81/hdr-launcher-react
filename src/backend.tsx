@@ -87,7 +87,7 @@ export abstract class Backend {
     /** downloads the requested file to the requested 
      * location relative to sdcard root */
      async downloadFile(url: string, location: string): Promise<string> {
-        return this.stringRequest("download_file", [url, location]);
+        return this.okOrErrorRequest("download_file", [url, location]);
     }
 
     /** gets the platform of the current backend, 
@@ -259,7 +259,7 @@ export class SwitchBackend extends Backend {
 
     /// the map of callbacks that have been registered
     /// Map<ID, function(received object){}>
-    callbacks: Map<string, {(object: string): void}> = new Map();
+    callbacks: Map<string, {(object: any): void}> = new Map();
 
     constructor() {
         super();
@@ -268,14 +268,29 @@ export class SwitchBackend extends Backend {
             // call any registered callbacks for this ID
             //console.debug("Received event from nx: ");
             //console.debug("Event data: " + event.data);
-            var response = JSON.parse(event.data);
-            var id: string = response.id;
+            let data = event.data;
+            try {
 
-            var callback = this.callbacks.get(id);
-            if (callback != undefined) {
-                callback(response);
-            } else {
-                console.error("Received response for unknown ID: " + JSON.stringify(response));
+                try {
+                    var response = JSON.parse(data);
+                    var id: string = response.id;
+                } catch (e) {
+                    console.error("parse/callback failure of received data!\nError: " + e + "\nData: " + data);
+                    return;
+                }
+
+                var callback = this.callbacks.get(id);
+                if (callback != undefined) {
+                    try {
+                        callback(response);
+                    } catch (e) {
+                        console.error("Callback failed for id " + id + " with error " + e);
+                    }
+                } else {
+                    console.error("Received response for unknown ID: " + JSON.stringify(response));
+                }
+            } catch (e) {
+                console.error("general error while calling back in skyline: " + e + "\nData: " + data);
             }
         });
     }
@@ -285,11 +300,22 @@ export class SwitchBackend extends Backend {
         return new Promise((resolve, reject) => {
             try {
                 console.debug("setting callback for skyline invocation");
+
+                var first_response: any = null;
                 // set a callback for when that ID is returned
                 this.callbacks.set(message.id, (response) => {
                     console.debug("response called back for id " + message.id + " with response");
-                    this.callbacks.delete(message.id);
-                    resolve(JSON.stringify(response));
+                    if (first_response == null) {
+                        console.debug("got first response");
+                        first_response = response;
+                    } else {
+                        console.debug("appending...");
+                        first_response.message += response.message;
+                    }
+                    if (response.more === undefined || response.more == false) {
+                        this.callbacks.delete(message.id);
+                        resolve(JSON.stringify(first_response));
+                    }
                 });
                 console.debug("sending message to skyline: " + JSON.stringify(message));
                 skyline.sendMessage(JSON.stringify(message));

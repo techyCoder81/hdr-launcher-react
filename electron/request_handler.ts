@@ -107,60 +107,74 @@ export class RequestHandler {
                         break;
                     }
                 case "download_file":
-                    if (!argcheck(2)) {break;}
+                    try {    
+                        if (!argcheck(2)) {break;}
 
-                    let args = request.arguments;
-                    let url = args[0];
-                    let location = args[1];
-                    console.log("preparing to download...\nurl: " + url + "\nlocation: " + location);
-                    if (mainWindow == null) {
-                        console.error("cannot download without a main window!");
-                        resolve(new OkOrError(false, "cannot download without a main window!", request.id));
+                        let args = request.arguments;
+                        let url = args[0];
+                        let location = args[1];
+                        console.log("preparing to download...\nurl: " + url + "\nlocation: " + location);
+                        if (mainWindow == null) {
+                            console.error("cannot download without a main window!");
+                            resolve(new OkOrError(false, "cannot download without a main window!", request.id));
+                            break;
+                        }
+
+                        if (fs.existsSync(location)) {
+                            fs.unlinkSync(location);
+                        }
+
+                        console.info("beginning download.");
+                        console.info("Absolute path: " + location);
+                        var out = fs.createWriteStream(location);
+
+                        var req = webrequest({
+                            method: 'GET',
+                            uri: url
+                        });
+
+                        req.pipe(out);
+                        let current = 0;
+                        let total = 0;
+                        let complete = false;
+
+                        req.on( 'response', function ( data: any ) {
+                            console.info("status code: " + data.statusCode);
+                            if (data.statusCode > 300 ) {
+                                console.error("download failed due to bad status code.");
+                                resolve(new OkOrError(false, "download failed with status code: " + data.statusCode, request.id));
+                                complete = true;
+                            }
+                            total = data.headers[ 'content-length' ];
+                        } );
+
+                        let counter = 0;
+                        req.on('data', function (chunk: any) {
+                            current += chunk.length;
+                            ++counter;
+                            if (counter > 500) {
+                                console.log("progress: " + current/total);
+                                counter = 0;
+                            }
+                        });
+
+                        req.on('end', function() {
+                            if (!complete) {
+                                resolve(new OkOrError(true, "download finished successfully", request.id));
+                            }
+                            out.close();
+                        });                    
+                        
+                        req.on("error", function(e: any){
+                            console.log("Error: " + e.message);
+                            resolve(new OkOrError(false, "download failed with error: " + e.message, request.id));
+                        });
+
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, "Error during download: " + String(e), request.id));
                         break;
                     }
-
-                    if (fs.existsSync(location)) {
-                        fs.unlinkSync(location);
-                    }
-
-                    console.info("beginning download.");
-                    console.info("Absolute path: " + location);
-                    var out = fs.createWriteStream(location);
-
-                    var req = webrequest({
-                        method: 'GET',
-                        uri: url
-                    });
-
-                    req.pipe(out);
-                    let current = 0;
-                    let total = 0;
-
-                    req.on( 'response', function ( data: any ) {
-                        total = data.headers[ 'content-length' ];
-                    } );
-
-                    let counter = 0;
-                    req.on('data', function (chunk: any) {
-                        current += chunk.length;
-                        ++counter;
-                        if (counter > 500) {
-                            console.log("progress: " + current/total);
-                            counter = 0;
-                        }
-                    });
-
-                    req.on('end', function() {
-                        resolve(new OkOrError(true, "download finished successfully", request.id));
-                        out.close();
-                    });                    
-                    
-                    req.on("error", function(e: any){
-                        console.log("Error: " + e.message);
-                        resolve(new OkOrError(false, "download failed with error: " + e.message, request.id));
-                    });
-
-                    break;
                 case "get_md5":
                     try {
                         if (!argcheck(1)) {break;}
@@ -171,12 +185,14 @@ export class RequestHandler {
                         let exists = fs.existsSync(file);
                         if (!exists) {
                             resolve(new OkOrError(false, "specified file for md5 does not exist!", request.id));
+                            console.info("Failed - file does not exist.");
                             break;
                         }
 
                         // get the md5
                         let hash = md5.sync(file);
                         resolve(new OkOrError(true, hash, request.id));
+                        console.info("Resolved.");
                         break;
                     } catch (e) {
                         resolve(new OkOrError(false, String(e), request.id));

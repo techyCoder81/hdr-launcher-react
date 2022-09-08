@@ -90,7 +90,7 @@ impl Handleable for Message {
                     session.error("requested file does not exist!", &self.id);
                 } else {
                     match fs::read_to_string(path) {
-                        Ok(version) => session.ok(&version, &self.id),
+                        Ok(data) => session.ok(&data.replace("\r", "").replace("\0", "").replace("\\", "\\\\").replace("\"", "\\\""), &self.id),
                         Err(e) => session.error(format!("{:?}", e).as_str(), &self.id)
                     }
                 }
@@ -231,10 +231,9 @@ impl Handleable for Message {
                 }
                 let path_list = PathList{list: vec};
                 let json = match serde_json::to_string(&path_list) {
-                    Ok(val) => val,
+                    Ok(val) => val.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""),
                     Err(e) => {session.error(format!("Could not serialize to json PathList. Error: {}", e).as_str(), &self.id); return true;}
                 };
-                let json = json.replace("\"", "\\\"");
                 println!("replying to list_dir with: {}", &json);
                 session.ok(&json, &self.id);
             },
@@ -257,10 +256,9 @@ impl Handleable for Message {
                 readDirAll(path, &mut subtree);
                 
                 let json = match serde_json::to_string(&subtree) {
-                    Ok(val) => val,
+                    Ok(val) => val.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""),
                     Err(e) => {session.error(format!("Could not serialize to json DirTree. Error: {}", e).as_str(), &self.id); return true;}
                 };
-                let json = json.replace("\"", "\\\"");
                 println!("replying to list_all_files with a string of size: {}", json.len());
                 session.ok(&json, &self.id);
                 println!("done sending.");
@@ -278,8 +276,18 @@ impl Handleable for Message {
                 println!("got result from GET");
 
                 match result {
-                    Ok(body) => {println!("Result: {}", body);session.ok(&body.replace("\\", "\\\\").replace("\"", "\\\""), &self.id);},
-                    Err(e) => {println!("Error: {}", e);session.error(format!("Error during download: {}", e).as_str(), &self.id);}
+                    Ok(body) => {
+                        if body.len() < 1000 {
+                            println!("Result: {}", body);
+                        } else {
+                            println!("body is very large, not println-ing.");
+                        }
+                        session.ok(&body.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""), &self.id);
+                    },
+                    Err(e) => {
+                        println!("Error: {}", e);
+                        session.error(format!("Error during download: {}", e).as_str(), &self.id);
+                    }
                 }
             }
             "delete_file" => {
@@ -333,22 +341,60 @@ impl BoolRespond for WebSession {
 
 impl StringRespond for WebSession {
     fn respond_string(&self, message: &str, id: &String) {
-        println!("Sending string response: {}", message);
-        self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.to_string()}).unwrap());
+        //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
+        if message.len() < 1000 {
+            println!("Sending string response: {}", message);
+        } else {
+            println!("Sending large string response.");
+        }
+        self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.to_string(), more: false}).unwrap());
     }
 }
 
 impl OkOrError for WebSession {
     fn ok(&self, message: &str, id: &String) {
+        //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
         println!("Sending OK");
-        self.send(&serde_json::to_string(&OkOrErrorResponse{ 
-            id: id.clone(), ok: true, message: message.to_string()
-        }).unwrap());
+
+        let total_length = message.len();
+        let mut index = 0;
+
+        while index < total_length {
+            let mut end_index = (index + CHUNK_SIZE).min(total_length);
+            let mut slice = &message[index..end_index];
+            while slice.chars().last().unwrap() == '\\' {
+                end_index = end_index + 1;
+                slice = &message[index..end_index];
+            }
+            
+            let data = serde_json::to_string(&OkOrErrorResponse{ 
+                id: id.clone(), ok: true, message: slice.to_string(), more: (end_index < total_length)
+            }).unwrap();
+            println!("Sending chunk:\n{}", data);
+            self.send(&data);
+            index = end_index;
+            println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
+        }
     }
     fn error(&self, message: &str, id: &String) {
+        //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
         println!("Sending ERROR");
-        self.send(&serde_json::to_string(&OkOrErrorResponse{ 
-            id: id.clone(), ok: false, message: message.to_string()
-        }).unwrap());
+        let total_length = message.len();
+        let mut index = 0;
+        while index < total_length {
+            let mut end_index = (index + CHUNK_SIZE).min(total_length);
+            let mut slice = &message[index..end_index];
+            while slice.chars().last().unwrap() == '\\' {
+                end_index = end_index + 1;
+                slice = &message[index..end_index];
+            }
+            self.send(&serde_json::to_string(&OkOrErrorResponse{ 
+                id: id.clone(), ok: false, message: slice.to_string(), more: (end_index < total_length)
+            }).unwrap());
+            index = end_index;
+            println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
+        }
     }
 }
+
+const CHUNK_SIZE: usize = 25000;

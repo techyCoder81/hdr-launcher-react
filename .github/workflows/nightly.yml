@@ -1,0 +1,61 @@
+name: build_nightly
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  plugin_build:
+    env:
+      PLUGIN_NAME: smashnet
+    runs-on: ubuntu-latest
+    container: 
+      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
+    steps:
+    - name: checkout version
+      uses: actions/checkout@v2
+
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+    
+
+    - name: install node.js and npm
+      run: |
+        export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
+        && apt update && apt install nodejs && apt install npm && npm install && python3 build.py package
+      env:
+        HOME: /root
+
+
+    - run: |
+        md5sum switch/target/aarch64-skyline-switch/release/lib*.nro > checksum.txt
+
+    # upload asset
+    - name: Upload plugin to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: 'switch/target/aarch64-skyline-switch/release/lib*.nro'
+        prerelease: true
+        file_glob: true
+        asset_name: plugin
+        release_name: nightly
+        tag: nightly
+        overwrite: true
+        body: Nightly build of hdr-launcher-react
+
+    # upload asset
+    - name: Upload checksum to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: 'checksum.txt'
+        prerelease: true
+        file_glob: true
+        asset_name: checksum
+        release_name: nightly
+        tag: nightly
+        overwrite: true
+        body: Nightly build of smashnet.nro
+    
+

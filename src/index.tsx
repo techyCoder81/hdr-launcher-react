@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { App } from "./App";
 import { Backend, NodeBackend, SwitchBackend } from "./backend";
 import { Header } from "./components/header";
+import { LogWindow } from "./components/log_window";
 
 // determine which type of backend we want, switch or node
 var backend: Backend;

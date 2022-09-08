@@ -36,10 +36,10 @@ export class Header {
 
     render() {
         return (
-        <div id="header">
-            <h1 id="title">HDR Launcher</h1>
-            <h1 id="installed">Installed: Unknown</h1>
-            <h1 id="version">Version: Unknown</h1>
+        <div id="header" className='header'>
+            <h1 id="title" className='header-item'>HDR Launcher</h1>
+            <h1 id="installed" className='header-item'>Installed: Unknown</h1>
+            <h1 id="version" className='header-item'>Version: Unknown</h1>
         </div>
         );
     }

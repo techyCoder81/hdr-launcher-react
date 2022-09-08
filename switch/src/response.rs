@@ -8,6 +8,7 @@ use crate::*;
 pub struct StringResponse {
     pub id: String,
     pub message: String,
+    pub more: bool,
 }
 
 impl fmt::Display for StringResponse {
@@ -49,6 +50,7 @@ pub struct OkOrErrorResponse {
     pub id: String,
     pub ok: bool,
     pub message: String,
+    pub more: bool,
 }
 
 impl fmt::Display for OkOrErrorResponse {

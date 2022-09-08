@@ -19,18 +19,13 @@ export class Options {
         return (
         <div id="options">
             <div className="main-menu">
-                <div className="left-side">
-                    <h1>Options</h1>
-                    <button className="main-buttons" onClick={() => this.backend.openModManager()}>
-                        <div>Mod Manager&nbsp;&nbsp;</div>
-                    </button>
-                    <button className="main-buttons" onClick={() => ReactDOM.render(new MainMenu(this.backend).render(), document.getElementById("root"))}>
-                        <div>Back&nbsp;&nbsp;</div>
-                    </button>
-                </div>
-                <div className="right-side">
-                    <LogWindow/>
-                </div> 
+                <h1>Options</h1>
+                <button className="main-buttons" onClick={() => this.backend.openModManager()}>
+                    <div>Mod Manager&nbsp;&nbsp;</div>
+                </button>
+                <button className="main-buttons" onClick={() => ReactDOM.render(new MainMenu(this.backend).render(), document.getElementById("left-side"))}>
+                    <div>Back&nbsp;&nbsp;</div>
+                </button>
             </div>
         </div>
         );
