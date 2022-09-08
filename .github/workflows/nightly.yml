@@ -113,9 +113,9 @@ jobs:
     - run: ls out/*
 
     - uses: vimtor/action-zip@v1
-        with:
-          files: hdr-launcher-win32-x64
-          dest: hdr-launcher-win32-x64.zip
+      with:
+        files: hdr-launcher-win32-x64
+        dest: hdr-launcher-win32-x64.zip
 
     # upload desktop app
     - name: Upload outfiles to release
