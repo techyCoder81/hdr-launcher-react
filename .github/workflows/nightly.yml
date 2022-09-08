@@ -25,6 +25,9 @@ jobs:
         node-version: 16
 
     - run: npm install
+
+    - run: npm install -g yarn
+
     - run: npm run make
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
