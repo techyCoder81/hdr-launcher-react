@@ -70,8 +70,7 @@ jobs:
         overwrite: true
         body: Nightly build of hdr-launcher-react
 
-    - run: ls
-    - run: ls out
+    - run: ls out/hdr-launcher-linux-x64/*
 
     # upload desktop app
     - name: Upload outfiles to release
