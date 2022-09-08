@@ -24,6 +24,8 @@ jobs:
       with:
         node-version: 16
 
+    - run: apt install rpm -y
+
     - run: npm install
 
     - run: npm install -g yarn
