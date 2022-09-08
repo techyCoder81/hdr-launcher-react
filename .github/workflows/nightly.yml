@@ -43,13 +43,13 @@ jobs:
     - run: mv switch/target/aarch64-skyline-switch/release/lib*.nro hdr-launcher.nro
 
     - run: |
-        md5sum switch/target/aarch64-skyline-switch/release/hdr-launcher.nro > checksum.txt
+        md5sum hdr-launcher.nro > checksum.txt
 
     # upload asset
     - name: Upload plugin to release
       uses: svenstaro/upload-release-action@v2
       with:
-        file: 'switch/target/aarch64-skyline-switch/release/hdr-launcher.nro'
+        file: 'hdr-launcher.nro'
         prerelease: true
         file_glob: true
         asset_name: plugin
@@ -114,7 +114,7 @@ jobs:
 
     - uses: vimtor/action-zip@v1
       with:
-        files: hdr-launcher-win32-x64/
+        files: out/hdr-launcher-win32-x64/
         dest: hdr-launcher-win32-x64.zip
 
     # upload desktop app
