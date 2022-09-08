@@ -109,8 +109,13 @@ jobs:
 
     - run: npm run make
     
-    - run: zip -r hdr-launcher-win32-x64.zip out/hdr-launcher-win32-x64
-
+    - name: Archive Release
+      uses: thedoctor0/zip-release@main
+      with:
+        type: 'zip'
+        filename: 'hdr-launcher-win32-x64.zip'
+        path: hdr-launcher-win32-x64
+        
     # upload desktop app
     - name: Upload outfiles to release
       uses: svenstaro/upload-release-action@v2
