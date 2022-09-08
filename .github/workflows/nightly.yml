@@ -40,15 +40,16 @@ jobs:
       env:
         HOME: /root
 
+    - run: mv switch/target/aarch64-skyline-switch/release/lib*.nro hdr-launcher.nro
 
     - run: |
-        md5sum switch/target/aarch64-skyline-switch/release/lib*.nro > checksum.txt
+        md5sum switch/target/aarch64-skyline-switch/release/hdr-launcher.nro > checksum.txt
 
     # upload asset
     - name: Upload plugin to release
       uses: svenstaro/upload-release-action@v2
       with:
-        file: 'switch/target/aarch64-skyline-switch/release/lib*.nro'
+        file: 'switch/target/aarch64-skyline-switch/release/hdr-launcher.nro'
         prerelease: true
         file_glob: true
         asset_name: plugin
@@ -115,7 +116,7 @@ jobs:
         type: 'zip'
         filename: 'hdr-launcher-win32-x64.zip'
         path: hdr-launcher-win32-x64
-        
+
     # upload desktop app
     - name: Upload outfiles to release
       uses: svenstaro/upload-release-action@v2
