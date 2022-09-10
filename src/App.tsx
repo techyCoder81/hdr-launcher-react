@@ -2,7 +2,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Messages from "./messages";
-import MainMenu from "./components/main_menu";
+import Menu from "./components/menu";
 import { Backend, NodeBackend, SwitchBackend } from "./backend";
 import './index.css';
 import { app } from 'electron';
@@ -16,7 +16,7 @@ export default class App extends React.Component {
       <div>
         <Header/>
         <div className="left-side" id="left-side">
-          <MainMenu/>
+          <Menu/>
         </div>
         <div className="right-side" id="right-side">
           <LogWindow/>

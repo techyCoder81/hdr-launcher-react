@@ -4,6 +4,8 @@ import * as Responses from "./responses";
 import { resolve } from "../webpack/main.webpack";
 import { lutimes } from "original-fs";
 import { BooleanResponse, OkOrError, StringResponse, PathList, DirTree } from "./responses";
+import { ipcRenderer } from "electron";
+import { Progress } from "./progress";
 
 
 
@@ -13,24 +15,24 @@ import { BooleanResponse, OkOrError, StringResponse, PathList, DirTree } from ".
  */
 export abstract class Backend {
     /** singleton instance of the backend */
-    private static backend_instance: Backend | null = null;
+    private static backendInstance: Backend | null = null;
 
     public static instance(): Backend {
-        if (Backend.backend_instance == null) {
+        if (Backend.backendInstance == null) {
             if (window.Main == undefined) {
-                Backend.backend_instance = new SwitchBackend();
+                Backend.backendInstance = new SwitchBackend();
             } else {
-                Backend.backend_instance = new NodeBackend();
+                Backend.backendInstance = new NodeBackend();
             }
         }
-        return Backend.backend_instance;
+        return Backend.backendInstance;
     }
 
     /** sends an async message to the backend instance */
     protected abstract send(message: Messages.Message): any;
 
     /** invokes on the backend instance and returns a promise of a result */
-    protected abstract invoke(message: Messages.Message): Promise<string>;
+    protected abstract invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string>;
 
     /**
      * pings the backend with a message.
@@ -69,9 +71,9 @@ export abstract class Backend {
      * @param name the name of the request
      * @returns a promise which resolves if the result is Ok, and rejects if the result is a failure
      */
-    private async okOrErrorRequest(name: string, args: string[] | null): Promise<string> {
+    private async okOrErrorRequest(name: string, args: string[] | null, progressCallback?: (p: Progress) => void): Promise<string> {
         console.debug("beginning " + name);
-        return await this.invoke(new Messages.Message(name, args)).then((json: string) => {
+        return await this.invoke(new Messages.Message(name, args), progressCallback).then((json: string) => {
             console.debug("response for " + name + ": " + json);
             let response = OkOrError.from(json);
             if (response.isOk()) {
@@ -100,8 +102,8 @@ export abstract class Backend {
 
     /** downloads the requested file to the requested 
      * location relative to sdcard root */
-     async downloadFile(url: string, location: string): Promise<string> {
-        return this.okOrErrorRequest("download_file", [url, location]);
+     async downloadFile(url: string, location: string, progressCallback?: (p: Progress) => void): Promise<string> {
+        return this.okOrErrorRequest("download_file", [url, location], progressCallback);
     }
 
     /** gets the platform of the current backend, 
@@ -250,10 +252,16 @@ export class NodeBackend extends Backend {
         window.Main.send("message", message);
     }
 
-    override invoke(message: Messages.Message): Promise<string> {
+    override invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string> {
         console.debug("invoking on node backend:\n" + JSON.stringify(message));
         var retval = null;
         return new Promise<string>((resolve, reject) => {
+            // if defined, set the progress callback
+            if (typeof progressCallback !== 'undefined') {
+                window.Main.on("progress", (progress: Progress) => {
+                    progressCallback(progress);
+                });
+            }
             // send the request
             window.Main.invoke("request", message).then(response => {
                 console.debug("got response: " + JSON.stringify(response));
@@ -309,12 +317,23 @@ export class SwitchBackend extends Backend {
         });
     }
     
-    override invoke(message: Messages.Message): Promise<string> {
+    override invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string> {
         console.debug("trying to invoke on nx: " + JSON.stringify(message));
         return new Promise((resolve, reject) => {
             try {
                 console.debug("setting callback for skyline invocation");
 
+                // if a progress callback was defined, set the callback
+                if (typeof progressCallback !== 'undefined') {
+                    this.callbacks.set("progress", (response) => {
+                        try {
+                            
+                            progressCallback(Progress.from(response.message));
+                        } catch (e) {
+                            console.error("Could not parse response as Progress: " + response);
+                        }
+                    })
+                }
                 var first_response: any = null;
                 // set a callback for when that ID is returned
                 this.callbacks.set(message.id, (response) => {
@@ -328,6 +347,7 @@ export class SwitchBackend extends Backend {
                     }
                     if (response.more === undefined || response.more == false) {
                         this.callbacks.delete(message.id);
+                        this.callbacks.delete("progress");
                         resolve(JSON.stringify(first_response));
                     }
                 });
@@ -336,6 +356,7 @@ export class SwitchBackend extends Backend {
                 console.debug("waiting for response from skyline");
             } catch (e) {
                 console.error("Error while invoking on skyline: " + e + ", object data: " + JSON.stringify(e))
+                this.callbacks.delete("progress");
                 reject("Error: " + JSON.stringify(e));
             }
         });

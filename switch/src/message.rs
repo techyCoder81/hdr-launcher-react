@@ -51,7 +51,7 @@ impl fmt::Display for Message {
 impl Handleable for Message {
     
     fn handle(&self, session: &WebSession) -> bool {
-        println!("Handling message {}", self.call_name);
+        //println!("Handling message {}", self.call_name);
         match self.call_name.as_str() {
             "play" => {session.exit(); return false;},
             "quit" => unsafe { skyline::nn::oe::ExitApplication();},
@@ -101,9 +101,9 @@ impl Handleable for Message {
 
                 let url = args[0].clone();
                 let location = args[1].clone();
-
+                
                 let result = Curler::new()
-                    //.progress_callback(|total, current| session.progress(current/total, &self.id))
+                    //.progress_callback(|total, current| test(total, current))
                     .download(url, location);
 
                 match result {
@@ -187,7 +187,7 @@ impl Handleable for Message {
                         continue;
                     }
             
-                    println!("progress: {}", file_no as f32/count as f32);
+                    //println!("progress: {}", file_no as f32/count as f32);
             
                     let path = Path::new(&destination).join(file.name());
                     if let Some(parent) = path.parent() {
@@ -199,9 +199,10 @@ impl Handleable for Message {
                     std::fs::write(path, file_data).unwrap();
                 }
 
+                session.ok("unzip succeeded", &self.id);
             },
             "list_dir" => {
-                println!("handling list_dir");
+                //println!("handling list_dir");
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
@@ -216,11 +217,11 @@ impl Handleable for Message {
                 }
 
                 let paths = fs::read_dir(path).unwrap();
-                println!("Paths...");
+                //println!("Paths...");
                 let mut vec = Vec::new();
                 for entry in paths {
                     let fullpath = entry.unwrap().path().display().to_string();
-                    println!("Path: {}", fullpath);
+                    //println!("Path: {}", fullpath);
                     let md = fs::metadata(fullpath.clone()).unwrap();
                     let kind = match md.is_file() {
                         true => 0,
@@ -234,11 +235,11 @@ impl Handleable for Message {
                     Ok(val) => val.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""),
                     Err(e) => {session.error(format!("Could not serialize to json PathList. Error: {}", e).as_str(), &self.id); return true;}
                 };
-                println!("replying to list_dir with: {}", &json);
+                //println!("replying to list_dir with: {}", &json);
                 session.ok(&json, &self.id);
             },
             "list_all_files" => {
-                println!("handling list_all_files");
+                //println!("handling list_all_files");
                 args!(self, session, 1);
                 let args = &self.arguments.as_ref().expect("args!() failure");
 
@@ -259,9 +260,9 @@ impl Handleable for Message {
                     Ok(val) => val.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""),
                     Err(e) => {session.error(format!("Could not serialize to json DirTree. Error: {}", e).as_str(), &self.id); return true;}
                 };
-                println!("replying to list_all_files with a string of size: {}", json.len());
+                //println!("replying to list_all_files with a string of size: {}", json.len());
                 session.ok(&json, &self.id);
-                println!("done sending.");
+                //println!("done sending.");
             },
             "get_request" => {
                 args!(self, session, 1);
@@ -273,19 +274,19 @@ impl Handleable for Message {
                     //.progress_callback(|total, current| session.progress(current/total, &self.id))
                     .get(url);
 
-                println!("got result from GET");
+                //println!("got result from GET");
 
                 match result {
                     Ok(body) => {
                         if body.len() < 1000 {
-                            println!("Result: {}", body);
+                            //println!("Result: {}", body);
                         } else {
-                            println!("body is very large, not println-ing.");
+                            //println!("body is very large, not println-ing.");
                         }
                         session.ok(&body.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\""), &self.id);
                     },
                     Err(e) => {
-                        println!("Error: {}", e);
+                        //println!("Error: {}", e);
                         session.error(format!("Error during download: {}", e).as_str(), &self.id);
                     }
                 }
@@ -320,10 +321,10 @@ fn readDirAll(dir: String, tree: &mut DirTree) {
         let fullpath = path.path();
         let file_name = format!("{}", path.file_name().into_string().unwrap());
         if path.metadata().unwrap().is_file() {
-            println!("File: {}", file_name);
+            //println!("File: {}", file_name);
             tree.files.push(file_name);
         } else {
-            println!("Directory: {}", file_name);
+            //println!("Directory: {}", file_name);
             let mut subtree = DirTree{name: file_name, files: Vec::new(), dirs: Vec::new()};
             readDirAll(fullpath.into_os_string().into_string().unwrap(), &mut subtree);
             tree.dirs.push(subtree);
@@ -332,9 +333,20 @@ fn readDirAll(dir: String, tree: &mut DirTree) {
     
 }
 
+impl SendProgress for WebSession {
+    fn send_progress(&self, progress: Progress) {
+        self.respond_string( 
+            &serde_json::to_string(&progress)
+                .unwrap()
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\""), 
+            &"progress".to_string());
+    }
+}
+
 impl BoolRespond for WebSession {
     fn respond_bool(&self, result: bool, id: &String) {
-        println!("Sending {}", result);
+        //println!("Sending {}", result);
         self.send(&serde_json::to_string(&BooleanResponse{id: id.clone(), result: result}).unwrap());
     }
 }
@@ -343,9 +355,9 @@ impl StringRespond for WebSession {
     fn respond_string(&self, message: &str, id: &String) {
         //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
         if message.len() < 1000 {
-            println!("Sending string response: {}", message);
+            //println!("Sending string response: {}", message);
         } else {
-            println!("Sending large string response.");
+            //println!("Sending large string response.");
         }
         self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.to_string(), more: false}).unwrap());
     }
@@ -354,7 +366,7 @@ impl StringRespond for WebSession {
 impl OkOrError for WebSession {
     fn ok(&self, message: &str, id: &String) {
         //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
-        println!("Sending OK");
+        //println!("Sending OK");
 
         let total_length = message.len();
         let mut index = 0;
@@ -370,15 +382,15 @@ impl OkOrError for WebSession {
             let data = serde_json::to_string(&OkOrErrorResponse{ 
                 id: id.clone(), ok: true, message: slice.to_string(), more: (end_index < total_length)
             }).unwrap();
-            println!("Sending chunk:\n{}", data);
+            //println!("Sending chunk:\n{}", data);
             self.send(&data);
             index = end_index;
-            println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
+            //println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
         }
     }
     fn error(&self, message: &str, id: &String) {
         //let message = message.replace("\r", "").replace("\\", "\\\\").replace("\"", "\\\"");
-        println!("Sending ERROR");
+        //println!("Sending ERROR");
         let total_length = message.len();
         let mut index = 0;
         while index < total_length {
@@ -392,7 +404,7 @@ impl OkOrError for WebSession {
                 id: id.clone(), ok: false, message: slice.to_string(), more: (end_index < total_length)
             }).unwrap());
             index = end_index;
-            println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
+            //println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)
         }
     }
 }

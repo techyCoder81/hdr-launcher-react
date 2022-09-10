@@ -30,6 +30,18 @@ impl fmt::Display for BooleanResponse {
     }
 }
 
+/// progress data
+#[derive(Serialize, Deserialize)]
+pub struct Progress {
+    title: String,
+    info: String,
+    progress: String
+}
+
+pub trait SendProgress {
+    fn send_progress(&self, progress: Progress);
+}
+
 pub trait BoolRespond {
     fn respond_bool(&self, result: bool, id: &String);
 }

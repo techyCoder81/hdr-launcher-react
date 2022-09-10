@@ -158,9 +158,15 @@ export class DirTree {
         return tree;
     }
 
-    public toList(root: string, list: string[]): string[] {
+    public toList(prefix: string): string[] {
+        let retval: string[] = [];
+        this.toListInner(prefix, retval);
+        return retval;
+    }
+
+    private toListInner(root: string, list: string[]): string[] {
         this.files.forEach(file => list.push(root + "/" + file));
-        this.dirs.forEach(dir => dir.toList(root + "/" + dir.name, list))
+        this.dirs.forEach(dir => dir.toListInner(root + "/" + dir.name, list))
         return list;
     }
 

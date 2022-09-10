@@ -1,4 +1,4 @@
-import { BrowserWindow, contextBridge, ipcRenderer } from 'electron'
+import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from 'electron'
 import * as Messages from "../src/messages";
 import * as Responses from "../src/responses";
 import { BaseResponse, BooleanResponse, DirTree, OkOrError, PathEntry, PathList, StringResponse } from '../src/responses';
@@ -11,6 +11,7 @@ import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
 import * as extract from 'extract-zip';
 import * as axios from 'axios';
+import { Progress } from '../src/progress';
 
 function readDirAll(dir: string, tree: DirTree, depth: number) {
     //let tabs = "";
@@ -107,6 +108,7 @@ export class RequestHandler {
                         break;
                     }
                 case "download_file":
+                    var out: fs.WriteStream | null = null;
                     try {    
                         if (!argcheck(2)) {break;}
 
@@ -124,25 +126,32 @@ export class RequestHandler {
                             fs.unlinkSync(location);
                         }
 
+                        fs.mkdirSync(path.dirname(location), { recursive: true });
+
                         console.info("beginning download.");
                         console.info("Absolute path: " + location);
-                        var out = fs.createWriteStream(location);
-
+                        out = fs.createWriteStream(location, {mode: 666});
+                        console.debug("created write stream");
+                        
                         var req = webrequest({
                             method: 'GET',
-                            uri: url
+                            uri: url,
+                            headers: {'User-Agent': 'HDR Launcher'}
                         });
 
-                        req.pipe(out);
                         let current = 0;
                         let total = 0;
                         let complete = false;
-
+                        
+                        let outcome: Responses.BaseResponse | null = null;
                         req.on( 'response', function ( data: any ) {
                             console.info("status code: " + data.statusCode);
                             if (data.statusCode > 300 ) {
                                 console.error("download failed due to bad status code.");
-                                resolve(new OkOrError(false, "download failed with status code: " + data.statusCode, request.id));
+                                if (out != null && !out.destroyed) {
+                                    out.close();
+                                }
+                                outcome = new OkOrError(false, "download failed with status code: " + data.statusCode, request.id);
                                 complete = true;
                             }
                             total = data.headers[ 'content-length' ];
@@ -151,27 +160,42 @@ export class RequestHandler {
                         let counter = 0;
                         req.on('data', function (chunk: any) {
                             current += chunk.length;
-                            ++counter;
-                            if (counter > 500) {
-                                console.log("progress: " + current/total);
-                                counter = 0;
-                            }
+                            mainWindow?.webContents.send(
+                                "progress", 
+                                new Progress(
+                                    "Download File", 
+                                    "Downloading from " + url, 
+                                    String(Math.trunc(100 * current/total))
+                                )
+                            );
                         });
 
                         req.on('end', function() {
-                            if (!complete) {
-                                resolve(new OkOrError(true, "download finished successfully", request.id));
+                            if (out != null && !out.destroyed) {
+                                out.close();
                             }
-                            out.close();
+                            if (outcome == null) {
+                                resolve(new OkOrError(true, "download finished successfully", request.id));
+                            } else {
+                                resolve(outcome);
+                            }
                         });                    
                         
                         req.on("error", function(e: any){
                             console.log("Error: " + e.message);
+                            if (out != null && !out.destroyed) {
+                                out.close();
+                            }
                             resolve(new OkOrError(false, "download failed with error: " + e.message, request.id));
                         });
 
+                        req.pipe(out);
+
                         break;
                     } catch (e) {
+                        if (out != null && !out.destroyed) {
+                            out.close();
+                        }
                         resolve(new OkOrError(false, "Error during download: " + String(e), request.id));
                         break;
                     }
