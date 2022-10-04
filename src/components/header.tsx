@@ -37,7 +37,7 @@ import { Backend } from "../backend";
         return (
         <div id="header" className='header'>
             <h1 id="title" className='header-item'>HDR {this.state.platform} Launcher</h1>
-            <h1 id="installed" className='header-item'>Installed: {this.state.installed}</h1>
+            {/*<h1 id="installed" className='header-item'>Installed: {this.state.installed}</h1>*/}
             <h1 id="version" className='header-item'>Version: {this.state.version}</h1>
         </div>
         );

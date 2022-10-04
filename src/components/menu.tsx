@@ -7,6 +7,7 @@ import { DirTree } from '../responses';
 import { autoUpdater } from 'electron';
 import update from '../operations/update';
 import verify from '../operations/verify';
+import install_latest from '../operations/install';
 import ReactModal from "react-modal";
 import $ from './progress_bar';
 import { Progress } from '../progress';
@@ -14,7 +15,9 @@ import ProgressBar from './progress_bar';
 
 enum MenuType {
         MainMenu,
-        Options
+        Options,
+        NotInstalled,
+        CheckingInstalled,
 }
 
 /**
@@ -22,7 +25,7 @@ enum MenuType {
  */
 export default class Menu extends React.Component {
         state = {
-                currentMenu: MenuType.MainMenu,
+                currentMenu: MenuType.CheckingInstalled,
                 showProgress: false,
                 progress: null
         }
@@ -90,7 +93,49 @@ export default class Menu extends React.Component {
                         </button>
                         </div>
                 </div>
-        }                
+        }      
+        
+        /**
+         * builds the not installed menu
+         * @returns the "not installed" menu
+         */
+         notInstalledMenu(): JSX.Element {
+                
+                return <div id="menu">
+                        <div className="main-menu">
+                        <h1>HDR Is not Installed.</h1>
+                        <button className="main-buttons" onClick={() => Backend.instance().play()}>
+                                <div>Play Vanilla&nbsp;&nbsp;</div>
+                        </button>
+                        <button className="main-buttons" onClick={async () => {
+                                this.setShowProgress(true);
+                                await install_latest((p: Progress) => this.setProgress(p))
+                                        .then(() => this.setShowProgress(false))
+                                        .catch(e => {
+                                                this.setShowProgress(false)
+                                                console.error("Error while installing: " + e);
+                                        });
+                                this.switchTo(MenuType.CheckingInstalled);
+                                this.checkInstalled();
+                        }}>
+                                <div>Install HDR&nbsp;&nbsp;</div>
+                        </button>
+                        </div>
+                </div>
+        }   
+        
+        /**
+         * builds the "checking if installed" view
+         * @returns the checking if installed menu
+         */
+         checkingInstalledMenu(): JSX.Element {
+                
+                return <div id="menu">
+                        <div className="main-menu">
+                        <h1>Checking if HDR is installed...</h1>
+                        </div>
+                </div>
+        }   
 
         getMenu() {
                 if (!this.state.showProgress) {
@@ -99,6 +144,10 @@ export default class Menu extends React.Component {
                                         return this.mainMenu();
                                 case MenuType.Options:
                                         return this.optionsMenu();
+                                case MenuType.CheckingInstalled:
+                                        return this.checkingInstalledMenu();
+                                case MenuType.NotInstalled:
+                                        return this.notInstalledMenu();
                                 default:
                                         return this.mainMenu();
                         }
@@ -118,5 +167,22 @@ export default class Menu extends React.Component {
                         {this.getMenu()}
                         {this.progressBar()}
                 </div>
+        }
+
+        checkInstalled() {
+                Backend.instance().isInstalled().then(installed => {
+                        if (installed) {
+                                this.switchTo(MenuType.MainMenu);
+                        } else {
+                                this.switchTo(MenuType.NotInstalled)
+                        }
+                }).catch(e => {
+                        console.error("Error while checking if installed!\n" + e);
+                        alert("Error while checking if installed!\n" + e);
+                });
+        }
+
+        componentDidMount() {
+                this.checkInstalled();
         }
 }

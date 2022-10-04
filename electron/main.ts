@@ -141,8 +141,13 @@ async function findSdcard() {
   if (fs.existsSync(configDir)) {
     console.info("setting sdcard root to " + path.join(configDir, "sdcard"));
     Config.setSdcardPath(path.join(configDir, "sdcard/"));
+    // create the sdcard folder if its not there
+    if (!fs.existsSync(Config.getSdcardPath())) {
+      fs.mkdirSync(Config.getSdcardPath());
+    }
   } else {
-    console.error("sdcard directory not found in " + configDir + "!");
+    console.error("Ryujinx directory not found at " + configDir + "!");
+    dialog.showErrorBox("Ryujinx not found!", "Ryujinx directory not found at " + configDir + "!");
     app.quit();
   }
 }
@@ -170,6 +175,12 @@ app.on('ready', createWindow)
   .then(findRom)
   .then(findSdcard)
   .then(registerListeners)
+  .then(() => {
+    // create the sdcard folder if its not there
+    if (!fs.existsSync(Config.getSdcardPath())) {
+      fs.mkdirSync(Config.getSdcardPath());
+    }
+  })
   .catch(e => console.error(e))
 
 app.on('window-all-closed', () => {

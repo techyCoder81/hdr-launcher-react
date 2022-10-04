@@ -88,8 +88,11 @@ export default async function update (progressCallback?: (p: Progress) => void) 
               let entries = JSON.parse(str)
               let count = 0
               let total = entries.length
-              if (entries.length === undefined || entries.length == 0) {
+              if (entries.length === undefined) {
                 throw new Error('Could not get file deletions!')
+              }
+              if (entries.length == 0) {
+                console.debug("No files to delete.");
               }
               while (count < total) {
                 let path = entries[count];

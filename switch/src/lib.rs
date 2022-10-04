@@ -28,11 +28,6 @@ pub fn main() {
     }
 
     println!("Checking if smashnet is available...");
-    if !smashnet::is_available() {
-        println!("ERROR! SMASHNET IS NOT AVAILABLE! CANNOT RUN HDR LAUNCHER!");
-        skyline_web::DialogOk::ok("Error: cannot start the launcher because you do not have smashnet.nro!");
-        return;
-    }
     
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {

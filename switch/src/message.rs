@@ -4,7 +4,7 @@ use skyline_web::{Webpage, WebSession};
 use std::path::Path;
 use crate::*;
 use std::fs;
-use smashnet::*;
+use smashnet::types::*;
 use walkdir::*;
 use std::io::Read;
 
