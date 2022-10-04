@@ -8,8 +8,20 @@ import './index.css';
 import { app } from 'electron';
 import { LogWindow } from './components/log_window';
 import Header from './components/header';
+import { TwitterTimelineEmbed } from 'react-twitter-embed';
+import Sidebar from './components/sidebar';
 
 export default class App extends React.Component {
+
+  state = {
+    enabled: true
+  }
+
+toggleEnabled() {
+    this.setState({enabled: !this.state.enabled});
+    console.info("Logs enabled: " + this.state.enabled);
+}
+
 
   render() {
     return (
@@ -19,7 +31,7 @@ export default class App extends React.Component {
           <Menu/>
         </div>
         <div className="right-side" id="right-side">
-          <LogWindow/>
+          <Sidebar/>
         </div>
       </div>
     )

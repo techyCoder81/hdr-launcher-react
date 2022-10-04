@@ -12,15 +12,6 @@ export class LogWindow extends React.Component {
     /** whether the console logging functions have been redirected yet */
     static logRedirected: boolean = false;
 
-    state = {
-        enabled: true
-    }
-
-    toggleEnabled() {
-        this.setState({enabled: !this.state.enabled});
-        console.info("Logs enabled: " + this.state.enabled);
-    }
-
     /** 
      * adds the given message with the given level
      * to the log div.
@@ -123,9 +114,7 @@ export class LogWindow extends React.Component {
 
         return ( 
         <div>
-            <input type="checkbox" checked={this.state.enabled} id="logCheck" name="logCheck" value="Check" onChange={() => this.toggleEnabled()}></input>
-            <label htmlFor="logCheck">Enable Logs </label>
-            {this.state.enabled ? (<div><label htmlFor="loglevels">Log level:</label>
+            <div><label htmlFor="loglevels">Log level:</label>
             <select name="loglevels" id="loglevels" onChange={
                 (item: { target: { value: any; }; }) => {
                     LogWindow.selected = item.target.value;
@@ -140,8 +129,7 @@ export class LogWindow extends React.Component {
                     box.innerHTML = "";
                 }
             }}>Clear Logs</button>
-            <div className="scroll-box" id="log-box"></div></div>)
-            : <div></div>}
+            <div className="scroll-box" id="log-box"></div></div>
         </div>
         );
     }

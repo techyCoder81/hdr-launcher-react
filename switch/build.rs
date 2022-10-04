@@ -40,7 +40,9 @@ fn main() -> std::io::Result<()> {
     let new_data_js = format!("{}", data_js
         .replace("const ", "var ")
         .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
-        .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"));
+        .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"))
+        .replace("() =>(module['default'])", "(()=>(module['default']))")
+        .replace("() =>(module)", "(() =>(module))");
     let mut dest_js = File::create("web-build/index.js")?;
 
     // prettyprint and then write the file
