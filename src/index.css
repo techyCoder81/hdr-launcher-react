@@ -2,19 +2,20 @@
   --main-bg-color: rgb(0, 0, 0);
   --main-text-color: white;
   --main-button-text-color: white;
-  --main-button-bg-color: rgb(54, 54, 54);
-  --main-button-bg-hover-color: #74be95;
+  --main-button-bg-color: rgb(54, 58, 55);
+  --main-button-bg-hover-color: rgb(47, 79, 57);
   --main-progress-download-color: rgb(28, 73, 110);
   --main-button-text-hover-color: rgb(0, 0, 0);
   --main-button-bg-focus-color: rgb(49, 119, 49);
   --main-button-text-focus-color: black;
   --main-button-hover-width: 500px;
---main-button-height: 100px;
+  --main-button-height: 100px;
   --main-button-hover-align: right;
   --main-progress-background-color: rgb(49, 49, 49);
   --main-progress-foreground-color: rgb(41, 109, 47);
   --main-progress-text-color: white;
---border-pad: 5px;
+  --border-pad: 5px;
+  --buttons-border-color: rgb(141, 194, 130);
 }
 
 * {
@@ -24,8 +25,7 @@
 }
 
 body {
-  background-color: var(--main-bg-color);
-  color: var(--main-text-color);
+  
   transition: 1000ms linear;
   -webkit-transition: 1000ms linear;
 }
@@ -38,12 +38,13 @@ body {
 .left-side {
   float:left;
   width: 50%;
-  
+  padding-top: 8px;
 }
 
 .right-side {
   float:right;
   width: 50%;
+  padding-top: 8px;
 }
 
 .main-buttons {
@@ -59,7 +60,8 @@ body {
   z-index: 1;
   transition:100ms linear;
   -webkit-transition:100ms linear;
-  background-image: linear-gradient(215deg, rgb(38, 95, 38), rgb(68, 167, 68));
+  background-image: linear-gradient(215deg, var(--buttons-border-color),rgb(84, 197, 84));
+  box-shadow: 5px 5px 10px 2px rgba(0,0,0,.8);
 }
 
 .main-buttons div {
@@ -67,9 +69,9 @@ body {
   display: inline;
   top: var(--border-pad);
   left: 0px;
-bottom: var(--border-pad);
-right: var(--border-pad);
-height: calc(var(--main-button-height) - 2 * var(--border-pad));
+  bottom: var(--border-pad);
+  right: var(--border-pad);
+  height: calc(var(--main-button-height) - 2 * var(--border-pad));
   background-color: var(--main-button-bg-color);
   color: var(--main-text-color);
   border: none;
@@ -78,13 +80,16 @@ height: calc(var(--main-button-height) - 2 * var(--border-pad));
   z-index: 1;
   transition:100ms linear;
   -webkit-transition:100ms linear;
-
-font-size: 3rem;
+  font-size: 3rem;
   font-weight: bold;
   font-style: italic;
-vertical-align: middle;
-text-align: right;
-line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
+  vertical-align: middle;
+  text-align: right;
+  line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
+}
+
+.main-buttons div:hover {
+  background-color: var(--main-button-bg-hover-color);
 }
 
 .main-buttons:hover {
@@ -95,13 +100,12 @@ padding: 12px 26px;
 }
 
 .main-buttons:active {
-background-image: linear-gradient(215deg, rgb(58, 125, 58), rgb(88, 207, 98));
+  background-image: linear-gradient(215deg, rgb(58, 125, 58), rgb(88, 207, 98));
 }
 
 .scroll-box {
   background: var(--main-button-bg-color);
-  border: 2px solid var(--main-progress-foreground-color);
-  height: 500px; /* maximum height of the box, feel free to change this! */
+  height: 500px;
   padding: 15px;
   overflow-y: scroll;
   overflow-wrap: break-word;
@@ -118,5 +122,63 @@ p {
 .header-item {
   padding-right: 10px;
   padding-left: 10px;
-  border-left: 2px solid;
+  background-color: var(--main-button-bg-color);
+  border-bottom: 3px solid var(--buttons-border-color);
+  border-right: 3px solid var(--buttons-border-color);
+  font-family: 'Trebuchet MS', sans-serif;
+  color: white;
+}
+
+.simple-button {
+  position: relative;
+  display: block;
+  margin-bottom: 1%;
+  height: 30px;
+  border: 3px solid var(--buttons-border-color);
+  text-align: center;
+  background-color: var(--main-button-bg-color);
+  color: rgb(255, 255, 255);
+  padding: 5;
+  box-sizing: border-box;
+  border-radius: 12px;
+}
+
+.simple-button:hover {
+  background-color: var(--main-button-bg-hover-color);
+}
+
+.sidebar-body {
+  border: 3px solid var(--buttons-border-color);
+  border-radius: 12px;
+  background-color: var(--main-button-bg-color);
+}
+
+.bg {
+  animation:slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, rgb(58, 138, 17) 50%, rgb(16, 116, 46) 50%);
+  bottom:0;
+  left:-50%;
+  opacity:.5;
+  position:fixed;
+  right:-50%;
+  top:0;
+  z-index:-1;
+}
+
+.bg2 {
+  animation-direction:alternate-reverse;
+  animation-duration:4s;
+}
+
+.bg3 {
+  animation-duration:5s;
+}
+
+@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
 }

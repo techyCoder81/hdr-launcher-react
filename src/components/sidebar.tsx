@@ -22,22 +22,23 @@ enum ContentType {
         switch(this.state.mode) {
             case ContentType.Logs:
                     return <div>
-                        <button onClick={() => this.setState({mode: ContentType.Feed})}>Close Logs</button>
-                        <LogWindow/>
+                        <button className="simple-button" onClick={() => this.setState({mode: ContentType.Feed})}>Close Logs</button>
+                        <div className='sidebar-body'><LogWindow/></div>
                     </div>;
             default:
                     return <div>
-                        <button onClick={() => this.setState({mode: ContentType.Logs})}>Open Logs</button>
-                        <TwitterTimelineEmbed
+                        <button className="simple-button" onClick={() => this.setState({mode: ContentType.Logs})}>Open Logs</button>
+                        <div className='sidebar-body'><TwitterTimelineEmbed
                             sourceType="profile"
                             screenName="HewDrawRemix"
                             theme='dark'
                             noScrollbar
+                            transparent
                             tweetLimit={10}
                             borderColor='296d2f'
                             options={{height: 550}}
                             placeholder={this.getPlaceholder()}
-                        />
+                        /></div>
                     </div>
         }
     }

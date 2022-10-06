@@ -97,44 +97,60 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
         count++
       }
 
-      if (missing.length > 0 || errors.length > 0 || wrong.length > 0) {
-        alert("Missing: " + missing.join(",") 
-          + "\nWrong: " + wrong.join(",") 
-          + "\nErrors: " + errors.join("\n"));
+      // check for any files which should not exist in the HDR folders
+      let expected_files: string[] = [];
+      let unexpected_files: string[] = [];
+      entries.forEach((element: any) => expected_files.push(element.path.replace(/\\/g, "/")));
+
+      let hdr_folders = [
+        "ultimate/mods/hdr",
+        "ultimate/mods/hdr-stages",
+        "ultimate/mods/hdr-assets",
+      ];
+
+      for (const folder of hdr_folders) {
+        // check the hdr dirs
+        let hdr_files =  (await backend.listDirAll(sdroot + folder)).toList("/" + folder)
+            .map(str => str.replace(/\\/g, "/"));
+        console.info("got " + folder + " files");
+        
+        for (const element of hdr_files) {
+          if (!expected_files.includes(element)) {
+            console.error("File should be removed: " + element);
+            unexpected_files.push(element);
+          }
+        }
+      }
+
+      // delete any problematic files in the HDR dirs
+      if (unexpected_files.length > 0) {
+        let ok = confirm("The following unexpected files were found which will be deleted:\n"
+          + unexpected_files.join("\n"));
+
+        if (ok) {
+          unexpected_files.forEach(async file => 
+            await (backend.deleteFile(sdroot + file).catch(e => {
+              alert("an error occurred while deleting file:\n" + e);
+              errors.push(e);
+            }))
+          );
+          unexpected_files = [];
+        } else {
+          alert("The files were not deleted. Be aware, this constitutes an nonstandard HDR install which may desync online.");
+        }
+      }
+
+      // determine if all is well
+      if (missing.length > 0 || errors.length > 0 || wrong.length > 0 || unexpected_files.length > 0) {
+        alert("Verify Outcome:\nMissing: \n" + missing.join("\n") 
+          + "\nWrong: \n" + wrong.join("\n") 
+          + "\nUnexpected: \n" + unexpected_files.join("\n")
+          + "\nErrors: \n" + errors.join("\n"));
       } else {
         alert("HDR's files are correct.");
       }
-/*
-      // delete any files that should not be present
-      let hdr_files =  (await backend.listDirAll(sdroot + "ultimate/mods/hdr")).toList(sdroot + "ultimate/mods/hdr");
-      hdr_files.forEach(str => str.replace("\\\\", "\\").replace("//", "/").replace("\\", "/"));
-      let assets_files = (await backend.listDirAll(sdroot + "ultimate/mods/hdr-assets")).toList(sdroot + "ultimate/mods/hdr-assets");
-      assets_files.forEach(str => str.replace("\\\\", "\\").replace("//", "/").replace("\\", "/"));
-      let stages_files = (await backend.listDirAll(sdroot + "ultimate/mods/hdr-stages")).toList(sdroot + "ultimate/mods/hdr-stages");
-      stages_files.forEach(str => str.replace("\\\\", "\\").replace("//", "/").replace("\\", "/"));
 
-      let expected_files: string[] = [];
-      entries.forEach((element: any) => expected_files.push(element.path.replace("\\\\", "\\").replace("//", "/").replace("\\", "/")));
-
-      hdr_files.forEach(element => {
-        if (!expected_files.includes(element)) {
-          console.error("File should be removed: " + element);
-        }
-      });
-
-      assets_files.forEach(element => {
-        if (!expected_files.includes(element)) {
-          console.error("File should be removed: " + element);
-        }
-      });
-
-      stages_files.forEach(element => {
-        if (!expected_files.includes(element)) {
-          console.error("File should be removed: " + element);
-        }
-      });
-*/
-      console.info('All files are correct: ' + matches)
+      console.info('All expected files are correct: ' + matches)
     })
     .catch(e => {
       console.error('Major error during verify: ' + e)
