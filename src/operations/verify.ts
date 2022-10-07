@@ -61,9 +61,9 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
         if (typeof progressCallback !== 'undefined') {
           progressCallback(
             new Progress(
-              "verifying", 
-              "file: " + path, 
-              String(Math.trunc((100 * count) / entries.length)) + '%'
+              "Verifying Files", 
+              "File: " + path, 
+              Math.trunc((100 * count) / entries.length)
             )
           );
         }
@@ -109,6 +109,16 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
       ];
 
       for (const folder of hdr_folders) {
+        if (typeof progressCallback !== 'undefined') {
+          progressCallback(
+            new Progress(
+              "Checking " + folder, 
+              "Folder: " + folder, 
+              Math.trunc((100 * count) / hdr_folders.length)
+            )
+          );
+        }
+
         // check the hdr dirs
         let hdr_files =  (await backend.listDirAll(sdroot + folder)).toList("/" + folder)
             .map(str => str.replace(/\\/g, "/"));
@@ -140,11 +150,44 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
         }
       }
 
+
+      // if these files are present, we will always move them into disabled_plugins
+      let plugins_dir = "atmosphere/contents/01006A800016E000/romfs/skyline/plugins";
+      let always_disable_plugins = [
+        plugins_dir + "/libsmashline_hook_development.nro",
+        plugins_dir + "/libhdr.nro",
+        plugins_dir + "/libnn_hid_hook",
+        plugins_dir + "/libparam_hook.nro",
+        plugins_dir + "/libtraining_modpack.nro",
+        plugins_dir + "/libHDR-Launcher.nro",
+        plugins_dir + "/libnn_hid_hook.nro",
+        plugins_dir + "/libacmd_hook.nro",
+      ];
+      let should_disable = [];
+      let should_warn = [];
+
+      // check the plugins
+      let plugins =  (await backend.listDirAll(sdroot + plugins_dir)).toList("/" + plugins_dir)
+      .map(str => str.replace(/\\/g, "/"));
+      console.info("got existing plugins.");
+      
+      // for every plugin in their plugins dir, make sure it should be there
+      for (const plugin of plugins) {
+        if (always_disable_plugins.includes(plugin)) {
+          console.error("Plugin should be disabled: " + plugin);
+          should_disable.push(plugin);
+        } else if (!expected_files.includes(plugin)) {
+          should_warn.push(plugin);
+        }
+      }
+
       // determine if all is well
-      if (missing.length > 0 || errors.length > 0 || wrong.length > 0 || unexpected_files.length > 0) {
+      if (missing.length > 0 || errors.length > 0 || wrong.length > 0 || unexpected_files.length > 0 || should_disable.length > 0 || should_warn.length > 0) {
         alert("Verify Outcome:\nMissing: \n" + missing.join("\n") 
           + "\nWrong: \n" + wrong.join("\n") 
-          + "\nUnexpected: \n" + unexpected_files.join("\n")
+          + "\nUnexpected files: \n" + unexpected_files.join("\n")
+          + "\nPlugins to please disable: \n" + should_disable.join("\n")
+          + "\nOther plugins: \n" + should_warn.join("\n")
           + "\nErrors: \n" + errors.join("\n"));
       } else {
         alert("HDR's files are correct.");

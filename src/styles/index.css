@@ -16,6 +16,8 @@
   --main-progress-text-color: white;
   --border-pad: 5px;
   --buttons-border-color: rgb(141, 194, 130);
+  --slide-green-1: rgb(58, 138, 17);
+  --slide-green-2: rgb(16, 116, 46);
 }
 
 * {
@@ -28,6 +30,7 @@ body {
   z-index: 1;
   transition: 1000ms linear;
   -webkit-transition: 1000ms linear;
+  background-color: var(--slide-green-2);
 }
 
 .main-menu {
@@ -36,17 +39,34 @@ body {
 }
 
 .left-side {
-  float:left;
+  height: 100%;
+  width: 50%;
+  padding-top: 8px;
+}
+
+.right-side {
   width: 50%;
   height: 100%;
   padding-top: 8px;
 }
 
-.right-side {
-  float:right;
-  width: 50%;
-  height: 100%;
-  padding-top: 8px;
+.overlay {
+  z-index: 999;
+  background-color: var(--slide-green-2);
+  position: absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+}
+
+.app-body {
+  display: flex;
+  height:max-content;
+}
+
+.hide {
+  display: none;
 }
 
 .main-buttons {
@@ -89,11 +109,11 @@ body {
   line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
 }
 
-.main-buttons div:hover {
+.electron-buttons div:hover {
   background-color: var(--main-button-bg-hover-color);
 }
 
-.main-buttons:hover {
+.electron-buttons:hover {
 padding: 12px 26px;
   width: var(--main-button-hover-width);
   height: var(--main-button-height);
@@ -196,9 +216,64 @@ p {
   border-top: 1px solid var(--buttons-border-color);
 }
 
+.loading {
+  top: 250px;
+  position:relative;
+}
+
+.loading-left {
+  position: relative;
+  animation:slide-from-left 1s ease-in;
+  
+  animation-fill-mode: forwards;
+}
+
+.loading-right {
+  position: relative;
+  animation:slide-from-right 1s ease-in;
+  
+  animation-fill-mode: forwards;
+}
+
+.leaving-left {
+  position: relative;
+  animation:slide-from-left 1s ease-out;
+  
+  animation-fill-mode: backwards;
+}
+
+.leaving-right {
+  position: relative;
+  animation:slide-from-right 1s ease-out;
+  
+  animation-fill-mode: backwards;
+}
+
+@keyframes slide-from-left {
+  0% {
+    transform:translateX(20%);
+    opacity: 0%;
+  }
+  100% {
+    transform:translateX(40%);
+    opacity: 100%;
+  }
+}
+
+@keyframes slide-from-right {
+  0% {
+    transform:translateX(80%);
+    opacity: 0%;
+  }
+  100% {
+    transform:translateX(50%);
+    opacity: 100%;
+  }
+}
+
 .bg {
   animation:slide 3s ease-in-out infinite alternate;
-  background-image: linear-gradient(-60deg, rgb(58, 138, 17) 50%, rgb(16, 116, 46) 50%);
+  background-image: linear-gradient(-60deg, var(--slide-green-1) 50%, var(--slide-green-2) 50%);
   bottom:0;
   left:-50%;
   opacity:.5;

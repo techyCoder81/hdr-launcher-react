@@ -1,37 +1,28 @@
-
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as Messages from "../messages";
 import Menu from "./menu";
 import { Backend, NodeBackend, SwitchBackend } from "../backend";
-import '../index.css';
-import { app } from 'electron';
-import { LogWindow } from './log_window';
+import '../styles/index.css';
 import Header from './header';
-import { TwitterTimelineEmbed } from 'react-twitter-embed';
 import Sidebar from './sidebar';
 
 export default class App extends React.Component {
-
-  state = {
-    enabled: true
-  }
-
-toggleEnabled() {
-    this.setState({enabled: !this.state.enabled});
-    console.info("Logs enabled: " + this.state.enabled);
-}
-
 
   render() {
     return (
       <div>
         <Header/>
-        <div className="left-side" id="left-side">
-          <Menu/>
-        </div>
-        <div className="right-side" id="right-side">
-          <Sidebar/>
+        {Backend.instance() instanceof NodeBackend ? (<div>
+        <div className="bg"></div>
+        <div className="bg bg2"></div>
+        <div className="bg bg3"></div></div>) : <div></div>
+        }
+        <div className='app-body'>
+          <div className="left-side" id="left-side">
+            <Menu />
+          </div>
+          <div className="right-side" id="right-side">
+            <Sidebar/>
+          </div>
         </div>
       </div>
     )

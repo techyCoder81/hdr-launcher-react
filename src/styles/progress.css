@@ -1,0 +1,24 @@
+
+.progress-block {
+    color: white;
+    overflow-wrap: break-word;
+    text-align: center;
+    position: relative;
+}
+
+.progress-background {
+    background-color: var(--slide-green-2);
+}
+
+.vertical-center {
+    top: 250px;
+    position:relative;
+}
+
+.progress-wrapper {
+    position:relative;
+    left: 15%;
+    width: 70%;
+    border: 3px solid var(--buttons-border-color);
+    transform: skewX(20deg);
+}

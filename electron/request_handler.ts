@@ -165,7 +165,7 @@ export class RequestHandler {
                                 new Progress(
                                     "Download File", 
                                     "Downloading from " + url, 
-                                    String(Math.trunc(100 * current/total))
+                                    Math.trunc(100 * current/total)
                                 )
                             );
                         });

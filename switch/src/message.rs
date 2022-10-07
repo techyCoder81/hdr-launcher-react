@@ -51,7 +51,7 @@ impl fmt::Display for Message {
 impl Handleable for Message {
     
     fn handle(&self, session: &WebSession) -> bool {
-        //println!("Handling message {}", self.call_name);
+        println!("Handling {}", self.call_name);
         match self.call_name.as_str() {
             "play" => {session.exit(); return false;},
             "quit" => unsafe { skyline::nn::oe::ExitApplication();},

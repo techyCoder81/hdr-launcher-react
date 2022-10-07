@@ -2,7 +2,7 @@ import { Backend } from '../backend'
 import { Progress } from '../progress';
 import verify from './verify';
 
-export default async function install_latest (progressCallback?: (p: Progress) => void) {
+export default async function install_latest(progressCallback?: (p: Progress) => void) {
   var reportProgress = (prog: Progress) => {
     if (typeof progressCallback !== 'undefined') {
       progressCallback(prog);
@@ -21,7 +21,7 @@ export default async function install_latest (progressCallback?: (p: Progress) =
     })
     let downloads = sdroot + 'downloads/';
 
-    reportProgress(new Progress("Downloading the latest HDR nightly", "downloading HDR", "pending..."));
+    reportProgress(new Progress("Downloading the latest HDR nightly", "downloading HDR", null));
 
 
     await backend.downloadFile(
@@ -30,7 +30,7 @@ export default async function install_latest (progressCallback?: (p: Progress) =
         (p: Progress) => reportProgress(p)
       ).then(result => console.info("Result of download: " + result))
       .then(() => {
-        reportProgress(new Progress("Extracting", "Extracting files", "pending..."));
+        reportProgress(new Progress("Extracting", "Extracting files", null));
       })
       .then(() => backend.unzip(downloads + "hdr-install.zip", sdroot))
       .then(result => console.info("Result of extraction: " + result))

@@ -35,7 +35,7 @@ impl fmt::Display for BooleanResponse {
 pub struct Progress {
     title: String,
     info: String,
-    progress: String
+    progress: u32
 }
 
 pub trait SendProgress {

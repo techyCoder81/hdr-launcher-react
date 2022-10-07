@@ -20,7 +20,7 @@ enum ContentType {
  export default class Sidebar extends React.Component {
 
     state = {
-        mode: ContentType.Twitter
+        mode: Backend.isNode() ? ContentType.Twitter : ContentType.Changelogs
     };
 
     getContent() {
@@ -42,10 +42,14 @@ enum ContentType {
 
     render() {
         return <div>
-            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Twitter})}>&nbsp;News&nbsp;</button>
+            { 
+            Backend.isNode() ?
+                <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Twitter})}>&nbsp;News&nbsp;</button>
+                : <div></div>
+            }
             <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Changelogs})}>&nbsp;Latest Changes&nbsp;</button>
             <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Logs})}>&nbsp;Logs&nbsp;</button>
-            {this.getContent()}
+            {this.getContent()} 
         </div>
     }
 }

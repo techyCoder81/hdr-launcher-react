@@ -25,7 +25,7 @@ import { TwitterTimelineEmbed } from "react-twitter-embed";
                 options={{height: 525}}
                 placeholder={this.getPlaceholder()}
             />
-        }
+        } 
         return TwitterSingleton.element;
     }
 

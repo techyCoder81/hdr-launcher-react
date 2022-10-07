@@ -161,13 +161,13 @@ async function registerListeners () {
 
   // register listening to the request channel
   ipcMain.handle("request", (event, request): Promise<Responses.BaseResponse> => {
-    console.log("main thread received request: " + JSON.stringify(request));
+    //console.log("main thread received request: " + JSON.stringify(request));
     return requestHandler.handle(request);
   });
 
   // register listening to the message channel
   ipcMain.on("message", (event, message) => {
-    console.log("main thread received message: " + JSON.stringify(message));
+    //console.log("main thread received message: " + JSON.stringify(message));
     messageHandler.handle(message as Messages.Message);
   });
 }

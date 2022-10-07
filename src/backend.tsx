@@ -30,6 +30,14 @@ export abstract class Backend {
     /** invokes on the backend instance and returns a promise of a result */
     protected abstract invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string>;
 
+    public static isNode() {
+        return Backend.instance() instanceof NodeBackend;
+    }
+
+    public static isSwitch() {
+        return Backend.instance() instanceof SwitchBackend;
+    }
+
     /**
      * pings the backend with a message.
      * @returns whether the backend responded.
@@ -102,10 +110,16 @@ export abstract class Backend {
         return this.okOrErrorRequest("download_file", [url, location], progressCallback);
     }
 
+    private static platform: string;
+
     /** gets the platform of the current backend, 
      * according to the backend itself. */
     async getPlatform(): Promise<string> {
-        return this.stringRequest("get_platform", null);
+        if (!Backend.platform) {
+            return this.stringRequest("get_platform", null);
+        } else {
+            return Backend.platform;
+        }
     }
 
     /** gets the platform of the current backend, 

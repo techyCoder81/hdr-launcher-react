@@ -53,9 +53,9 @@ pub fn main() {
 
 fn listen_for_messages(session: &WebSession) {
     loop {
-        println!("trying to receive...");
+        println!("listening");
         let msg = session.recv();
-            println!("received a message: {}" , msg);
+            //println!("received a message: {}" , msg);
             let keep_listening = match serde_json::from_str::<Message>(&msg) {
                 Ok(message) => message.handle(&session),
                 Err(_) => {
