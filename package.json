@@ -24,6 +24,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-modal": "^3.15.1",
+    "react-remark": "^2.1.0",
     "react-twitter-embed": "^4.0.4",
     "request": "^2.88.2",
     "webpack": "^5.74.0"

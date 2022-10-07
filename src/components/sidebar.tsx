@@ -3,10 +3,15 @@ import * as Messages from "../messages";
 import { Backend } from "../backend";
 import { TwitterTimelineEmbed } from 'react-twitter-embed';
 import { LogWindow } from './log_window';
+import Changelog from './changelog';
+import LatestChanges from './latest_changes';
+import { TwitterSingleton } from './twitter_singleton';
+
 
 enum ContentType {
     Logs,
-    Feed
+    Twitter,
+    Changelogs,
 }
 
 /**
@@ -15,40 +20,31 @@ enum ContentType {
  export default class Sidebar extends React.Component {
 
     state = {
-        mode: ContentType.Feed
+        mode: ContentType.Twitter
     };
 
     getContent() {
         switch(this.state.mode) {
             case ContentType.Logs:
-                    return <div>
-                        <button className="simple-button" onClick={() => this.setState({mode: ContentType.Feed})}>Close Logs</button>
-                        <div className='sidebar-body'><LogWindow/></div>
+                    return <div className='sidebar-outer'>
+                            <LogWindow/>
                     </div>;
+            case ContentType.Changelogs:
+                return <div className='sidebar-outer scrollable'>
+                                <LatestChanges count={10} />
+                        </div>;
             default:
-                    return <div>
-                        <button className="simple-button" onClick={() => this.setState({mode: ContentType.Logs})}>Open Logs</button>
-                        <div className='sidebar-body'><TwitterTimelineEmbed
-                            sourceType="profile"
-                            screenName="HewDrawRemix"
-                            theme='dark'
-                            noScrollbar
-                            transparent
-                            tweetLimit={10}
-                            borderColor='296d2f'
-                            options={{height: 550}}
-                            placeholder={this.getPlaceholder()}
-                        /></div>
-                    </div>
+                    return <div className='twitter'>
+                                {TwitterSingleton.instance()}
+                            </div>
         }
-    }
-
-    getPlaceholder() {
-        return <div>Loading twitter feed...</div>
     }
 
     render() {
         return <div>
+            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Twitter})}>&nbsp;News&nbsp;</button>
+            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Changelogs})}>&nbsp;Latest Changes&nbsp;</button>
+            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Logs})}>&nbsp;Logs&nbsp;</button>
             {this.getContent()}
         </div>
     }

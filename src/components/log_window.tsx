@@ -113,24 +113,24 @@ export class LogWindow extends React.Component {
         }
 
         return ( 
-        <div>
-            <div><label htmlFor="loglevels">Log level:</label>
-            <select name="loglevels" id="loglevels" onChange={
-                (item: { target: { value: any; }; }) => {
-                    LogWindow.selected = item.target.value;
-                }}> 
-                {
-                LogWindow.LOG_LEVELS.map((level) => getOption(level))
-                } 
-            </select>
-            <button onClick={() => {
-                var box = document.getElementById("log-box");
-                if (box != null) {
-                    box.innerHTML = "";
-                }
-            }}>Clear Logs</button>
-            <div className="scroll-box" id="log-box"></div></div>
-        </div>
+            <div className='log-box'>
+                <label htmlFor="loglevels">Log level:</label>
+                <select name="loglevels" id="loglevels" onChange={
+                    (item: { target: { value: any; }; }) => {
+                        LogWindow.selected = item.target.value;
+                    }}> 
+                    {
+                    LogWindow.LOG_LEVELS.map((level) => getOption(level))
+                    } 
+                </select>
+                <button onClick={() => {
+                    var box = document.getElementById("log-box");
+                    if (box != null) {
+                        box.innerHTML = "";
+                    }
+                }}>Clear Logs</button> 
+                <div className="log-box" id="log-box"></div>
+            </div>
         );
     }
 }

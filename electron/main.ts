@@ -61,6 +61,7 @@ async function findEmulator() {
     });
     if (selectedPath == undefined || selectedPath.length < 1) {
       console.warn("User cancelled finding ryujinx!");
+      app.quit();
       continue;
     }
     let ryuPath = selectedPath[0];
@@ -109,6 +110,8 @@ async function findRom() {
       filters: [ { name: 'Switch Roms', extensions: ['nsp', 'xci'] } ]
     });
     if (selectedPath == undefined || selectedPath.length < 1) {
+      console.warn("User cancelled finding ultimate dump!");
+      app.quit();
       continue;
     }
     let romPath = selectedPath[0];

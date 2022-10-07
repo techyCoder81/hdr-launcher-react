@@ -10,7 +10,7 @@ const customStyles = {
   };
 
 /**
- * main menu implementation
+ * progress bar implementation
  */
  export default function ProgressBar(props: any) {
     return <div>

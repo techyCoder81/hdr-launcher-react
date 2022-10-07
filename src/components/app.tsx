@@ -1,15 +1,15 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Messages from "./messages";
-import Menu from "./components/menu";
-import { Backend, NodeBackend, SwitchBackend } from "./backend";
-import './index.css';
+import * as Messages from "../messages";
+import Menu from "./menu";
+import { Backend, NodeBackend, SwitchBackend } from "../backend";
+import '../index.css';
 import { app } from 'electron';
-import { LogWindow } from './components/log_window';
-import Header from './components/header';
+import { LogWindow } from './log_window';
+import Header from './header';
 import { TwitterTimelineEmbed } from 'react-twitter-embed';
-import Sidebar from './components/sidebar';
+import Sidebar from './sidebar';
 
 export default class App extends React.Component {
 

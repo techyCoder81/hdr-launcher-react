@@ -84,12 +84,12 @@ export default class Menu extends React.Component {
                 
                 return <div id="options">
                         <div className="main-menu">
-                        <h1>Options</h1>
+                        
                         <button className="main-buttons" onClick={() => Backend.instance().openModManager()}>
                                 <div>Mod Manager&nbsp;&nbsp;</div>
                         </button>
                         <button className="main-buttons" onClick={() => this.switchTo(MenuType.MainMenu)}>
-                                <div>Back&nbsp;&nbsp;</div>
+                                <div>Main Menu&nbsp;&nbsp;</div>
                         </button>
                         </div>
                 </div>
