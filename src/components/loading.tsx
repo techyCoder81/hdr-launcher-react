@@ -8,7 +8,7 @@ export default function Loading(props: any) {
             <h1 className="leaving-left">HewDraw</h1>
             <h1 className="leaving-right">Remix</h1>
             </div>
-            }
+            } 
         </div>
 </div> 
 }

@@ -30,12 +30,30 @@ export abstract class Backend {
     /** invokes on the backend instance and returns a promise of a result */
     protected abstract invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string>;
 
+    /**
+     * returns whether this is running on pc or not,
+     * without making a backend call
+     * @returns whether this is running on pc (node.js)
+     */
     public static isNode() {
         return Backend.instance() instanceof NodeBackend;
     }
 
+    /**
+     * returns whether this is running on switch or not,
+     * without making a backend call
+     * @returns whether this is running on switch
+     */
     public static isSwitch() {
         return Backend.instance() instanceof SwitchBackend;
+    }
+
+    /**
+     * Gets the user friendly backend name, without making a backend call.
+     * @returns the platform name
+     */
+    public static platformName() {
+        return (this.isNode() ? "Ryujinx" : "Switch");
     }
 
     /**

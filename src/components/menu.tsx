@@ -1,19 +1,19 @@
 import * as React from 'react';
-import * as Messages from "../messages";
 import { Backend, NodeBackend } from "../backend";
-import { LogWindow } from './log_window';
-import ReactDOM from 'react-dom';
-import { DirTree } from '../responses';
-import { autoUpdater } from 'electron';
 import update from '../operations/update';
 import verify from '../operations/verify';
 import install_latest from '../operations/install';
-import ReactModal from "react-modal";
-import $ from './progress_bar';
 import { Progress } from '../progress';
 import ProgressDisplay from './progress_bar';
 import "../styles/progress.css";
 import Loading from './loading';
+import {FocusButton} from './focus_button';
+import * as skyline from "../skyline";
+import { Github } from '../operations/github_utils';
+
+type Props = {
+        onUpdate: () => void;
+};
 
 enum MenuType {
         MainMenu,
@@ -26,18 +26,37 @@ enum MenuType {
 /**
  * main menu implementation
  */
-export default class Menu extends React.Component {
+export default class Menu extends React.Component<Props> {
         state = { 
                 currentMenu: MenuType.CheckingInstalled,
                 progress: null
         }
 
+        private onUpdate;
+
         switchTo(menu: MenuType) {
                 this.setState({currentMenu: menu, progress: null});
+                this.onUpdate();
+
+                // assign button actions for switch
+                skyline.setButtonAction("X", () => {})
+                switch(this.state.currentMenu) {
+                        case MenuType.Options:
+                                skyline.setButtonAction("B", () => this.switchTo(MenuType.MainMenu));
+                                break;
+                        default:
+                                skyline.setButtonAction("B", () => {});
+                                break;
+                }
         }
 
         setProgress(progress: Progress) {
                 this.setState({currentMenu: this.state.currentMenu, progress: progress});
+        }
+
+        public constructor(props: Props) {
+                super(props);
+                this.onUpdate = props.onUpdate;
         }
 
         /**
@@ -46,32 +65,32 @@ export default class Menu extends React.Component {
          */
         mainMenu(): JSX.Element {
                 return <div className="main-menu" id="menu">
-                        
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => Backend.instance().play()}>
-                                <div>Play&nbsp;&nbsp;</div>
-                        </button> 
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => {
-                                this.switchTo(MenuType.Progress);
-                                update((p: Progress) => this.setProgress(p))
-                                       .then(() => this.switchTo(MenuType.MainMenu))
-                                       .catch(e => this.switchTo(MenuType.MainMenu));
-                        }}>
-                                <div>Update&nbsp;&nbsp;</div>
-                        </button>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => {
-                                this.switchTo(MenuType.Progress);
-                                verify((p: Progress) => this.setProgress(p))
-                                        .then(() => this.switchTo(MenuType.MainMenu))
-                                        .catch(e => this.switchTo(MenuType.MainMenu));
-                        }}>
-                                <div>Verify&nbsp;&nbsp;</div>
-                        </button>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => this.switchTo(MenuType.Options)}>
-                                <div>Options&nbsp;&nbsp;</div>
-                        </button>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => Backend.instance().quit()}>
-                                <div>Exit&nbsp;&nbsp;</div>
-                        </button>
+                        <FocusButton text='Play&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => Backend.instance().play()}
+                                autofocus={Backend.isSwitch()}/>
+                        <FocusButton text='Update&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => {
+                                        this.switchTo(MenuType.Progress);
+                                        update((p: Progress) => this.setProgress(p))
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => this.switchTo(MenuType.MainMenu));
+                        }}/>
+                        <FocusButton text='Verify&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => {
+                                        this.switchTo(MenuType.Progress);
+                                        verify((p: Progress) => this.setProgress(p))
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => this.switchTo(MenuType.MainMenu));
+                        }}/>
+                        <FocusButton text='Options&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => this.switchTo(MenuType.Options)}/>
+                        <FocusButton text='Exit&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => Backend.instance().quit()}/>
                 </div>
         }
 
@@ -80,17 +99,13 @@ export default class Menu extends React.Component {
          * @returns the options menu
          */
         optionsMenu(): JSX.Element {
-                
-                return <div id="options">
-                        <div className="main-menu">
-                        
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => Backend.instance().openModManager()}>
-                                <div>Mod Manager&nbsp;&nbsp;</div>
-                        </button>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => this.switchTo(MenuType.MainMenu)}>
-                                <div>Main Menu&nbsp;&nbsp;</div>
-                        </button>
-                        </div>
+                return <div className="main-menu">
+                        <FocusButton text='Mod Manager&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => Backend.instance().openModManager()}/>
+                        <FocusButton text='Main Menu&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => this.switchTo(MenuType.MainMenu)}/>
                 </div>
         }      
         
@@ -103,22 +118,25 @@ export default class Menu extends React.Component {
                 return <div id="menu">
                         <div className="main-menu">
                         <h1>HDR Is not Installed.</h1>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={() => Backend.instance().play()}>
-                                <div>Play Vanilla&nbsp;&nbsp;</div>
-                        </button>
-                        <button className={"main-buttons" + (Backend.isNode() ? " electron-buttons" : "")} onClick={async () => {
-                                this.switchTo(MenuType.Progress);
-                                await install_latest((p: Progress) => this.setProgress(p))
-                                        .then(() => this.switchTo(MenuType.MainMenu))
-                                        .catch(e => {
-                                                this.switchTo(MenuType.MainMenu);
-                                                console.error("Error while installing latest HDR.");
-                                        });
-                                this.switchTo(MenuType.CheckingInstalled);
-                                this.checkInstalled();
-                        }}>
-                                <div>Install HDR&nbsp;&nbsp;</div>
-                        </button>
+                        <FocusButton text='Play Vanilla&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => Backend.instance().play()}/>
+                        
+                        <FocusButton text='Install HDR&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={async () => {
+                                        this.switchTo(MenuType.Progress);
+                                        await install_latest((p: Progress) => this.setProgress(p))
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => {
+                                                        this.switchTo(MenuType.MainMenu);
+                                                        console.error("Error while installing latest HDR.");
+                                                });
+                                        this.switchTo(MenuType.CheckingInstalled);
+                                        this.checkInstalled();
+                                }
+                        }/>
+                        
                         </div>
                 </div>
         }   
@@ -175,17 +193,18 @@ export default class Menu extends React.Component {
         }
 
         checkInstalled() {
-                Backend.instance().isInstalled().then(installed => {
-                        
-                        if (installed) {
-                                this.switchTo(MenuType.MainMenu);
-                        } else {
-                                this.switchTo(MenuType.NotInstalled)
-                        } 
-                }).catch(e => {
-                        console.error("Error while checking if installed!\n" + e);
-                        alert("Error while checking if installed!\n" + e);
-                });
+                Github.pullRequests()
+                        .then(_ => Backend.instance().isInstalled())
+                        .then(installed => {
+                                if (installed) {
+                                        this.switchTo(MenuType.MainMenu);
+                                } else {
+                                        this.switchTo(MenuType.NotInstalled)
+                                } 
+                        }).catch(e => {
+                                console.error("Error while checking if installed!\n" + e);
+                                alert("Error while checking if installed!\n" + e);
+                        });
         }
 
         componentDidMount() {

@@ -10,7 +10,7 @@ type Props = {
 /**
  * gets the latest changes in the repo
  */
- export default class LatestChanges extends React.Component<Props> {
+ export default class LatestChanges extends React.PureComponent<Props> {
 
     state = {
         text: ["Getting Updates..."],
@@ -64,7 +64,7 @@ type Props = {
 
     render() {
         return (
-            <div className="sidebar-inner padding">
+            <div className="sidebar-inner">
                 <h2>Latest Changes:</h2>
                 {this.state.text.map(str => str)}
             </div>

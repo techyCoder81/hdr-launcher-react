@@ -6,6 +6,7 @@ import { LogWindow } from './log_window';
 import Changelog from './changelog';
 import LatestChanges from './latest_changes';
 import { TwitterSingleton } from './twitter_singleton';
+import {FocusButton} from './focus_button';
 
 
 enum ContentType {
@@ -44,11 +45,20 @@ enum ContentType {
         return <div>
             { 
             Backend.isNode() ?
-                <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Twitter})}>&nbsp;News&nbsp;</button>
+                <FocusButton 
+                    className="simple-button inline"
+                    text='&nbsp;News&nbsp;' 
+                    onClick={() => this.setState({mode: ContentType.Twitter})}/>
                 : <div></div>
             }
-            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Changelogs})}>&nbsp;Latest Changes&nbsp;</button>
-            <button className="simple-button inline" onClick={() => this.setState({mode: ContentType.Logs})}>&nbsp;Logs&nbsp;</button>
+            <FocusButton 
+                    className="simple-button inline"
+                    text='&nbsp;Latest Changes&nbsp;' 
+                    onClick={() => this.setState({mode: ContentType.Changelogs})}/>
+            <FocusButton 
+                    className="simple-button inline"
+                    text='&nbsp;Logs&nbsp;' 
+                    onClick={() => this.setState({mode: ContentType.Logs})}/>
             {this.getContent()} 
         </div>
     }

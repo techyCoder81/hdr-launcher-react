@@ -114,8 +114,7 @@ export class LogWindow extends React.Component {
 
         return ( 
             <div className='log-box'>
-                <label htmlFor="loglevels">Log level:</label>
-                <select name="loglevels" id="loglevels" onChange={
+                <select className='simple-button inline' name="loglevels" id="loglevels" onChange={
                     (item: { target: { value: any; }; }) => {
                         LogWindow.selected = item.target.value;
                     }}> 
@@ -123,12 +122,12 @@ export class LogWindow extends React.Component {
                     LogWindow.LOG_LEVELS.map((level) => getOption(level))
                     } 
                 </select>
-                <button onClick={() => {
+                <button className='simple-button inline' onClick={() => {
                     var box = document.getElementById("log-box");
                     if (box != null) {
                         box.innerHTML = "";
                     }
-                }}>Clear Logs</button> 
+                }}>&nbsp;Clear Logs&nbsp;</button> 
                 <div className="log-box" id="log-box"></div>
             </div>
         );

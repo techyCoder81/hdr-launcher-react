@@ -3,7 +3,8 @@
   --main-text-color: white;
   --main-button-text-color: white;
   --main-button-bg-color: rgb(54, 58, 55);
-  --main-button-bg-hover-color: rgb(47, 79, 57);
+  --main-button-bg-hover-color: rgb(61, 100, 73);
+  --main-button-border-hover-color: rgb(199, 255, 216);
   --main-progress-download-color: rgb(28, 73, 110);
   --main-button-text-hover-color: rgb(0, 0, 0);
   --main-button-bg-focus-color: rgb(49, 119, 49);
@@ -83,6 +84,7 @@ body {
   transition:100ms linear;
   -webkit-transition:100ms linear;
   background-image: linear-gradient(215deg, var(--buttons-border-color),rgb(84, 197, 84));
+  outline: none;
 }
 
 .main-buttons div {
@@ -107,14 +109,18 @@ body {
   vertical-align: middle;
   text-align: right;
   line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
+  outline:none;
 }
 
-.electron-buttons div:hover {
+
+.main-buttons div:focus {
   background-color: var(--main-button-bg-hover-color);
+  border-color: var(--main-button-border-hover-color);
 }
 
-.electron-buttons:hover {
-padding: 12px 26px;
+
+.main-buttons:focus {
+  padding: 12px 26px;
   width: var(--main-button-hover-width);
   height: var(--main-button-height);
   font-size: 3rem;
@@ -189,6 +195,7 @@ p {
   position: relative;
   display: block;
   margin-bottom: 1%;
+  margin-top: 1%;
   height: 30px;
   border: 3px solid var(--buttons-border-color);
   text-align: center;
@@ -197,16 +204,18 @@ p {
   padding: 5;
   box-sizing: border-box;
   border-radius: 12px;
+  outline:none;
+}
+
+.simple-button:focus {
+  background-color: var(--main-button-bg-hover-color);
+  border-color: var(--main-button-border-hover-color);
 }
 
 .inline {
   display: inline;
   margin-right: 5px;
 } 
-
-.simple-button:hover {
-  background-color: var(--main-button-bg-hover-color);
-}
 
 .border-bottom {
   border-bottom: 1px solid var(--buttons-border-color);
@@ -219,6 +228,7 @@ p {
 .loading {
   top: 250px;
   position:relative;
+  overflow: hidden;
 }
 
 .loading-left {
