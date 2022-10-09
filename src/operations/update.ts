@@ -1,5 +1,6 @@
 import { Backend } from '../backend'
 import { Progress } from '../progress';
+import { getInstallType, getRepoName } from './install';
 
 export default async function update (progressCallback?: (p: Progress) => void) {
   var reportProgress = (prog: Progress) => {
@@ -21,12 +22,23 @@ export default async function update (progressCallback?: (p: Progress) => void) 
     .catch(e => {
       console.error('Could not get SD root. ' + e)
       return
-    })
-
+    });
+  
   reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
   
+  let version = 'unknown';
+  await backend
+    .getVersion()
+    .then(ver => version = ver)
+    .catch(e => {
+      console.error('Could not get current version. ' + e)
+      return
+    });
+
+  let repoName = getRepoName(getInstallType(version));
+
   let latest = String(await backend.getRequest(
-    'https://github.com/HDR-Development/HDR-Nightlies/releases/latest/download/hdr_version.txt'
+    'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/hdr_version.txt'
   ));
   if (latest.startsWith("\"") && latest.endsWith("\"")) {
     latest = latest.substring(1, latest.length-1);
@@ -34,9 +46,13 @@ export default async function update (progressCallback?: (p: Progress) => void) 
   console.info('Latest is ' + latest)
 
   let downloads = sdroot + 'downloads/'
-  let version = 'unknown'
   let version_stripped = 'unknown'
   
+  if (version === latest) {
+    alert("The latest version is already installed!");
+    return;
+  }
+
   console.info('attempting to update chain')
   while (!(version === latest)) {
     reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
@@ -59,7 +75,7 @@ export default async function update (progressCallback?: (p: Progress) => void) 
       })
       .then(() =>
         backend.downloadFile(
-          'https://github.com/HDR-Development/HDR-Nightlies/releases/download/' +
+          'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
             version_stripped +
             '/upgrade.zip',
           downloads + 'upgrade.zip',
@@ -78,7 +94,7 @@ export default async function update (progressCallback?: (p: Progress) => void) 
       .then(async () =>{
         let deletions_file = downloads + 'deletions.json';
         await backend.downloadFile(
-          'https://github.com/HDR-Development/HDR-Nightlies/releases/download/' +
+          'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
             version_stripped +
             '/deletions.json',
           deletions_file,
@@ -135,3 +151,5 @@ export default async function update (progressCallback?: (p: Progress) => void) 
   }
 
 }
+
+

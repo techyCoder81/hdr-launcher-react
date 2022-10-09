@@ -5,7 +5,7 @@ import { TwitterTimelineEmbed } from 'react-twitter-embed';
 import { LogWindow } from './log_window';
 import Changelog from './changelog';
 import LatestChanges from './latest_changes';
-import { TwitterSingleton } from './twitter_singleton';
+import { TwitterEmbed } from './twitter_embed';
 import {FocusButton} from './focus_button';
 
 
@@ -18,7 +18,7 @@ enum ContentType {
 /**
  * header implementation
  */
- export default class Sidebar extends React.Component {
+ export default class Sidebar extends React.PureComponent {
 
     state = {
         mode: Backend.isNode() ? ContentType.Twitter : ContentType.Changelogs
@@ -36,7 +36,7 @@ enum ContentType {
                         </div>;
             default:
                     return <div className='twitter'>
-                                {TwitterSingleton.instance()}
+                                <TwitterEmbed/>
                             </div>
         }
     }

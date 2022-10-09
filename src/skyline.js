@@ -21,8 +21,6 @@ export function printData() {
 export function setButtonAction(button, action) {
     if (window.nx) {
         window.nx.footer.setAssign(button, "", action);
-    } else {
-        console.info("not on nx, no button assignments made.");
     }
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Remark } from "react-remark";
 import { Backend } from "../backend";
+import { getInstallType, getRepoName } from "../operations/install";
 
 type Props = {
     versions: string[];
@@ -21,7 +22,9 @@ type Props = {
             let logs = "";
             for (var version of props.versions) {
                 await Backend.instance().getJson(
-                    "https://github.com/HDR-Development/HDR-Nightlies/releases/download/" + version.split('-')[0] + "/CHANGELOG.md")
+                    "https://github.com/HDR-Development/"
+                    + getRepoName(getInstallType(version))
+                    + "/releases/download/" + version.split('-')[0] + "/CHANGELOG.md")
                     .then(str => logs += (str + "\n"))
                     .catch(e => console.info(e));
             }

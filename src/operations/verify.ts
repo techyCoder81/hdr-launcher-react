@@ -1,6 +1,7 @@
 import { Backend } from '../backend'
 import { Progress } from '../progress'
 import { PathList } from '../responses'
+import { getInstallType, getRepoName } from './install'
 
 export default async function verify (progressCallback?: (p: Progress) => void) {
   var backend = Backend.instance()
@@ -13,22 +14,26 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
     .catch(e => {
       console.error('Could not get SD root. ' + e)
       return
-    })
+    });
 
   let downloads = sdroot + 'downloads/'
   let version = 'unknown'
   await backend.getVersion().then(ver => {
     version = ver
     console.debug('version is: ' + ver)
-  })
+  }).catch(e => {
+    console.error('Could not get current version. ' + e)
+    return;
+  });
 
   let version_stripped = version.split('-')[0]
   let hash_file = downloads + 'content_hashes.json'
+  let repoName = getRepoName(getInstallType(version));
   
   // get the hashes file from github
   await backend
     .downloadFile(
-      'https://github.com/HDR-Development/HDR-Nightlies/releases/download/' +
+      'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
         version_stripped +
         '/content_hashes.json',
       hash_file,

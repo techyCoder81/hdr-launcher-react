@@ -5,7 +5,7 @@ import { Backend } from "../backend";
 /**
  * header implementation
  */
- export default function Header(props: { version: string}) {
+ function HeaderInner(props: { version: string}) {
     return (
     <div id="header" className='header'>
         <h1 id="title" className='header-item'>HDR {Backend.platformName()} Launcher</h1>
@@ -13,3 +13,5 @@ import { Backend } from "../backend";
     </div>
     );
 }
+
+export const Header = React.memo(HeaderInner);

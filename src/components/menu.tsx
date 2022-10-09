@@ -2,14 +2,12 @@ import * as React from 'react';
 import { Backend, NodeBackend } from "../backend";
 import update from '../operations/update';
 import verify from '../operations/verify';
-import install_latest from '../operations/install';
+import { installBeta, installNightly, installLatest } from '../operations/install';
 import { Progress } from '../progress';
 import ProgressDisplay from './progress_bar';
 import "../styles/progress.css";
-import Loading from './loading';
 import {FocusButton} from './focus_button';
 import * as skyline from "../skyline";
-import { Github } from '../operations/github_utils';
 
 type Props = {
         onUpdate: () => void;
@@ -29,15 +27,16 @@ enum MenuType {
 export default class Menu extends React.Component<Props> {
         state = { 
                 currentMenu: MenuType.CheckingInstalled,
-                progress: null
+                progress: null,
+                version: "unknown",
         }
 
-        private onUpdate;
+        private updateParent;
 
         switchTo(menu: MenuType) {
-                this.setState({currentMenu: menu, progress: null});
-                this.onUpdate();
-
+                this.updateParent();
+                this.setState({currentMenu: menu, progress: this.state.progress, version: this.state.version});
+                
                 // assign button actions for switch
                 skyline.setButtonAction("X", () => {})
                 switch(this.state.currentMenu) {
@@ -50,13 +49,34 @@ export default class Menu extends React.Component<Props> {
                 }
         }
 
+        setVersion(version: string) {
+                console.info("setting version: " + version);
+                this.setState({
+                        currentMenu: this.state.currentMenu, 
+                        progress: this.state.progress, 
+                        version: version
+                });
+        }
+
+        loadVersion() {
+                Backend.instance()
+                        .getVersion()
+                        .then(ver => {console.info("loaded version: " + ver);this.setVersion(ver);})
+                        .then(() => this.updateParent())
+                        .catch(e => console.error("console error: " + e));
+        }
+
         setProgress(progress: Progress) {
-                this.setState({currentMenu: this.state.currentMenu, progress: progress});
+                this.setState({
+                        currentMenu: this.state.currentMenu, 
+                        progress: progress,
+                        version: this.state.version
+                });
         }
 
         public constructor(props: Props) {
                 super(props);
-                this.onUpdate = props.onUpdate;
+                this.updateParent = props.onUpdate;
         }
 
         /**
@@ -74,6 +94,7 @@ export default class Menu extends React.Component<Props> {
                                 onClick={() => {
                                         this.switchTo(MenuType.Progress);
                                         update((p: Progress) => this.setProgress(p))
+                                                .then(() => this.loadVersion())
                                                 .then(() => this.switchTo(MenuType.MainMenu))
                                                 .catch(e => this.switchTo(MenuType.MainMenu));
                         }}/>
@@ -99,10 +120,34 @@ export default class Menu extends React.Component<Props> {
          * @returns the options menu
          */
         optionsMenu(): JSX.Element {
+                
                 return <div className="main-menu">
                         <FocusButton text='Mod Manager&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => Backend.instance().openModManager()}/>
+                        {
+                        this.state.version.toLowerCase().includes("nightly") ? 
+                        <FocusButton text='Install Beta&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={async () => {
+                                        this.switchTo(MenuType.Progress);
+                                        await installBeta(this.state.version, (p: Progress) => this.setProgress(p))
+                                                .then(() => verify((p: Progress) => this.setProgress(p)))
+                                                .then(() => this.loadVersion())
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during beta switch: " + e)});
+                        }}/> :
+                        <FocusButton text='Install Nightly&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={async () => {
+                                        this.switchTo(MenuType.Progress);
+                                        await installNightly(this.state.version, (p: Progress) => this.setProgress(p))
+                                                .then(() => verify((p: Progress) => this.setProgress(p)))
+                                                .then(() => this.loadVersion())
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during nightly switch: " + e)});
+                        }}/>
+                        }
                         <FocusButton text='Main Menu&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => this.switchTo(MenuType.MainMenu)}/>
@@ -117,7 +162,6 @@ export default class Menu extends React.Component<Props> {
                 
                 return <div id="menu">
                         <div className="main-menu">
-                        <h1>HDR Is not Installed.</h1>
                         <FocusButton text='Play Vanilla&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => Backend.instance().play()}/>
@@ -126,7 +170,9 @@ export default class Menu extends React.Component<Props> {
                                 className={"main-buttons"} 
                                 onClick={async () => {
                                         this.switchTo(MenuType.Progress);
-                                        await install_latest((p: Progress) => this.setProgress(p))
+                                        await installLatest((p: Progress) => this.setProgress(p))
+                                                .then(() => verify((p: Progress) => this.setProgress(p)))
+                                                .then(() => this.loadVersion())
                                                 .then(() => this.switchTo(MenuType.MainMenu))
                                                 .catch(e => {
                                                         this.switchTo(MenuType.MainMenu);
@@ -141,24 +187,6 @@ export default class Menu extends React.Component<Props> {
                 </div>
         }   
         
-        /**
-         * builds the "checking if installed" view
-         * @returns the checking if installed menu
-         */
-         checkingInstalledMenu() {
-                
-                return <Loading entering={true} />
-        }  
-        
-        /**
-         * builds the "checking if installed" view
-         * @returns the checking if installed menu
-         */
-         doneLoading() {
-                
-                return <Loading entering={true} />
-        }  
-
         /**
          * builds the progress bar view
          * @returns the progress view
@@ -176,7 +204,7 @@ export default class Menu extends React.Component<Props> {
                         case MenuType.Options:
                                 return this.optionsMenu(); 
                         case MenuType.CheckingInstalled:
-                                return this.checkingInstalledMenu();
+                                return <div/>
                         case MenuType.NotInstalled:
                                 return this.notInstalledMenu();
                         case MenuType.Progress:
@@ -187,14 +215,14 @@ export default class Menu extends React.Component<Props> {
         }
 
         render() {
+                console.info("menu render with:" + this.state.version);
                 return <div>
                         {this.getMenu()}
                 </div>
         }
 
         checkInstalled() {
-                Github.pullRequests()
-                        .then(_ => Backend.instance().isInstalled())
+                Backend.instance().isInstalled()
                         .then(installed => {
                                 if (installed) {
                                         this.switchTo(MenuType.MainMenu);
@@ -203,11 +231,12 @@ export default class Menu extends React.Component<Props> {
                                 } 
                         }).catch(e => {
                                 console.error("Error while checking if installed!\n" + e);
-                                alert("Error while checking if installed!\n" + e);
                         });
         }
 
         componentDidMount() {
                 this.checkInstalled();
+                this.loadVersion();
+
         }
 }

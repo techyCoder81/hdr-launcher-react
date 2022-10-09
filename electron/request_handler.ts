@@ -163,7 +163,7 @@ export class RequestHandler {
                             mainWindow?.webContents.send(
                                 "progress", 
                                 new Progress(
-                                    "Download File", 
+                                    "Downloading Update", 
                                     "Downloading from " + url, 
                                     Math.trunc(100 * current/total)
                                 )

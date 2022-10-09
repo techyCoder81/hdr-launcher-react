@@ -3,6 +3,7 @@ import React from "react";
 import ReactModal from "react-modal";
 import { Backend } from "../backend";
 import "../styles/progress.css"
+import SlidingBackground from "./sliding_background";
 
 
 ReactModal.setAppElement('#root');
@@ -23,10 +24,7 @@ var platformCache;
     }
 
     return <div className="progress-block vertical-center">
-      {props.animate ? (<div>
-      <div className="bg"></div>
-      <div className="bg bg2"></div>
-      <div className="bg bg3"></div></div>) : <div></div>
+      {props.animate ? (<SlidingBackground/>) : <div></div>
       }
       <h1>{props.progress.title}</h1>
       {/*<p>{props.progress.info}</p> */}

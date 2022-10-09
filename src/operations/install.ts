@@ -2,41 +2,98 @@ import { Backend } from '../backend'
 import { Progress } from '../progress';
 import verify from './verify';
 
-export default async function install_latest(progressCallback?: (p: Progress) => void) {
-  var reportProgress = (prog: Progress) => {
-    if (typeof progressCallback !== 'undefined') {
-      progressCallback(prog);
-    }
+export enum InstallType {
+  Beta,
+  Nightly,
+  Unknown
+}
+
+export function getInstallType(version: string): InstallType {
+  if (version.toLowerCase().includes("nightly")) {
+    return InstallType.Nightly;
+  } else if (version.toLowerCase().includes("beta")) {
+    return InstallType.Beta;
+  } else {
+    return InstallType.Unknown;
   }
-  var backend = Backend.instance();
-  var sdroot = ''
-  await backend
-    .getSdRoot()
-    .then(value => {
-      sdroot = value
-    })
-    .catch(e => {
-      console.error('Could not get SD root. ' + e)
-      return
-    })
+}
+
+export function getRepoName(type: InstallType) {
+  switch(type) {
+    case InstallType.Beta:
+      return "HDR-Releases";
+    case InstallType.Nightly:
+      return "HDR-Nightlies";
+    default:
+      return "unknown";
+  }
+}
+
+export async function installLatest(progressCallback?: (p: Progress) => void, type?: InstallType) {
+  if (typeof type === 'undefined') {
+    console.info("defaulting to beta installation");
+    return installArtifact("switch-package.zip", "latest", InstallType.Beta, progressCallback);
+  }
+  
+  return installArtifact("switch-package.zip", "latest", type, progressCallback);
+}
+
+export async function installNightly(currentVersion: string, progressCallback?: (p: Progress) => void) {
+  return installArtifact("to-nightly.zip", currentVersion, InstallType.Beta, progressCallback);
+}
+
+export async function installBeta(currentVersion: string, progressCallback?: (p: Progress) => void) {
+  return installArtifact("to-beta.zip", currentVersion, InstallType.Nightly, progressCallback);
+}
+
+async function installArtifact(artifact: string, version: string, type: InstallType, progressCallback?: (p: Progress) => void) {
+  try {
+    var backend = Backend.instance();
+    var sdroot = ''
+
+    await backend
+      .getSdRoot()
+      .then(value => {
+        sdroot = value
+      })
+      .catch(e => {
+        console.error('Could not get SD root. ' + e)
+        return
+      })
+
+    if (progressCallback) {
+      progressCallback(new Progress("Checking version", "Checking", null));
+    }
+
     let downloads = sdroot + 'downloads/';
 
-    reportProgress(new Progress("Downloading the latest HDR nightly", "downloading HDR", null));
+    console.info("version: " + version);
 
+    let repoName = getRepoName(type);
+
+    let url = version == "latest" ? 
+      'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/' + artifact
+      : 'https://github.com/HDR-Development/' + repoName + '/releases/download/' + version.split('-')[0] + '/' + artifact;
+
+    console.info("downloading from: " + url);
 
     await backend.downloadFile(
-        'https://github.com/HDR-Development/HDR-Nightlies/releases/latest/download/switch-package.zip',
+        url,
         downloads + 'hdr-install.zip',
-        (p: Progress) => reportProgress(p)
+        progressCallback
       ).then(result => console.info("Result of download: " + result))
       .then(() => {
-        reportProgress(new Progress("Extracting", "Extracting files", null));
+        if (progressCallback) {
+          progressCallback(new Progress("Extracting", "Extracting files", 0));
+        }
       })
       .then(() => backend.unzip(downloads + "hdr-install.zip", sdroot))
       .then(result => console.info("Result of extraction: " + result))
-      .then(() => verify(progressCallback))
       .catch(e => {
         console.error("Error during install! " + e);
         alert("Error during install: " + e);
       });
+    } catch (e) {
+      alert("Exception while installing: " + e);
+    }
 }
