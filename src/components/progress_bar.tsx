@@ -18,7 +18,7 @@ var platformCache;
 /** 
  * progress bar implementation
  */
- export default function ProgressDisplay(props: any) {
+function ProgressDisplayInner(props: any) {
     if (props.progress === undefined || props.progress == null) {
       return <div></div>
     }
@@ -41,3 +41,4 @@ var platformCache;
     </div>
 } 
  
+export const ProgressDisplay = React.memo(ProgressDisplayInner);

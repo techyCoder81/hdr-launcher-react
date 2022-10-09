@@ -4,7 +4,7 @@ import update from '../operations/update';
 import verify from '../operations/verify';
 import { installBeta, installNightly, installLatest } from '../operations/install';
 import { Progress } from '../progress';
-import ProgressDisplay from './progress_bar';
+import {ProgressDisplay} from './progress_bar';
 import "../styles/progress.css";
 import {FocusButton} from './focus_button';
 import * as skyline from "../skyline";
@@ -24,7 +24,7 @@ enum MenuType {
 /**
  * main menu implementation
  */
-export default class Menu extends React.Component<Props> {
+export default class Menu extends React.PureComponent<Props> {
         state = { 
                 currentMenu: MenuType.CheckingInstalled,
                 progress: null,
@@ -35,13 +35,13 @@ export default class Menu extends React.Component<Props> {
 
         switchTo(menu: MenuType) {
                 this.updateParent();
-                this.setState({currentMenu: menu, progress: this.state.progress, version: this.state.version});
+                this.setState({currentMenu: menu, progress: null, version: this.state.version});
                 
                 // assign button actions for switch
                 skyline.setButtonAction("X", () => {})
                 switch(this.state.currentMenu) {
                         case MenuType.Options:
-                                skyline.setButtonAction("B", () => this.switchTo(MenuType.MainMenu));
+                                skyline.setButtonAction("B", () => {});
                                 break;
                         default:
                                 skyline.setButtonAction("B", () => {});
