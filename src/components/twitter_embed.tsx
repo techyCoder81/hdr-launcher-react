@@ -21,7 +21,7 @@ import { TwitterTimelineEmbed } from "react-twitter-embed";
 export const TwitterEmbed = React.memo(TwitterEmbedInner);
 
 function getPlaceholder() {
-    return <div>&nbsp;Loading twitter feed...</div>
+    return <div className="sidebar-inner">&nbsp;Loading twitter feed...</div>
 }
 
 

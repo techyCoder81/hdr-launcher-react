@@ -4,6 +4,7 @@ import { PathList } from '../responses'
 import { getInstallType, getRepoName } from './install'
 
 export default async function verify (progressCallback?: (p: Progress) => void) {
+
   var backend = Backend.instance()
   var sdroot = ''
   await backend
@@ -15,6 +16,16 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
       console.error('Could not get SD root. ' + e)
       return
     });
+
+  if (typeof progressCallback !== 'undefined') {
+    progressCallback(
+      new Progress(
+        "Checking Versions", 
+        "Checking", 
+        null
+      )
+    );
+  }
 
   let downloads = sdroot + 'downloads/'
   let version = 'unknown'
@@ -39,7 +50,7 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
       hash_file,
       (p: Progress) => {if (typeof progressCallback !== 'undefined') {progressCallback(p);}}
     )
-    .then(result => console.info(result))
+    .then(result => console.debug(result))
     .catch(e => console.error(e))
   let matches = true
   
@@ -139,8 +150,9 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
 
       // delete any problematic files in the HDR dirs
       if (unexpected_files.length > 0) {
-        let ok = confirm("The following unexpected files were found which will be deleted:\n"
-          + unexpected_files.join("\n"));
+        let text = unexpected_files.length < 10 ? "The following unexpected files were found which will be deleted:\n"
+          + unexpected_files.join("\n") : "Multiple unexpected files were found in the HDR folders, which will be deleted.";
+        let ok = confirm(text);
 
         if (ok) {
           unexpected_files.forEach(async file => 
@@ -184,6 +196,13 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
         } else if (!expected_files.includes(plugin)) {
           should_warn.push(plugin);
         }
+      }
+
+      // launcher nro is unnecessary on ryujinx and will actually cause a crash (for the old launcher)
+      if (Backend.isNode() && (await backend.fileExists(sdroot + plugins_dir + "/hdr-launcher.nro"))) {
+        await backend.deleteFile(sdroot + plugins_dir + "/hdr-launcher.nro")
+          .then(str => console.debug("deleted old launcher"))
+          .catch(e => console.error(e));
       }
 
       // determine if all is well

@@ -46,39 +46,31 @@
     font-size: 4rem;
     font-weight: bold;
     font-style: italic;
-    background: -webkit-linear-gradient(90deg, silver, rgb(116, 117, 117));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; 
-    filter: drop-shadow(3px 3px 3px #333);
+    color: silver;
   }
 
   .remix {
     font-size: 5rem;
     font-weight: bold; 
     font-style: italic; 
-    background: -webkit-linear-gradient(90deg, var(--slide-green-2), var(--slide-green-1));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(3px  3px #333);
+    color: green;
   }
   
   @keyframes slide-from-left {
     0% {
       transform:translateX(-20%);
       -webkit-transform:translateX(-20%);
-      opacity: 0%;
+      opacity: 0;
     }
     30%,70% { 
       transform:translateX(32%);
       -webkit-transform:translateX(32%);
-      opacity: 100%;
+      opacity: 1;
     }
     100% {
       transform:translateX(100%);
       -webkit-transform:translateX(100%);
-      opacity: 0%;
+      opacity: 0;
     }
   }
   
@@ -86,26 +78,26 @@
     0% {
       transform:translateX(100%);
       -webkit-transform:translateX(100%);
-      opacity: 0%;
+      opacity: 0;
     }
     30%,70% {
       transform:translateX(45%);
       -webkit-transform:translateX(45%);
-      opacity: 100%;
+      opacity: 1;
     }
     100% {
       transform:translateX(-20%);
       -webkit-transform:translateX(-20%);
-      opacity: 0%;
+      opacity: 0;
     }
   }
 
   @keyframes fade-out {
     0%,85% {
-      opacity: 100%;
+      opacity: 1;
     }
     100% {
-      opacity: 0%;
+      opacity: 0;
       visibility: hidden;
     }
   }

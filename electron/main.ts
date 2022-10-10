@@ -43,15 +43,21 @@ async function findEmulator() {
     console.error("Browserwindow was not defined!");
     dialog.showErrorBox("Invalid window context!", 
       "Browser window was not defined! The application will now close");
-    app.quit();
+    app.exit(0);
     return;
   }
   while (Config.getRyuPath() == null || Config.getRyuPath() == "") {
     // show instructions to the user
-    dialog.showMessageBoxSync(mainWindow, {
+    let response = dialog.showMessageBoxSync(mainWindow, {
       title: "Instructions", 
-      message: "Please select your Ryujinx executable."
+      message: "Please select your Ryujinx executable.",
+      buttons: ["ok" , "cancel"]
     });
+
+    if (response != 0) {
+      app.exit(0);
+      return;
+    }
 
     // let the user point us to ryujinx
     let selectedPath = dialog.showOpenDialogSync(mainWindow, { 
@@ -59,9 +65,9 @@ async function findEmulator() {
       properties: ['openFile'],
       filters: [ { name: 'Ryujinx Executables', extensions: ['', 'exe'] } ]
     });
-    if (selectedPath == undefined || selectedPath.length < 1) {
+    if (!selectedPath || selectedPath.length < 1) {
       console.warn("User cancelled finding ryujinx!");
-      app.quit();
+      app.exit(0);
       continue;
     }
     let ryuPath = selectedPath[0];
@@ -92,26 +98,32 @@ async function findRom() {
     console.error("Browserwindow was not defined!");
     dialog.showErrorBox("Invalid window context!", 
       "Browser window was not defined! The application will now close");
-    app.quit();
+    app.exit(0);
     return;
   }
 
   while (Config.getRomPath() == null || Config.getRomPath() == "") {
     // show instructions to the user
-    dialog.showMessageBoxSync(mainWindow, {
+    let response = dialog.showMessageBoxSync(mainWindow, {
       title: "Instructions", 
-      message: "Please select your valid Smash Ultimate dump file"
+      message: "Please select your valid Smash Ultimate 13.0.1 dump.",
+      buttons: ["ok" , "cancel"]
     });
+
+    if (response != 0) {
+      app.exit(0);
+      return;
+    }
 
     // let the user point us to the rom
     let selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-      title: "Please select your valid Smash Ultimate dump file", 
+      title: "Please select your valid Smash Ultimate dump.", 
       properties: ['openFile'],
       filters: [ { name: 'Switch Roms', extensions: ['nsp', 'xci'] } ]
     });
-    if (selectedPath == undefined || selectedPath.length < 1) {
+    if (!selectedPath || selectedPath.length < 1) {
       console.warn("User cancelled finding ultimate dump!");
-      app.quit();
+      app.exit(0);
       continue;
     }
     let romPath = selectedPath[0];

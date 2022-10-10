@@ -192,9 +192,7 @@ export default class Menu extends React.PureComponent<Props> {
          * @returns the progress view
          */
         progressView() {
-                return <div className='overlay'>
-                        <ProgressDisplay progress={this.state.progress} animate={Backend.instance() instanceof NodeBackend} />
-                </div>
+                return  <ProgressDisplay progress={this.state.progress} animate={Backend.instance() instanceof NodeBackend} />
         }
 
         getMenu() {

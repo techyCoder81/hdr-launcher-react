@@ -39,7 +39,7 @@ export default class App extends React.Component {
     return (
       <div>
         <Header version={this.state.version} />
-        {Backend.isNode() ? (<SlidingBackground/>) : <div></div>
+        {Backend.isNode() ? (<SlidingBackground/>) : <div className='gradient-background'></div>
         }
         {this.state.loading ?
           <Loading/> : <div/>}

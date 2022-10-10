@@ -13,8 +13,6 @@ const customStyles = {
     overlay: {zIndex: 1000}
 };
 
-var platformCache;
-
 /** 
  * progress bar implementation
  */
@@ -23,21 +21,23 @@ function ProgressDisplayInner(props: any) {
       return <div></div>
     }
 
-    return <div className="progress-block vertical-center">
-      {props.animate ? (<SlidingBackground/>) : <div></div>
-      }
-      <h1>{props.progress.title}</h1>
-      {/*<p>{props.progress.info}</p> */}
-      <ProgressBar 
-        className="progress-wrapper" 
-        completed={
-          props.progress.progress == null ? 0 : props.progress.progress
+    return <div className="overlay-progress">
+        <div className="progress-block vertical-center">
+        {props.animate ? (<SlidingBackground/>) : <div></div>
         }
-        transitionDuration="100ms"
-        isLabelVisible={false}
-        bgColor="var(--main-button-bg-color)"
-        borderRadius="0px"
-      />
+        <h1>{props.progress.title}</h1>
+        {/*<p>{props.progress.info}</p> */}
+        <ProgressBar 
+          className="progress-wrapper" 
+          completed={
+            props.progress.progress == null ? 0 : props.progress.progress
+          }
+          transitionDuration="100ms"
+          isLabelVisible={false}
+          bgColor="var(--main-button-bg-color)"
+          borderRadius="0px"
+        />
+      </div>
     </div>
 } 
  

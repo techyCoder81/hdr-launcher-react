@@ -7,7 +7,7 @@
 }
 
 .progress-background {
-    background-color: var(--slide-green-2);
+    background: linear-gradient(30deg, var(--main-button-bg-color), rgb(94, 93, 93));
 }
 
 .vertical-center {
@@ -22,3 +22,13 @@
     border: 3px solid var(--buttons-border-color);
     transform: skewX(20deg);
 }
+
+.overlay-progress {
+    z-index: 999;
+    background: linear-gradient(30deg, var(--main-button-bg-color), rgb(94, 93, 93));
+    position: absolute;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
+  }

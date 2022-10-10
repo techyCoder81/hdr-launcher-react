@@ -5,6 +5,7 @@ import { app } from 'electron'
 import * as Process from 'child_process';
 import Config from './config';
 import { createWindow, mainWindow } from './main';
+import * as net from 'net';
 
 export class MessageHandler {
 
@@ -25,9 +26,25 @@ export class MessageHandler {
                 }
                 console.log("Starting the game, with command: " + command);
                 Process.exec(command, () => {
-                    createWindow();
+                    mainWindow?.show();
                 });
-                mainWindow?.close();
+                mainWindow?.hide();
+                
+                let did_connect = false;
+                let connect = () => {
+                    var s = net.createConnection(6969, "localhost");
+                    s.on('data', function(data) {
+                        did_connect = true;
+                        console.log(data.toString());
+                    });
+                    s.on('error', e => {
+                        if (!did_connect) {
+                            console.info("waiting for skyline logger...");
+                            setTimeout(connect, 1000);
+                        }
+                    });
+                }
+                setTimeout(connect, 1000);
                 break;
             default:
                 console.error("Could not handle message with name: " + name);

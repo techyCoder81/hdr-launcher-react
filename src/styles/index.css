@@ -34,6 +34,16 @@ body {
   background-color: linear-gradient(30deg, var(--main-button-bg-color), rgb(119, 119, 119));
 }
 
+.gradient-background {
+  bottom:0;
+  left:0;
+  position:absolute;
+  right:0;
+  top:0;
+  z-index:-1;
+  background: linear-gradient(30deg, var(--main-button-bg-color), rgb(94, 93, 93));
+}
+
 .main-menu {
   transition: 1000ms linear;
   -webkit-transition: 1000ms linear;
