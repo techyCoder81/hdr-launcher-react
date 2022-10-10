@@ -1,5 +1,6 @@
 import { Backend } from '../backend'
 import { Progress } from '../progress';
+import { handleDeletions } from './update';
 import verify from './verify';
 
 export enum InstallType {
@@ -38,12 +39,14 @@ export async function installLatest(progressCallback?: (p: Progress) => void, ty
   return installArtifact("switch-package.zip", "latest", type, progressCallback);
 }
 
-export async function installNightly(currentVersion: string, progressCallback?: (p: Progress) => void) {
-  return installArtifact("to-nightly.zip", currentVersion, InstallType.Beta, progressCallback);
+export async function switchToNightly(currentVersion: string, progressCallback?: (p: Progress) => void) {
+  return installArtifact("to-nightly.zip", currentVersion, InstallType.Beta, progressCallback)
+    .then(() => handleDeletions(currentVersion, "to_nightly_deletions.json", progressCallback));
 }
 
-export async function installBeta(currentVersion: string, progressCallback?: (p: Progress) => void) {
-  return installArtifact("to-beta.zip", currentVersion, InstallType.Nightly, progressCallback);
+export async function switchToBeta(currentVersion: string, progressCallback?: (p: Progress) => void) {
+  return installArtifact("to-beta.zip", currentVersion, InstallType.Nightly, progressCallback)
+    .then(() => handleDeletions(currentVersion, "to_beta_deletions.json", progressCallback));
 }
 
 async function installArtifact(artifact: string, version: string, type: InstallType, progressCallback?: (p: Progress) => void) {

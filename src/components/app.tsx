@@ -35,7 +35,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    console.info("rendering with:" + this.state.version);
     return (
       <div>
         <Header version={this.state.version} />

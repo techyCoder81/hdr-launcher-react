@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Backend, NodeBackend } from "../backend";
 import update from '../operations/update';
 import verify from '../operations/verify';
-import { installBeta, installNightly, installLatest } from '../operations/install';
+import { installLatest, switchToBeta, switchToNightly } from '../operations/install';
 import { Progress } from '../progress';
 import {ProgressDisplay} from './progress_bar';
 import "../styles/progress.css";
@@ -131,20 +131,20 @@ export default class Menu extends React.PureComponent<Props> {
                                 className={"main-buttons"} 
                                 onClick={async () => {
                                         this.switchTo(MenuType.Progress);
-                                        await installBeta(this.state.version, (p: Progress) => this.setProgress(p))
-                                                .then(() => verify((p: Progress) => this.setProgress(p)))
+                                        await switchToBeta(this.state.version, (p: Progress) => this.setProgress(p))
+                                                //.then(() => verify((p: Progress) => this.setProgress(p)))
                                                 .then(() => this.loadVersion())
-                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .then(() => {alert("Switched successfully!");this.switchTo(MenuType.MainMenu);})
                                                 .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during beta switch: " + e)});
                         }}/> :
                         <FocusButton text='Install Nightly&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={async () => {
                                         this.switchTo(MenuType.Progress);
-                                        await installNightly(this.state.version, (p: Progress) => this.setProgress(p))
-                                                .then(() => verify((p: Progress) => this.setProgress(p)))
+                                        await switchToNightly(this.state.version, (p: Progress) => this.setProgress(p))
+                                                //.then(() => verify((p: Progress) => this.setProgress(p)))
                                                 .then(() => this.loadVersion())
-                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .then(() => {alert("Switched successfully!");this.switchTo(MenuType.MainMenu);})
                                                 .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during nightly switch: " + e)});
                         }}/>
                         }
@@ -213,7 +213,6 @@ export default class Menu extends React.PureComponent<Props> {
         }
 
         render() {
-                console.info("menu render with:" + this.state.version);
                 return <div>
                         {this.getMenu()}
                 </div>
