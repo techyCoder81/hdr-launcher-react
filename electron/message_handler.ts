@@ -6,6 +6,7 @@ import * as Process from 'child_process';
 import Config from './config';
 import { createWindow, mainWindow } from './main';
 import * as net from 'net';
+import * as path from 'path';
 
 export class MessageHandler {
 
@@ -20,7 +21,7 @@ export class MessageHandler {
                 app.quit();
                 break;
             case "play":
-                let command = Config.getRyuPath() + " " + Config.getRomPath();
+                let command = path.normalize(Config.getRyuPath() + " " + Config.getRomPath());
                 if (process.platform == "win32") {
                     command = "start cmd /k \"" + command + "\"";
                 }

@@ -8,8 +8,8 @@ import { Backend } from "../backend";
  function HeaderInner(props: { version: string}) {
     return (
     <div id="header" className='header'>
-        <h1 id="title" className='header-item'>HDR {Backend.platformName()} Launcher</h1>
-        <h1 id="version" className='header-item'>Version: {props.version}</h1>
+        <p id="title" className='header-item'>HDR {Backend.platformName()} Launcher</p>
+        <p id="version" className='header-item'>Version: {props.version}</p>
     </div>
     );
 }

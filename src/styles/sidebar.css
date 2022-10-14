@@ -1,0 +1,53 @@
+:root {
+    --sidebar-button-width: 30px;
+    --sidebar-button-height: 150px;
+}
+
+.button-container {
+    position:relative;
+    top: 50%;
+    width: var(--sidebar-button-width);
+    height: var(--sidebar-button-height);
+}
+
+.open-button {
+    position: relative;
+    transform: translateX(calc(-0.5 * var(--sidebar-button-height) + 0.5 * var(--sidebar-button-width))) rotate(-90deg);
+    height: var(--sidebar-button-width);
+    width: var(--sidebar-button-height);
+    
+}
+
+.sidebar-container {
+    transition: 1000ms linear;
+    -webkit-transition: 1000ms linear;
+    position: absolute;
+    right: 0px;
+    top: 10%;
+    height: 70%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.wide {
+    width: 65%;
+}
+
+.open-sidebar {
+    display: relative;
+    width: calc(100% - var(--sidebar-button-width));
+    transform: translateX(var(--sidebar-button-width)) translateY(-125px);
+    border: 3px solid var(--main-button-border-color);
+    height: 90%;
+    padding: 4px;
+    color:white;
+}
+
+.blur-back {
+    backdrop-filter: blur(10px);
+}
+
+.opaque {
+    background-color: rgb(68, 68, 68);
+    opacity: 0.5;
+}

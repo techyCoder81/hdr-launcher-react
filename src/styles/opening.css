@@ -4,7 +4,7 @@
 
 .overlay-opening {
     z-index: 999;
-    background: linear-gradient(30deg, var(--main-button-bg-color), rgb(94, 93, 93));
+    background-color: black;
     position: absolute;
     top:0px;
     right:0px;

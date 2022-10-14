@@ -8,6 +8,10 @@ import {ProgressDisplay} from './progress_bar';
 import "../styles/progress.css";
 import {FocusButton} from './focus_button';
 import * as skyline from "../skyline";
+import InfoBox from './info_box';
+import Sidebar from './sidebar';
+import { Header } from './header';
+import logo from '../../assets/logo_full.png';
 
 type Props = {
         onUpdate: () => void;
@@ -29,13 +33,14 @@ export default class Menu extends React.PureComponent<Props> {
                 currentMenu: MenuType.CheckingInstalled,
                 progress: null,
                 version: "unknown",
+                info: "  ",
         }
 
         private updateParent;
 
         switchTo(menu: MenuType) {
                 this.updateParent();
-                this.setState({currentMenu: menu, progress: null, version: this.state.version});
+                this.setState({currentMenu: menu, progress: null, version: this.state.version, info: this.state.info});
                 
                 // assign button actions for switch
                 skyline.setButtonAction("X", () => {})
@@ -54,7 +59,8 @@ export default class Menu extends React.PureComponent<Props> {
                 this.setState({
                         currentMenu: this.state.currentMenu, 
                         progress: this.state.progress, 
-                        version: version
+                        version: version,
+                        info: this.state.info
                 });
         }
 
@@ -70,7 +76,17 @@ export default class Menu extends React.PureComponent<Props> {
                 this.setState({
                         currentMenu: this.state.currentMenu, 
                         progress: progress,
-                        version: this.state.version
+                        version: this.state.version,
+                        info: this.state.info
+                });
+        }
+
+        setInfo(info: string) {
+                this.setState({
+                        currentMenu: this.state.currentMenu, 
+                        progress: this.state.progress,
+                        version: this.state.version,
+                        info: info
                 });
         }
 
@@ -88,7 +104,8 @@ export default class Menu extends React.PureComponent<Props> {
                         <FocusButton text='Play&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => Backend.instance().play()}
-                                autofocus={Backend.isSwitch()}/>
+                                autofocus={Backend.isSwitch()}
+                                onFocus={() => this.setInfo("Play HDR!")}/>
                         <FocusButton text='Update&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => {
@@ -97,7 +114,9 @@ export default class Menu extends React.PureComponent<Props> {
                                                 .then(() => this.loadVersion())
                                                 .then(() => this.switchTo(MenuType.MainMenu))
                                                 .catch(e => this.switchTo(MenuType.MainMenu));
-                        }}/>
+                                }}
+                                onFocus={() => this.setInfo("Update your HDR Installation")}
+                        />
                         <FocusButton text='Verify&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => {
@@ -105,13 +124,17 @@ export default class Menu extends React.PureComponent<Props> {
                                         verify((p: Progress) => this.setProgress(p))
                                                 .then(() => this.switchTo(MenuType.MainMenu))
                                                 .catch(e => this.switchTo(MenuType.MainMenu));
-                        }}/>
+                                }}
+                                onFocus={() => this.setInfo("Verify your HDR files")}
+                        />
                         <FocusButton text='Options&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
-                                onClick={() => this.switchTo(MenuType.Options)}/>
+                                onClick={() => this.switchTo(MenuType.Options)}
+                                onFocus={() => this.setInfo("Open the Options menu")}/>
                         <FocusButton text='Exit&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
-                                onClick={() => Backend.instance().quit()}/>
+                                onClick={() => Backend.instance().quit()}
+                                onFocus={() => this.setInfo("Exit the game")}/>
                 </div>
         }
 
@@ -122,9 +145,10 @@ export default class Menu extends React.PureComponent<Props> {
         optionsMenu(): JSX.Element {
                 
                 return <div className="main-menu">
-                        <FocusButton text='Mod Manager&nbsp;&nbsp;' 
+                        <FocusButton text='Arcadia&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
-                                onClick={() => Backend.instance().openModManager()}/>
+                                onClick={() => Backend.instance().openModManager()}
+                                onFocus={() => this.setInfo("Open the Mod Manager")}/>
                         {
                         this.state.version.toLowerCase().includes("nightly") ? 
                         <FocusButton text='Install Beta&nbsp;&nbsp;' 
@@ -136,7 +160,9 @@ export default class Menu extends React.PureComponent<Props> {
                                                 .then(() => this.loadVersion())
                                                 .then(() => {alert("Switched successfully!");this.switchTo(MenuType.MainMenu);})
                                                 .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during beta switch: " + e)});
-                        }}/> :
+                                }}
+                                onFocus={() => this.setInfo("Switch to the Beta version of HDR")}
+                        /> :
                         <FocusButton text='Install Nightly&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={async () => {
@@ -146,11 +172,14 @@ export default class Menu extends React.PureComponent<Props> {
                                                 .then(() => this.loadVersion())
                                                 .then(() => {alert("Switched successfully!");this.switchTo(MenuType.MainMenu);})
                                                 .catch(e => {this.switchTo(MenuType.MainMenu); alert("Error during nightly switch: " + e)});
-                        }}/>
+                                }}
+                                onFocus={() => this.setInfo("Switch to the Nightly version of HDR")}
+                        />
                         }
                         <FocusButton text='Main Menu&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
-                                onClick={() => this.switchTo(MenuType.MainMenu)}/>
+                                onClick={() => this.switchTo(MenuType.MainMenu)}
+                                onFocus={() => this.setInfo("Return to the Main menu")}/>
                 </div>
         }      
         
@@ -164,7 +193,8 @@ export default class Menu extends React.PureComponent<Props> {
                         <div className="main-menu">
                         <FocusButton text='Play Vanilla&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
-                                onClick={() => Backend.instance().play()}/>
+                                onClick={() => Backend.instance().play()}
+                                onFocus={() => this.setInfo("Play vanilla Ultimate")}/>
                         
                         <FocusButton text='Install HDR&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
@@ -180,8 +210,9 @@ export default class Menu extends React.PureComponent<Props> {
                                                 });
                                         this.switchTo(MenuType.CheckingInstalled);
                                         this.checkInstalled();
-                                }
-                        }/>
+                                }}
+                                onFocus={() => this.setInfo("Install the latest version of HDR")}
+                        />
                         
                         </div>
                 </div>
@@ -213,8 +244,19 @@ export default class Menu extends React.PureComponent<Props> {
         }
 
         render() {
-                return <div>
-                        {this.getMenu()}
+                return <div className='full'>
+                        <Header version={this.state.version} />
+                        <div className='app-body'>
+                                <div className="left-side" id="left-side">
+                                        {this.getMenu()}
+                                </div>
+                                <div className="right-side" id="right-side">
+                                        <div className='image'>
+                                                <img src={logo} alt="Logo" />
+                                        </div>
+                                </div>
+                        </div>
+                        <InfoBox text={this.state.info}/>
                 </div>
         }
 

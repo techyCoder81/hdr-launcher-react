@@ -7,6 +7,7 @@ use prettify_js::*;
 
 static JS_FILE_PATH: &str = "../.webpack/renderer/main_window/index.js";
 static HTML_FILE_PATH: &str = "../.webpack/renderer/main_window/index.html";
+static LOGO_FILE_PATH: &str = "../.webpack/renderer/assets/logo_full.png";
 
 fn main() -> std::io::Result<()> {
     println!("current dir: {}", env::current_dir()?.display());
@@ -27,6 +28,9 @@ fn main() -> std::io::Result<()> {
         .replace("../main_window/", "")
         .replace("./main_window/", "")
         .replace("/main_window", "")
+        .replace("../assets/", "")
+        .replace("./assets/", "")
+        .replace("/assets", "")
         .replace("const ", "var "));
     let mut dest_html = File::create("web-build/index.html")?;
 
@@ -42,12 +46,16 @@ fn main() -> std::io::Result<()> {
         .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
         .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"))
         .replace("() =>(module['default'])", "(()=>(module['default']))")
-        .replace("() =>(module)", "(() =>(module))");
+        .replace("() =>(module)", "(() =>(module))")
+        .replace("\"assets/", "\"");
     let mut dest_js = File::create("web-build/index.js")?;
 
     // prettyprint and then write the file
     let (pretty, _) = prettify_js::prettyprint(&new_data_js);
     dest_js.write(pretty.as_bytes())?; 
+
+    // copy the logo image file
+    fs::copy(LOGO_FILE_PATH, "web-build/logo_full.png")?;
 
     Ok(()) 
 } 

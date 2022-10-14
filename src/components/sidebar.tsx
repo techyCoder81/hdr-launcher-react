@@ -21,45 +21,47 @@ enum ContentType {
  export default class Sidebar extends React.PureComponent {
 
     state = {
-        mode: Backend.isNode() ? ContentType.Twitter : ContentType.Changelogs
+        mode: ContentType.Changelogs
     };
 
     getContent() {
         switch(this.state.mode) {
             case ContentType.Logs:
-                    return <div className='sidebar-outer'>
+                    return <div className='sidebar-content'>
+                        
                             <LogWindow/>
+                        
                     </div>;
             case ContentType.Changelogs:
-                return <div className='sidebar-outer scrollable'>
-                                <LatestChanges count={10} />
+                return <div className='sidebar-content'>
+                        
+                                <LatestChanges count={10}/>
+                        
                         </div>;
             default:
-                    return <div className='twitter'>
-                                <TwitterEmbed/>
+                    return <div className='sidebar-content'>
+                        
+                                    <TwitterEmbed/>
+                        
                             </div>
         }
     }
 
     render() {
-        return <div>
-            { 
-            Backend.isNode() ?
+        return <div className='full sidebar'>
+            <div className='simple-buttons'>
                 <FocusButton 
-                    className="simple-button inline"
-                    text='&nbsp;News&nbsp;' 
-                    onClick={() => this.setState({mode: ContentType.Twitter})}/>
-                : <div></div>
-            }
-            <FocusButton 
-                    className="simple-button inline"
-                    text='&nbsp;Latest Changes&nbsp;' 
-                    onClick={() => this.setState({mode: ContentType.Changelogs})}/>
-            <FocusButton 
-                    className="simple-button inline"
-                    text='&nbsp;Logs&nbsp;' 
-                    onClick={() => this.setState({mode: ContentType.Logs})}/>
-            {this.getContent()} 
+                        className="simple-button inline"
+                        text='&nbsp;Latest Changes&nbsp;' 
+                        onClick={() => this.setState({mode: ContentType.Changelogs})}/>
+                <FocusButton 
+                        className="simple-button inline"
+                        text='&nbsp;Logs&nbsp;' 
+                        onClick={() => this.setState({mode: ContentType.Logs})}/>
+            </div>
+
+                {this.getContent()} 
+            
         </div>
     }
 }

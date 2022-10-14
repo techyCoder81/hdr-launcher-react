@@ -64,7 +64,7 @@ type Props = {
 
     render() {
         return (
-            <div className="sidebar-inner">
+            <div className="full scrollable">
                 <h2>Latest Changes:</h2>
                 {this.state.text.map(str => str)}
             </div>

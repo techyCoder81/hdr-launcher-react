@@ -113,7 +113,7 @@ export class LogWindow extends React.Component {
         }
 
         return ( 
-            <div className='log-box'>
+            <div className='full'>
                 <select className='simple-button inline' name="loglevels" id="loglevels" onChange={
                     (item: { target: { value: any; }; }) => {
                         LogWindow.selected = item.target.value;

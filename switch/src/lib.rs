@@ -19,6 +19,7 @@ use unzipper::*;
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
+static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
@@ -35,6 +36,7 @@ pub fn main() {
             .htdocs_dir("hdr-launcher")
             .file("index.html", &HTML_TEXT)
             .file("index.js", &JS_TEXT)
+            .file("logo_full.png", &LOGO_PNG)
             .background(skyline_web::Background::Default)
             .boot_display(skyline_web::BootDisplay::Black)
             .open_session(skyline_web::Visibility::InitiallyHidden).unwrap();

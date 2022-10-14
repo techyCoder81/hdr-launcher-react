@@ -14,7 +14,7 @@ export default class FocusTimer {
     private static last_time = new Date().getTime();
 
     /** the minimum waiting time between transitions */
-    private static MIN_WAIT_TIME = 200;
+    private static MIN_WAIT_TIME = 150;
 
     static request(): boolean {
         // focus changes don't need to be limited on electron

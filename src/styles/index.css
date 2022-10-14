@@ -3,22 +3,23 @@
   --main-text-color: white;
   --main-button-text-color: white;
   --main-button-bg-color: rgb(54, 58, 55);
-  --main-button-bg-hover-color: rgb(61, 100, 73);
+  --main-button-bg-hover-color: rgb(109, 177, 129);
+  --main-button-border-color: rgb(37, 131, 65);
   --main-button-border-hover-color: rgb(199, 255, 216);
   --main-progress-download-color: rgb(28, 73, 110);
   --main-button-text-hover-color: rgb(0, 0, 0);
   --main-button-bg-focus-color: rgb(49, 119, 49);
   --main-button-text-focus-color: black;
-  --main-button-hover-width: 500px;
-  --main-button-height: 100px;
+  --main-button-hover-width: 475px;
+  --main-button-height: 85px;
   --main-button-hover-align: right;
   --main-progress-background-color: rgb(49, 49, 49);
   --main-progress-foreground-color: rgb(41, 109, 47);
   --main-progress-text-color: white; 
   --border-pad: 5px; 
   --buttons-border-color: rgb(141, 194, 130);
-  --slide-green-1: rgb(69, 134, 37);
-  --slide-green-2: rgb(43, 116, 64);
+  --slide-1: rgb(66, 66, 66);
+  --slide-2: rgb(58, 58, 58);
 }
 
 * {
@@ -31,7 +32,7 @@ body {
   z-index: 1;
   transition: 1000ms linear;
   -webkit-transition: 1000ms linear;
-  background-color: linear-gradient(30deg, var(--main-button-bg-color), rgb(119, 119, 119));
+  background-color: black;
 }
 
 .gradient-background {
@@ -41,7 +42,7 @@ body {
   right:0;
   top:0;
   z-index:-1;
-  background: linear-gradient(30deg, var(--main-button-bg-color), rgb(94, 93, 93));
+  background-color: black;
 }
 
 .main-menu {
@@ -49,21 +50,27 @@ body {
   -webkit-transition: 1000ms linear;
 }
 
+.app-body {
+  display: flex;
+  height:500px;
+  width: 100%;
+}
+
 .left-side {
-  height: 100%;
-  width: 50%;
+  flex:3;
   padding-top: 8px;
+  height: 100%;
 }
 
 .right-side {
-  width: 50%;
-  height: 100%;
+  flex:5;
   padding-top: 8px;
+  height:100%;
 }
 
 .overlay {
   z-index: 999;
-  background-color: var(--slide-green-2);
+  background-color: var(--slide-2);
   position: absolute;
   top:0px;
   right:0px;
@@ -71,86 +78,57 @@ body {
   left:0px;
 }
 
-.app-body {
-  display: flex;
-  height:max-content;
-}
 
 .hide {
   display: none;
 }
 
 .main-buttons { 
-  padding: 12px 26px;
   margin: 10px 0; 
   display: block;
-  width: 400px;
+  width: 375px;
   height: var(--main-button-height);
-  border: none;
-  clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
-  -webkit-clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
+  border: 5px solid var(--main-button-border-color);
+  transform: skewX(-20deg);
+  left: -20px;
   position: relative;
   z-index: 10;
   transition:100ms linear;
   -webkit-transition:100ms linear;
-  background-image: linear-gradient(215deg, var(--buttons-border-color),rgb(84, 197, 84));
   outline: none;
-  box-shadow: 3px 3px #333;
-}
-
-.main-buttons div {
-  position: absolute;
-  display: inline;
-  top: var(--border-pad);
-  left: 0px;
-  bottom: var(--border-pad);
-  right: var(--border-pad);
-  height: calc(var(--main-button-height) - 2 * var(--border-pad));
+  box-shadow: 3px 3px 5px #333;
   background-color: var(--main-button-bg-color);
   color: var(--main-text-color);
-  border: none;
-  clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
-  -webkit-clip-path: polygon(95% 0, 100% 38%, 95% 100%, 0 100%, 0 0);
   z-index: 10;
-  transition:100ms linear;
-  -webkit-transition:100ms linear;
   font-size: 3rem;
-  font-weight: bold;
-  font-style: italic;
-  vertical-align: middle;
+  
   text-align: right;
-  line-height: calc(var(--main-button-height) - 2 * var(--border-pad));
-  outline:none;
 }
 
 
-.main-buttons div:focus {
-  background-color: var(--main-button-bg-hover-color);
-  border-color: var(--main-button-border-hover-color);
-}
-
-
-.main-buttons:focus,
-.main-buttons:hover {
-  padding: 12px 26px;
+.main-buttons:focus {
   width: var(--main-button-hover-width);
-  height: var(--main-button-height);
-  font-size: 3rem;
+  background-color: var(--main-button-bg-hover-color);
+  color: black;
 }
 
 .main-buttons:active {
-  background-image: linear-gradient(215deg, rgb(58, 125, 58), rgb(88, 207, 98));
+  background-color: var(--buttons-border-color);
 }
 
 .log-box {
   position: relative;
-  top:0;
-  bottom:0; 
-  right:0; 
-  left:0;
+  width:100%;
+  height:80%;
   overflow-y: auto;
   overflow-wrap: break-word;
-  max-height: 100%;
+  opacity: 0.5;
+  z-index: 99;
+}
+
+.sidebar {
+  display: flex;
+  flex-flow: column;
 }
 
 .sidebar-inner {
@@ -161,22 +139,46 @@ body {
   z-index: 0;
 }
 
+.simple-buttons {
+  flex: 0 1 auto;
+}
+
 .scrollable {
   overflow-y: scroll;
 }
 
-.sidebar-outer {
+.full {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image {
+  overflow: hidden;
+  height: 100%;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image img {
+  width: 100%;
+}
+
+.sidebar-content {
+  flex: 1 1 auto;
+  -webkit-box-flex: 1 1 auto;
   border: 3px solid var(--buttons-border-color);
   border-radius: 12px;
-  height: 500px;
-  background-color: var(--main-button-bg-color);
+  
   color: white;
+  overflow-y: hidden;
 }
 
 .twitter {
   border: 3px solid var(--buttons-border-color);
   border-radius: 12px;
-  height: 525px;
   background-color: var(--main-button-bg-color);
   color: white;
 }
@@ -190,32 +192,37 @@ p {
 }
 
 .header {
-  display: inline-flex;
+  display: relative;
+  left: -1%;
+  width: 100%;
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
 }
 
 .header-item {
-  padding-right: 10px;
+  display: inline;
+  margin-right: 10px;
   padding-left: 10px;
-  background-color: var(--main-button-bg-color);
-  border-bottom: 3px solid var(--buttons-border-color);
-  border-right: 3px solid var(--buttons-border-color);
-  font-family: 'Trebuchet MS', sans-serif;
+  font-size: xx-large;
   color: white;
+}
+
+.header > .header-item + .header-item {
+  border-left: 1px solid white;
 }
 
 .simple-button {
   position: relative;
-  display: block;
+  display: flexbox;
   margin-bottom: 1%;
   margin-top: 1%;
   height: 30px;
-  border: 3px solid var(--buttons-border-color);
+  border: 3px solid var(--main-button-border-color);
   text-align: center;
   background-color: var(--main-button-bg-color);
   color: rgb(255, 255, 255);
   padding: 5;
   box-sizing: border-box;
-  border-radius: 12px;
   outline:none;
 }
 
@@ -240,7 +247,7 @@ p {
 
 .bg {
   animation:slide 3s ease-in-out infinite alternate;
-  background-image: linear-gradient(-60deg, var(--slide-green-1) 50%, var(--slide-green-2) 50%);
+  background-image: linear-gradient(-60deg, var(--slide-1) 50%, var(--slide-2) 50%);
   bottom:0;
   left:-50%;
   opacity:.5;
