@@ -5,6 +5,7 @@ function FocusButtonInner(props: {className: string, onClick: () => void, text: 
     return <button 
             className={props.className} 
             autoFocus={props.autofocus}
+            onMouseMove={ e => e.currentTarget.focus() }
             onMouseEnter={ e => e.currentTarget.focus() }
             onMouseLeave={e => e.currentTarget.blur() }
             onBlur={e => {
