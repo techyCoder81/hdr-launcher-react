@@ -7,6 +7,7 @@ import { RequestHandler } from './request_handler';
 import { MessageHandler } from './message_handler';
 import Config from './config';
 import { platform } from 'process';
+import * as os from 'os';
 
 export let mainWindow: BrowserWindow | null
 
@@ -59,12 +60,21 @@ async function findEmulator() {
       return;
     }
 
-    // let the user point us to ryujinx
-    let selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-      title: "Please select your Ryujinx executable",
-      properties: ['openFile'],
-      filters: [ { name: 'Ryujinx Executables', extensions: ['', 'exe'] } ]
-    });
+    let selectedPath;
+    if (os.platform() == 'win32') {
+      // let the user point us to ryujinx on windows
+      selectedPath = dialog.showOpenDialogSync(mainWindow, { 
+        title: "Please select your Ryujinx executable",
+        properties: ['openFile'],
+        filters: [ { name: 'Ryujinx Executables', extensions: ['exe'] } ]
+      });
+    } else {
+      // let the user point us to ryujinx on linux
+      selectedPath = dialog.showOpenDialogSync(mainWindow, { 
+        title: "Please select your Ryujinx executable",
+        properties: ['openFile'],
+      });
+    }
     if (!selectedPath || selectedPath.length < 1) {
       console.warn("User cancelled finding ryujinx!");
       app.exit(0);
@@ -150,7 +160,7 @@ async function findSdcard() {
   if (process.platform == "win32") {
     configDir = process.env.APPDATA + "/Ryujinx";
   } else {
-    configDir = "~/.ryujinx";
+    configDir = path.join(os.homedir(), ".config/Ryujinx/");
   }
 
   if (fs.existsSync(configDir)) {

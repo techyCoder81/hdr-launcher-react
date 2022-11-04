@@ -5,6 +5,7 @@ import '../styles/index.css';
 import SlidingBackground from './sliding_background';
 import Loading from './loading';
 import {ExpandSidebar} from './expand_sidebar';
+import { Logs } from '../operations/log_singleton';
 
 export default class App extends React.Component {
 
@@ -13,6 +14,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount(): void {
+    Logs.instance();
     Backend.instance()
       .getVersion()
       .then(version => this.setState({loading: this.state.loading}))

@@ -130,7 +130,7 @@ export class RequestHandler {
 
                         console.info("beginning download.");
                         console.info("Absolute path: " + location);
-                        out = fs.createWriteStream(location, {mode: 666});
+                        out = fs.createWriteStream(location, {mode: 0o777});
                         console.debug("created write stream");
                         
                         var req = webrequest({

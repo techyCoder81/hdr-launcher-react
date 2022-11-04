@@ -3,6 +3,7 @@ import React from "react";
 import ReactModal from "react-modal";
 import { Backend } from "../backend";
 import "../styles/progress.css"
+import { ExpandSidebar } from "./expand_sidebar";
 import SlidingBackground from "./sliding_background";
 
 
@@ -38,6 +39,7 @@ function ProgressDisplayInner(props: any) {
           borderRadius="0px"
         />
       </div>
+      <ExpandSidebar/>
     </div>
 } 
  

@@ -79,7 +79,7 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
             new Progress(
               "Verifying Files", 
               "File: " + path, 
-              Math.trunc((100 * count) / entries.length)
+              (Math.trunc((1000 * count) / entries.length) /10)
             )
           );
         }
