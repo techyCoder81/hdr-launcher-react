@@ -82,7 +82,7 @@ export function getValue(level: Level) {
         await backend.writeFile(logPath, JSON.stringify(Logs.instance().getAll()))
             .then(result => {
                 console.info(result);
-                alert(result);
+                alert("Logs were written to sd:/hdr_launcher_log.json");
             })
             .catch(e => {
                 console.error("Error while saving logs: " + e);

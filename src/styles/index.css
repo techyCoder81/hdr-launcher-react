@@ -101,10 +101,8 @@ body {
   color: var(--main-text-color);
   z-index: 10;
   font-size: 3rem;
-  
   text-align: right;
 }
-
 
 .main-buttons:focus {
   width: var(--main-button-hover-width);
@@ -205,6 +203,14 @@ p {
   padding-left: 10px;
   font-size: xx-large;
   color: white;
+}
+
+.header-right {
+  position: absolute;
+  font-size: x-large;
+  color: white;
+  right: 10px;
+  top: 3px;
 }
 
 .header > .header-item + .header-item {

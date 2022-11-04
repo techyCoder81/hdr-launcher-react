@@ -1,96 +1,96 @@
+import { resolve } from '../../webpack/main.webpack';
 import { Backend } from '../backend'
 import { Progress } from '../progress';
 import { getInstallType, getRepoName } from './install';
 
-export default async function update (progressCallback?: (p: Progress) => void) {
-  var reportProgress = (prog: Progress) => {
-    if (typeof progressCallback !== 'undefined') {
-      progressCallback(prog);
+export async function getLatest(progressCallback?: (p: Progress) => void): Promise<string> {
+  return new Promise(async (resolve) => {
+    var reportProgress = (prog: Progress) => {
+      if (typeof progressCallback !== 'undefined') {
+        progressCallback(prog);
+      }
     }
-  }
 
-  var backend = Backend.instance();
-  var sdroot = ''
-  await backend
-    .getSdRoot()
-    .then(value => {
-      sdroot = value
-    })
-    .catch(e => {
-      console.error('Could not get SD root. ' + e)
-      return
-    });
-  
-  reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
-  
-  let version = 'unknown';
-  await backend
-    .getVersion()
-    .then(ver => version = ver)
-    .catch(e => {
-      console.error('Could not get current version. ' + e)
-      return
-    });
+    let backend = Backend.instance();
+    let current_version = await backend.getVersion();
+    let repoName = getRepoName(getInstallType(current_version));
 
-  let repoName = getRepoName(getInstallType(version));
+    // get the latest for that repo
+    let latest = String(await backend.getRequest(
+      'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/hdr_version.txt'
+    ));
+    if (latest.startsWith("\"") && latest.endsWith("\"")) {
+      latest = latest.substring(1, latest.length-1);
+    }
+    console.info('Latest is ' + latest);
+    resolve(latest);
+  });
+}
 
-  let latest = String(await backend.getRequest(
-    'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/hdr_version.txt'
-  ));
-  if (latest.startsWith("\"") && latest.endsWith("\"")) {
-    latest = latest.substring(1, latest.length-1);
-  }
-  console.info('Latest is ' + latest)
+export default async function update(progressCallback?: (p: Progress) => void): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    var reportProgress = (prog: Progress) => {
+      if (typeof progressCallback !== 'undefined') {
+        progressCallback(prog);
+      }
+    }
 
-  let downloads = sdroot + 'downloads/'
-  let version_stripped = 'unknown'
-  
-  if (version === latest) {
-    alert("The latest version is already installed!");
-    return;
-  }
+    var backend = Backend.instance();
+    let sdroot = await backend.getSdRoot();
 
-  console.info('attempting to update chain')
-  while (!(version === latest)) {
-    reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
-    await backend
-      .getVersion()
-      .then(ver => {
-        version = ver
-        version_stripped = version.split('-')[0]
-        console.info('version is: ' + ver)
-        var versionText = document.getElementById('version')
-        if (versionText != null) {
-          versionText.innerHTML = 'Version: ' + String(version)
-        }
-        console.info('latest is: ' + latest);
-        if (String(version) == latest) {
-          alert("The latest version is installed!");
-          throw new Error("no need to update further");
-        }
-        reportProgress(new Progress("Checking for Updates", "checking for updates for " + version, 0));
-      })
-      .then(() =>
-        backend.downloadFile(
-          'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
-            version_stripped +
-            '/upgrade.zip',
-          downloads + 'upgrade.zip',
-          (p: Progress) => reportProgress(p)
+    let downloads = sdroot + 'downloads/'
+    let version_stripped = 'unknown'
+    let latest = await getLatest(progressCallback);
+    let version = await backend.getVersion();
+
+    let current_version = await backend.getVersion();
+    let repoName = getRepoName(getInstallType(current_version));
+
+    if (version === latest) {
+      console.info("The latest version is already installed.");
+      resolve("The latest version is already installed!");
+    }
+
+    console.info('attempting to update chain')
+    while (!(version === latest)) {
+      reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
+      await backend
+        .getVersion()
+        .then(ver => {
+          version = ver
+          version_stripped = version.split('-')[0]
+          console.info('version is: ' + ver)
+          var versionText = document.getElementById('version')
+          if (versionText != null) {
+            versionText.innerHTML = 'Version: ' + String(version)
+          }
+          console.info('latest is: ' + latest);
+          if (String(version) == latest) {
+            resolve("no need to update further.");
+          }
+          reportProgress(new Progress("Checking for Updates", "checking for updates for " + version, 0));
+        })
+        .then(() =>
+          backend.downloadFile(
+            'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+              version_stripped +
+              '/upgrade.zip',
+            downloads + 'upgrade.zip',
+            (p: Progress) => reportProgress(p)
+          )
         )
-      )
-      .then(result => console.info('Result:' + result))
-      .then(() => {
-        reportProgress(new Progress("Extracting", "Extracting update" + version, 0));
-      })
-      .then(() => backend.unzip(downloads + 'upgrade.zip', sdroot))
-      .then(result => console.info(result))
-      .then(() => backend.deleteFile(downloads + 'upgrade.zip'))
+        .then(result => console.info('Result:' + result))
+        .then(() => {
+          reportProgress(new Progress("Extracting", "Extracting update" + version, 0));
+        })
+        .then(() => backend.unzip(downloads + 'upgrade.zip', sdroot))
+        .then(result => console.info(result))
+        .then(() => backend.deleteFile(downloads + 'upgrade.zip'))
 
-      .then(() => handleDeletions(version, "deletions.json", progressCallback))
-      .catch(e => console.error(e));
-  }
-
+        .then(() => handleDeletions(version, "deletions.json", progressCallback))
+        .catch(e => {console.error(e);reject(e);});
+    }
+  });
 }
 
 /**

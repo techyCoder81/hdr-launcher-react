@@ -20,6 +20,7 @@ type Props = {
 enum MenuType {
         MainMenu,
         Options,
+        Tools,
         NotInstalled,
         CheckingInstalled,
         Progress,
@@ -46,6 +47,9 @@ export default class Menu extends React.PureComponent<Props> {
                 skyline.setButtonAction("X", () => {})
                 switch(this.state.currentMenu) {
                         case MenuType.Options:
+                                skyline.setButtonAction("B", () => {});
+                                break;
+                        case MenuType.Tools:
                                 skyline.setButtonAction("B", () => {});
                                 break;
                         default:
@@ -112,25 +116,22 @@ export default class Menu extends React.PureComponent<Props> {
                                         this.switchTo(MenuType.Progress);
                                         update((p: Progress) => this.setProgress(p))
                                                 .then(() => this.loadVersion())
-                                                .then(() => this.switchTo(MenuType.MainMenu))
-                                                .catch(e => this.switchTo(MenuType.MainMenu));
+                                                .then(() => {
+                                                        this.switchTo(MenuType.MainMenu);
+                                                        alert("HDR is up to date!");
+                                                })
+                                                .catch(e => alert("Error while updating: " + e));
                                 }}
                                 onFocus={() => this.setInfo("Update your HDR Installation")}
-                        />
-                        <FocusButton text='Verify&nbsp;&nbsp;' 
-                                className={"main-buttons"} 
-                                onClick={() => {
-                                        this.switchTo(MenuType.Progress);
-                                        verify((p: Progress) => this.setProgress(p))
-                                                .then(() => this.switchTo(MenuType.MainMenu))
-                                                .catch(e => this.switchTo(MenuType.MainMenu));
-                                }}
-                                onFocus={() => this.setInfo("Verify your HDR files")}
                         />
                         <FocusButton text='Options&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => this.switchTo(MenuType.Options)}
                                 onFocus={() => this.setInfo("Open the Options menu")}/>
+                        <FocusButton text='Tools&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => this.switchTo(MenuType.Tools)}
+                                onFocus={() => this.setInfo("Open the Tools menu")}/>
                         <FocusButton text='Exit&nbsp;&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => Backend.instance().quit()}
@@ -145,10 +146,6 @@ export default class Menu extends React.PureComponent<Props> {
         optionsMenu(): JSX.Element {
                 
                 return <div className="main-menu">
-                        <FocusButton text='Arcadia&nbsp;&nbsp;' 
-                                className={"main-buttons"} 
-                                onClick={() => Backend.instance().openModManager()}
-                                onFocus={() => this.setInfo("Open the Mod Manager")}/>
                         {
                         this.state.version.toLowerCase().includes("nightly") ? 
                         <FocusButton text='Install Beta&nbsp;&nbsp;' 
@@ -181,7 +178,35 @@ export default class Menu extends React.PureComponent<Props> {
                                 onClick={() => this.switchTo(MenuType.MainMenu)}
                                 onFocus={() => this.setInfo("Return to the Main menu")}/>
                 </div>
-        }      
+        }   
+        
+        /**
+         * builds the options menu components
+         * @returns the options menu
+         */
+         toolsMenu(): JSX.Element {
+                
+                return <div className="main-menu">
+                        <FocusButton text='Arcadia&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => Backend.instance().openModManager()}
+                                onFocus={() => this.setInfo("Open the Mod Manager")}/>
+                        <FocusButton text='Verify&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => {
+                                        this.switchTo(MenuType.Progress);
+                                        verify((p: Progress) => this.setProgress(p))
+                                                .then(() => this.switchTo(MenuType.MainMenu))
+                                                .catch(e => this.switchTo(MenuType.MainMenu));
+                                }}
+                                onFocus={() => this.setInfo("Verify your HDR files")}
+                        />
+                        <FocusButton text='Main Menu&nbsp;&nbsp;' 
+                                className={"main-buttons"} 
+                                onClick={() => this.switchTo(MenuType.MainMenu)}
+                                onFocus={() => this.setInfo("Return to the Main menu")}/>
+                </div>
+        }   
         
         /**
          * builds the not installed menu
@@ -232,6 +257,8 @@ export default class Menu extends React.PureComponent<Props> {
                                 return this.mainMenu();
                         case MenuType.Options:
                                 return this.optionsMenu(); 
+                        case MenuType.Tools:
+                                return this.toolsMenu(); 
                         case MenuType.CheckingInstalled:
                                 return <div/>
                         case MenuType.NotInstalled:
@@ -245,7 +272,9 @@ export default class Menu extends React.PureComponent<Props> {
 
         render() {
                 return <div className='full'>
-                        <Header version={this.state.version} />
+                        <Header version={this.state.version} submenu={
+                                (this.state.currentMenu == MenuType.Options) ? ["Options"] : (
+                                        (this.state.currentMenu == MenuType.Tools) ? ["Tools"] : [])} />
                         <div className='app-body'>
                                 <div className="left-side" id="left-side">
                                         {this.getMenu()}
