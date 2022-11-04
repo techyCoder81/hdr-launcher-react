@@ -1,3 +1,4 @@
+import { Backend } from "../backend";
 import { LogListener } from "./log_listener";
 
 export type Level = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
@@ -65,6 +66,28 @@ export function getValue(level: Level) {
         }
 
         return Logs.singleton;
+    }
+
+    /**
+     * saves the logs to the log file on sd root
+     */
+    public async save() {
+        let backend = Backend.instance()
+        let root = await backend.getSdRoot();
+        let logPath = root + "hdr_launcher_log.json";
+        let exists = await backend.fileExists(logPath);
+        if (exists) {
+            await backend.deleteFile(logPath);
+        }
+        await backend.writeFile(logPath, JSON.stringify(Logs.instance().getAll()))
+            .then(result => {
+                console.info(result);
+                alert(result);
+            })
+            .catch(e => {
+                console.error("Error while saving logs: " + e);
+                alert(e);
+            });
     }
 
     /**

@@ -50,6 +50,7 @@ export class LogWindow extends React.Component implements LogListener {
                 <button className='simple-button inline' onClick={() => {
                     Logs.instance().clear();
                 }}>&nbsp;Clear Logs&nbsp;</button> 
+                <button className='simple-button inline' onClick={async () => Logs.instance().save()}>&nbsp;Save Logs&nbsp;</button> 
                 <div className="log-box" id="log-box">
                 {
                     Logs.instance().getAll().map((entry, index) => {

@@ -394,6 +394,27 @@ export class RequestHandler {
                         resolve(new OkOrError(false, String(e), request.id));
                         break;
                     }
+                case "write_file":
+                    try {
+                        if (!argcheck(2)) {break;}
+
+                        let args = request.arguments;
+                        // read the given file path
+                        let file: string = args[0];
+                        let exists = fs.existsSync(file);
+                        if (exists) {
+                            console.info("deleting existing log file...");
+                            fs.unlinkSync(file);
+                        }
+
+                        // write the file
+                        fs.writeFileSync(file, args[1]);
+                        resolve(new OkOrError(true, "File written successfully.", request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new OkOrError(false, String(e), request.id));
+                        break;
+                    }
                 default:
                     console.error("Could not handle request with name: " + name);
                     resolve(new Error("unable to handle request " + name));

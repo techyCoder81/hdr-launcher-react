@@ -306,6 +306,26 @@ impl Handleable for Message {
                     }
                 }
             },
+            "write_file" => {
+                args!(self, session, 2);
+                let args = &self.arguments.as_ref().expect("args!() failure");
+
+                let path = args[0].clone();
+                let exists = Path::new(&path).exists();
+                if exists {
+                    // delete existing file, if present
+                    match fs::remove_file(path) {
+                        Ok(version) => println!("Deleted existing file successfully."),
+                        Err(e) => session.error(format!("Could not delete existing file! Reason: {:?}", e).as_str(), &self.id)
+                    }
+                } 
+
+                match fs::write(path, args[1].clone()) {
+                    Ok(version) => session.ok("The file was written successfully", &self.id),
+                    Err(e) => session.error(format!("Could not write file. Reason: {:?}", e).as_str(), &self.id)
+                }
+                
+            },
             _ => println!("ERROR: doing nothing for unknown message {}", self)
         }
         return true;
