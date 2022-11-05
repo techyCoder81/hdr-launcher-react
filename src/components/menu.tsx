@@ -12,6 +12,7 @@ import InfoBox from './info_box';
 import Sidebar from './sidebar';
 import { Header } from './header';
 import logo from '../../assets/logo_full.png';
+import {UpdateButton} from './update_button';
 
 type Props = {
         onUpdate: () => void;
@@ -47,10 +48,10 @@ export default class Menu extends React.PureComponent<Props> {
                 skyline.setButtonAction("X", () => {})
                 switch(this.state.currentMenu) {
                         case MenuType.Options:
-                                skyline.setButtonAction("B", () => {});
+                                skyline.setButtonAction("B", () => this.switchTo(MenuType.MainMenu));
                                 break;
                         case MenuType.Tools:
-                                skyline.setButtonAction("B", () => {});
+                                skyline.setButtonAction("B", () => this.switchTo(MenuType.MainMenu));
                                 break;
                         default:
                                 skyline.setButtonAction("B", () => {});
@@ -110,8 +111,7 @@ export default class Menu extends React.PureComponent<Props> {
                                 onClick={() => Backend.instance().play()}
                                 autofocus={Backend.isSwitch()}
                                 onFocus={() => this.setInfo("Play HDR!")}/>
-                        <FocusButton text='Update&nbsp;&nbsp;' 
-                                className={"main-buttons"} 
+                        <UpdateButton 
                                 onClick={() => {
                                         this.switchTo(MenuType.Progress);
                                         update((p: Progress) => this.setProgress(p))

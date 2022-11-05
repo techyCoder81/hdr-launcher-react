@@ -3,6 +3,7 @@ import * as Messages from "../messages";
 import { Backend } from "../backend";
 import { Level, Logs, LogEntry } from "../operations/log_singleton";
 import { LogListener } from '../operations/log_listener';
+import { LogList } from './log_list';
 
 /**
  * log window implementation
@@ -22,6 +23,7 @@ export class LogWindow extends React.Component implements LogListener {
         super(props);
         Logs.instance().registerChangeCallback(this);
     }
+    
 
     componentWillUnmount(): void {
         Logs.instance().unregisterChangeCallback(this); 
@@ -51,13 +53,7 @@ export class LogWindow extends React.Component implements LogListener {
                     Logs.instance().clear();
                 }}>&nbsp;Clear Logs&nbsp;</button> 
                 <button className='simple-button inline' onClick={async () => Logs.instance().save()}>&nbsp;Save Logs&nbsp;</button> 
-                <div className="log-box" id="log-box">
-                {
-                    Logs.instance().getAll().map((entry, index) => {
-                        return <div key={index}>{entry.level.toString() + " (" + entry.time.toLocaleTimeString() + "): " + entry.data}</div>
-                    })
-                }
-                </div>
+                <LogList/>
             </div>
         );
     }

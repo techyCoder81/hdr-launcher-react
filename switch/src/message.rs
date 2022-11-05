@@ -314,7 +314,7 @@ impl Handleable for Message {
                 let exists = Path::new(&path).exists();
                 if exists {
                     // delete existing file, if present
-                    match fs::remove_file(path) {
+                    match fs::remove_file(path.clone()) {
                         Ok(version) => println!("Deleted existing file successfully."),
                         Err(e) => session.error(format!("Could not delete existing file! Reason: {:?}", e).as_str(), &self.id)
                     }

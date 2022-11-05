@@ -35,11 +35,11 @@
 
 .open-sidebar {
     display: relative;
-    width: calc(100% - var(--sidebar-button-width));
+    width: calc(100% - var(--sidebar-button-width) - 6px);
     transform: translateX(var(--sidebar-button-width)) translateY(-125px);
     border: 3px solid var(--main-button-border-color);
     height: 90%;
-    padding: 4px;
+    padding: 0px;
     color:white;
 }
 

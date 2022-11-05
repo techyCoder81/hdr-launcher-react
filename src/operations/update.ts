@@ -3,6 +3,23 @@ import { Backend } from '../backend'
 import { Progress } from '../progress';
 import { getInstallType, getRepoName } from './install';
 
+export async function isAvailable(progressCallback?: (p: Progress) => void): Promise<boolean> {
+  return new Promise(async (resolve) => {
+    var reportProgress = (prog: Progress) => {
+      if (typeof progressCallback !== 'undefined') {
+        progressCallback(prog);
+      }
+    }
+    let latest = await getLatest(progressCallback);
+    let version = await Backend.instance().getVersion();
+    if (latest === version) {
+      resolve(false);
+    } else {
+      resolve(true);
+    }
+  });
+}
+
 export async function getLatest(progressCallback?: (p: Progress) => void): Promise<string> {
   return new Promise(async (resolve) => {
     var reportProgress = (prog: Progress) => {
@@ -34,17 +51,15 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         progressCallback(prog);
       }
     }
-
+    
     var backend = Backend.instance();
     let sdroot = await backend.getSdRoot();
-
+    reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
     let downloads = sdroot + 'downloads/'
     let version_stripped = 'unknown'
     let latest = await getLatest(progressCallback);
     let version = await backend.getVersion();
-
-    let current_version = await backend.getVersion();
-    let repoName = getRepoName(getInstallType(current_version));
+    let repoName = getRepoName(getInstallType(version));
 
     if (version === latest) {
       console.info("The latest version is already installed.");
@@ -53,7 +68,7 @@ export default async function update(progressCallback?: (p: Progress) => void): 
 
     console.info('attempting to update chain')
     while (!(version === latest)) {
-      reportProgress(new Progress("Checking for Updates", "checking for updates", 0));
+      reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
       await backend
         .getVersion()
         .then(ver => {
