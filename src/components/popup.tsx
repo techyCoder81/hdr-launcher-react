@@ -10,7 +10,7 @@ export const Popup = (props: {data: PopupData}) => {
             }
             {
                 props.data.options.map((option, index) => {
-                    return <button autoFocus={index == 0 ? true : false} className="simple-button" onClick={() => props.data.onSelect(option)}>{option}</button>
+                    return <button autoFocus={index == 0 ? true : false} className="simple-button inline" onClick={() => props.data.onSelect(option)}>{option}</button>
                 })
             }
         </div>
