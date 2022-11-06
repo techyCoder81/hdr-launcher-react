@@ -3,8 +3,6 @@ import * as Messages from "./messages";
 import { BooleanResponse, OkOrError, StringResponse, PathList, DirTree } from "./responses";
 import { Progress } from "./progress";
 
-
-
 /**
  * this will represent the backend interface, which
  * could eventually be both node.js and also Skyline web.
@@ -319,7 +317,7 @@ export class SwitchBackend extends Backend {
     constructor() {
         super();
         // add listener for all messages from window.nx
-        var retval = skyline.addEventListener("message", (event: any) => {
+        skyline.addEventListener("message", (event: any) => {
             // call any registered callbacks for this ID
             //console.debug("Received event from nx: ");
             //console.debug("Event data: " + event.data);
