@@ -30,7 +30,7 @@ export default class App extends React.Component {
         }
         {this.state.loading ?
           <Loading/> : <div/>}
-          <Menu onUpdate={() => {}}/>
+          <Menu/>
           <ExpandSidebar/>
       </div>
     )

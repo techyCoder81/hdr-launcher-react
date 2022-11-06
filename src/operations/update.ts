@@ -44,66 +44,68 @@ export async function getLatest(progressCallback?: (p: Progress) => void): Promi
   });
 }
 
-export default async function update(progressCallback?: (p: Progress) => void): Promise<string> {
+export default async function update(progressCallback?: (p: Progress) => void): Promise<string[]> {
   return new Promise(async (resolve, reject) => {
-    var reportProgress = (prog: Progress) => {
-      if (typeof progressCallback !== 'undefined') {
-        progressCallback(prog);
+    try {
+      var reportProgress = (prog: Progress) => {
+        if (typeof progressCallback !== 'undefined') {
+          progressCallback(prog);
+        }
       }
-    }
-    
-    var backend = Backend.instance();
-    let sdroot = await backend.getSdRoot();
-    reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
-    let downloads = sdroot + 'downloads/'
-    let version_stripped = 'unknown'
-    let latest = await getLatest(progressCallback);
-    let version = await backend.getVersion();
-    let repoName = getRepoName(getInstallType(version));
-
-    if (version === latest) {
-      console.info("The latest version is already installed.");
-      resolve("The latest version is already installed!");
-    }
-
-    console.info('attempting to update chain')
-    while (!(version === latest)) {
+      
+      var backend = Backend.instance();
+      let sdroot = await backend.getSdRoot();
       reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
-      await backend
-        .getVersion()
-        .then(ver => {
-          version = ver
-          version_stripped = version.split('-')[0]
-          console.info('version is: ' + ver)
-          var versionText = document.getElementById('version')
-          if (versionText != null) {
-            versionText.innerHTML = 'Version: ' + String(version)
-          }
-          console.info('latest is: ' + latest);
-          if (String(version) == latest) {
-            resolve("no need to update further.");
-          }
-          reportProgress(new Progress("Checking for Updates", "checking for updates for " + version, 0));
-        })
-        .then(() =>
-          backend.downloadFile(
+      let downloads = sdroot + 'downloads/'
+      let version_stripped = 'unknown'
+      let latest = await getLatest(progressCallback);
+      let version = await backend.getVersion();
+      let repoName = getRepoName(getInstallType(version));
+
+      if (version === latest) {
+        console.info("The latest version is already installed.");
+        resolve(["The latest version is already installed!"]);
+      }
+
+      let changelogs = ["Changes:"];
+
+      console.info('attempting to update chain')
+      while (!(version === latest)) {
+        reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
+        version = await backend.getVersion();
+        version_stripped = version.split('-')[0];
+        console.info('version is: ' + version);
+        var versionText = document.getElementById('version')
+        if (versionText != null) {
+          versionText.innerHTML = 'Version: ' + String(version)
+        }
+        console.info('latest is: ' + latest);
+        if (String(version) == latest) {
+          resolve(changelogs);
+          return;
+        }
+        reportProgress(new Progress("Checking for Updates", "checking for updates for " + version, 0));
+        let result = await backend.downloadFile(
             'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
               version_stripped +
               '/upgrade.zip',
             downloads + 'upgrade.zip',
             (p: Progress) => reportProgress(p)
-          )
-        )
-        .then(result => console.info('Result:' + result))
-        .then(() => {
-          reportProgress(new Progress("Extracting", "Extracting update" + version, 0));
-        })
-        .then(() => backend.unzip(downloads + 'upgrade.zip', sdroot))
-        .then(result => console.info(result))
-        .then(() => backend.deleteFile(downloads + 'upgrade.zip'))
-
-        .then(() => handleDeletions(version, "deletions.json", progressCallback))
-        .catch(e => {console.error(e);reject(e);});
+          );
+        console.info(result);
+          
+        reportProgress(new Progress("Extracting", "Extracting update" + version, 0));
+        await backend.unzip(downloads + 'upgrade.zip', sdroot);
+        await backend.deleteFile(downloads + 'upgrade.zip');
+        await handleDeletions(version, "deletions.json", progressCallback);
+        let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+              version_stripped + '/CHANGELOG.md');
+        let changes = processChangelog(changelog);
+        changes.forEach(entry => changelogs.push(entry));
+      }
+    } catch (e) {
+      console.error("During update: " + e);
+      reject(e);
     }
   });
 }
@@ -114,37 +116,32 @@ export default async function update(progressCallback?: (p: Progress) => void): 
  * @param deletions_artifact the deletions file name
  * @param progressCallback optional progress callback
  */
-export async function handleDeletions(version: string, deletions_artifact: string, progressCallback?: (p: Progress) => void) {
-  // check for files that should be deleted
-  let backend = Backend.instance();
-  var sdroot = ''
-  await backend
-    .getSdRoot()
-    .then(value => {
-      sdroot = value
-    })
-    .catch(e => {
-      console.error('Could not get SD root. ' + e)
-      return
-    });
-
-  let downloads = sdroot + 'downloads/';
-  let version_stripped = version.split('-')[0];
-  let repoName = getRepoName(getInstallType(version));
-
-  let deletions_file = downloads + 'deletions.json';
-  await backend.downloadFile(
-    'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
-      version_stripped +
-      '/' + deletions_artifact,
-    deletions_file,
-    (p: Progress) => {if (typeof progressCallback !== 'undefined') {progressCallback(p);}}
-  )
-  .then(result => console.info(result))
-  .catch(e => console.error(e))
-  await backend
-    .readFile(deletions_file)
-    .then(async str => {
+export async function handleDeletions(version: string, deletions_artifact: string, progressCallback?: (p: Progress) => void): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      var reportProgress = (prog: Progress) => {
+        if (typeof progressCallback !== 'undefined') {
+          progressCallback(prog);
+        }
+      }
+      // check for files that should be deleted
+      let backend = Backend.instance();
+      var sdroot =  await backend.getSdRoot();
+        
+      let downloads = sdroot + 'downloads/';
+      let version_stripped = version.split('-')[0];
+      let repoName = getRepoName(getInstallType(version));
+        
+      let deletions_file = downloads + 'deletions.json';
+      await backend.downloadFile(
+        'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+          version_stripped +
+          '/' + deletions_artifact,
+        deletions_file,
+        (p: Progress) => reportProgress(p)
+      );
+      
+      let str = await backend.readFile(deletions_file);
       let entries = JSON.parse(str)
       let count = 0
       let total = entries.length
@@ -153,45 +150,60 @@ export async function handleDeletions(version: string, deletions_artifact: strin
       }
       if (entries.length == 0) {
         console.debug("No files to delete.");
+        resolve("no files to delete.");
+        return;
       }
       while (count < total) {
         let path = entries[count];
-        if (typeof progressCallback !== 'undefined') {
-          progressCallback(
-            new Progress(
+        reportProgress(new Progress(
               "deleting removed files", 
               "file: " + path, 
               Math.trunc((100 * count) / entries.length)
-            )
-          );
+            ));
+
+        try {
+          // check for the deleted files
+          let exists = await backend.fileExists(sdroot + path);
+          if (exists) {
+            await backend.deleteFile(sdroot + path);
+            console.info("File deleted successfully");
+          }
+        } catch (e) {
+          // for deleting individual files, we can just warn the user to verify later if it fails.
+          console.error("Failed to detect/delete file: " + path);
+          alert("Failed to detect/delete certain HDR files. Please run verify to ensure your installation is correct.");
         }
-
-        await backend.fileExists(sdroot + path).then()
-
-        // check for the deleted files
-        await backend
-          .fileExists(sdroot + path)
-          .then(async exists => {if (exists) {
-            await backend.deleteFile(sdroot + path)
-              .then(() => console.info("File deleted successfully"))
-              .catch(e => {
-                console.error(
-                  'Error while deleting file: ' + path + '\nError: ' + e
-                );
-              })
-          }})
-          .catch(e => {
-            console.error(
-              'Error while checking if file exists: ' + path + '\nError: ' + e
-            );
-          })
         count++
       }
-      console.info('deleted all removed files.');
-    })
-    .catch(e => {
-      console.error('Major error while handling deletions: ' + e);
-      alert("Error while handling deletions: " + e);
-    })
+      console.info('done deleting files.');
+      resolve("done deleting files.");
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+const MERGED_STRING = "**Merged pull requests:**";
+const CHANGELOG_GENERATOR_STRING = "\* *This Changelog";
+
+function processChangelog(changelog: string): string[] {
+
+  if (!changelog.includes(MERGED_STRING)) {
+    return []
+  }
+  
+  changelog = changelog.split(MERGED_STRING)[1];
+  if (changelog.includes(CHANGELOG_GENERATOR_STRING)) {
+    changelog = changelog.split(CHANGELOG_GENERATOR_STRING)[0];
+  }
+  let changes = changelog.trim().split("\n").map(line => {
+    line = line.replace("\\n\\n", "").replace("\n", "");
+    if (!line.includes("[")) {
+      return line;
+    }
+    return line.split("[")[0];
+  });
+
+  return changes;
 }
 

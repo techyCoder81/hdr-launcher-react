@@ -140,7 +140,7 @@ export function getValue(level: Level) {
      */
     public add(level: Level, data: any) {
         // add the data
-        if (level.valueOf() >= this.level.valueOf()) {
+        if (getValue(level) >= getValue(this.level)) {
             this.logs.push(new LogEntry(level, data));
 
             // limit the size of the logs, requires linked list

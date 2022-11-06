@@ -2,10 +2,10 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import React from "react";
 import ReactModal from "react-modal";
 import { Backend } from "../backend";
+import { Progress } from "../progress";
 import "../styles/progress.css"
 import { ExpandSidebar } from "./expand_sidebar";
 import SlidingBackground from "./sliding_background";
-
 
 ReactModal.setAppElement('#root');
 
@@ -17,7 +17,7 @@ const customStyles = {
 /** 
  * progress bar implementation
  */
-function ProgressDisplayInner(props: any) {
+function ProgressDisplayInner(props: {progress: Progress, animate: boolean}) {
     if (props.progress === undefined || props.progress == null) {
       return <div></div>
     }
