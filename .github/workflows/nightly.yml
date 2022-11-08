@@ -52,7 +52,7 @@ jobs:
         path: .webpack
 
   build_plugin:
-    needs: build_windows
+    needs: build_linux
     runs-on: ubuntu-latest
     container: 
       image: jugeeya/cargo-skyline:3.0.0-dkp-beta
