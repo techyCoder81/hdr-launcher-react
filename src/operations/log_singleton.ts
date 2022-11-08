@@ -1,6 +1,75 @@
 import { Backend } from "../backend";
 import { LogListener } from "./log_listener";
 
+class Node {
+    public next;
+    public previous;
+    public entry: LogEntry;
+    constructor(next: Node | null, previous: Node | null, entry: LogEntry) {
+        this.next = next;
+        this.previous = previous;
+        this.entry = entry;
+    }
+}
+
+class LogList {
+    public head: Node | null = null;
+    public tail: Node | null = null;
+    public length = 0;
+    append(entry: LogEntry) {
+        this.length += 1;
+        if (this.head === null || this.tail === null) {
+            this.head = new Node(null, null, entry);
+            this.tail = this.head;
+            return;
+        }
+        this.tail.next = new Node(null, this.tail, entry);
+        this.tail = this.tail.next;
+    }
+    prepend(entry: LogEntry) {
+        this.length += 1;
+        if (this.head === null || this.tail === null) {
+            this.head = new Node(null, null, entry);
+            this.tail = this.head;
+            return;
+        }
+        this.head.previous = new Node(this.head, null, entry);
+        this.head = this.head.previous;
+    }
+    removeHead() {
+        if (this.head === null) {
+            // it must be empty
+            return;
+        }
+        this.length = this.length - 1;
+        if (this.head.next !== null) {
+            // make the next node the head
+            this.head = this.head.next;
+            this.head.previous = null;
+        } else {
+            // there is only one node, which means we should delete this node
+            this.head = null;
+            this.tail = null;
+        }
+    }
+    removeTail() {
+        if (this.tail === null) {
+            // it must be empty
+            return;
+        }
+        this.length = this.length - 1;
+        if (this.tail.previous !== null) {
+            // make the second to last node the tail
+            this.tail = this.tail.previous;
+            this.tail.next = null;
+        } else {
+            // there is only one node, which means we should delete this node
+            this.tail = null;
+            this.head = null;
+        }
+    }
+}
+
 export type Level = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
     
 export class LogEntry {
@@ -37,11 +106,11 @@ export function getValue(level: Level) {
     private static singleton: Logs;
 
     /** the internal structure holding the log data */
-    private logs: LogEntry[] = [];
+    private logs: LogList = new LogList();
 
     /** the max number of log entries to allow at any
      *  given time. Older entries are removed. */
-    private max = 1000;
+    private max = 10000;
 
     /** the current level */
     private level: Level = 'INFO';
@@ -143,12 +212,12 @@ export function getValue(level: Level) {
     public add(level: Level, data: any) {
         // add the data
         if (getValue(level) >= getValue(this.level)) {
-            this.logs.push(new LogEntry(level, data));
+            this.logs.prepend(new LogEntry(level, data));
 
-            // limit the size of the logs, requires linked list
-            //if (this.logs.length > this.max && this.logs[0] != null) {
-            //    this.logs;
-            //}
+            // limit the size of the logs
+            if (this.logs.length > this.max) {
+                this.logs.removeTail();
+            }
 
             // invoke the listener
             this.triggerListeners();
@@ -175,13 +244,13 @@ export function getValue(level: Level) {
     /**
      * gets all of the log entries in sequence, regardless of level
      */
-    public getAll(): LogEntry[] {
+    public getAll(): LogList {
         return this.logs;
     }
 
     /** clears the logs */
     public clear() {
-        Logs.instance().logs = [];
+        Logs.instance().logs = new LogList();
         this.triggerListeners();
     }
 

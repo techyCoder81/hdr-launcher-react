@@ -5,9 +5,12 @@ function buildList() {
     let list = Logs.instance().getAll();
     let out = [];
     let i = 0;
-    for (const entry of list) {
-        out.push(<div key={i}>{entry.level.toString() + " (" + entry.time.toLocaleTimeString() + "): " + entry.data}</div>);
+    let node = list.head;
+    // iterate across the logs, but only show the most recent 500 logs.
+    while (node !== null && i < 500) {
+        out.push(<div key={i}>{node.entry.level.toString() + " (" + node.entry.time.toLocaleTimeString() + "): " + node.entry.data}</div>);
         ++i;
+        node = node.next;
     }
     return out;
 }
