@@ -1,8 +1,9 @@
 {
   "name": "hdr-launcher",
   "author": "techyCoder81",
-  "version": "2.0.0",
+  "version": "0.1.0",
   "description": "The HDR Launcher",
+  "repository": "techyCoder81/hdr-launcher-react",
   "main": "./.webpack/main/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -29,6 +30,7 @@
     "react-remark": "^2.1.0",
     "react-twitter-embed": "^4.0.4",
     "request": "^2.88.2",
+    "update-electron-app": "^2.0.1",
     "webpack": "^5.74.0"
   },
   "devDependencies": {

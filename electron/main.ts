@@ -8,6 +8,7 @@ import { MessageHandler } from './message_handler';
 import Config from './config';
 import { platform } from 'process';
 import * as os from 'os';
+require('update-electron-app')();
 
 export let mainWindow: BrowserWindow | null
 
