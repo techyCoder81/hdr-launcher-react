@@ -25,8 +25,13 @@ jobs:
     - run: npm install
 
     - run: npm install -g yarn
-
+    
     - run: npm run make
+
+    - uses: vimtor/action-zip@v1
+      with:
+        files: out/hdr-launcher-linux-x64/
+        dest: hdr-launcher-linux-x64.zip
 
     # upload desktop app
     - name: Upload outfiles to release
@@ -46,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: frontend
-        path: out/hdr-launcher-linux*/resources/app/.webpack
+        path: .webpack
 
   build_plugin:
     needs: build_linux
