@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: frontend
-        path: .webpack
+        path: out/hdr-launcher-linux*/resources/app/.webpack
 
   build_plugin:
     needs: build_linux
