@@ -4,9 +4,9 @@ import { PopupData } from "../../operations/popup_data";
 import update from "../../operations/update";
 import verify from "../../operations/verify";
 import { Progress } from "../../progress";
-import { FocusButton } from "../focus_button";
+import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
-import { UpdateButton } from "../update_button";
+import { UpdateButton } from "../buttons/update_button";
 import { AbstractMenu } from "./abstract_menu";
 
 /**

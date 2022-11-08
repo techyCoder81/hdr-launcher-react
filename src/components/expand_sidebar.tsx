@@ -1,7 +1,7 @@
 import React from 'react';
 import { Backend } from '../backend';
 import '../styles/sidebar.css';
-import { FocusButton } from './focus_button';
+import { FocusButton } from './buttons/focus_button';
 import { LogWindow } from './log_window';
 
 export class ExpandSidebar extends React.Component {

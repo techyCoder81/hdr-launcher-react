@@ -1,5 +1,5 @@
 import React from "react";
-import FocusTimer from "../operations/focus_singleton";
+import FocusTimer from "../../operations/focus_singleton";
 
 function FocusButtonInner(props: {className: string, onClick: () => void, text: string, autofocus?: boolean, onFocus?: () => void}) {
     return <button 

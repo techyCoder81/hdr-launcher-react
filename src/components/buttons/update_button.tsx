@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Backend } from "../backend";
-import * as update from "../operations/update";
+import { Backend } from "../../backend";
+import * as update from "../../operations/update";
 import { FocusButton } from "./focus_button";
 
 /// check for updates when the button is loaded

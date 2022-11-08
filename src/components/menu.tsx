@@ -5,12 +5,12 @@ import verify from '../operations/verify';
 import { installLatest, switchToBeta, switchToNightly } from '../operations/install';
 import { Progress } from '../progress';
 import "../styles/progress.css";
-import {FocusButton} from './focus_button';
+import {FocusButton} from './buttons/focus_button';
 import * as skyline from "../skyline";
 import InfoBox from './info_box';
 import Sidebar from './sidebar';
 import { Header } from './header';
-import {UpdateButton} from './update_button';
+import {UpdateButton} from './buttons/update_button';
 import { LogoRight } from './logo_right';
 import MainMenu from './menus/main_menu';
 import { CheckingInstalled } from './menus/checking_installed';
@@ -38,6 +38,7 @@ export default class Menu extends React.PureComponent {
 
         switchTo(menu: MenuType) {
                 this.setState({currentMenu: menu, version: this.state.version, info: this.state.info});
+                this.loadVersion();
                 
                 // assign button actions for switch
                 skyline.setButtonAction("X", () => {})
