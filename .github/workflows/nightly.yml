@@ -25,7 +25,7 @@ jobs:
         node-version: 16
 
     - run: apt-get update
-    - run: apt-get install rpm -y
+    - run: apt-get install npm -y
 
     - run: npm install
 
