@@ -5,12 +5,10 @@ on:
       - main
 
 jobs:
-  build_plugin_and_linux:
+  build_linux:
     env:
       PLUGIN_NAME: hdr-launcher
     runs-on: ubuntu-latest
-    container: 
-      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
     steps:
     - name: checkout version
       uses: actions/checkout@v2
@@ -18,7 +16,7 @@ jobs:
     - name: setup python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        python-version: '3.9'
     
     - uses: actions/setup-node@v3
       with:
@@ -32,6 +30,40 @@ jobs:
     - run: npm install -g yarn
 
     - run: npm run make
+
+    # upload desktop app
+    - name: Upload outfiles to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: 'hdr-launcher-linux-x64.zip'
+        prerelease: true
+        file_glob: true
+        asset_name: hdr-launcher-linux-x64
+        release_name: nightly
+        tag: nightly
+        overwrite: true
+        body: Nightly build of hdr-launcher-react
+
+    # upload built web files
+    - name: Upload frontend artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend
+        path: .webpack
+
+  build_plugin:
+    needs: build_windows
+    runs-on: ubuntu-latest
+    container: 
+      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
+    steps:
+    - name: checkout version
+      uses: actions/checkout@v2
+    - uses: actions/download-artifact@v3
+      with:
+        name: frontend
+    - run: ls -lart
+    - run: ls -lart .webpack
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \
@@ -72,21 +104,6 @@ jobs:
         body: Nightly build of hdr-launcher-react
 
     - run: zip -r hdr-launcher-linux-x64.zip out/hdr-launcher-linux-x64
-
-    # upload desktop app
-    - name: Upload outfiles to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'hdr-launcher-linux-x64.zip'
-        prerelease: true
-        file_glob: true
-        asset_name: hdr-launcher-linux-x64
-        release_name: nightly
-        tag: nightly
-        overwrite: true
-        body: Nightly build of hdr-launcher-react
-    
-
   build_windows:
     env:
       PLUGIN_NAME: hdr-launcher
