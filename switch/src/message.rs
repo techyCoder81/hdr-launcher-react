@@ -75,7 +75,7 @@ impl Handleable for Message {
                     session.error("Version file does not exist!", &self.id);
                 } else {
                     match fs::read_to_string(path) {
-                        Ok(version) => session.ok(&version, &self.id),
+                        Ok(version) => session.ok(&version.trim(), &self.id),
                         Err(e) => session.error(format!("{:?}", e).as_str(), &self.id)
                     }
                 }
@@ -379,7 +379,7 @@ impl StringRespond for WebSession {
         } else {
             //println!("Sending large string response.");
         }
-        self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.to_string(), more: false}).unwrap());
+        self.send(&serde_json::to_string(&StringResponse{id: id.clone(), message: message.trim().to_string(), more: false}).unwrap());
     }
 }
 
@@ -400,7 +400,7 @@ impl OkOrError for WebSession {
             }
             
             let data = serde_json::to_string(&OkOrErrorResponse{ 
-                id: id.clone(), ok: true, message: slice.to_string(), more: (end_index < total_length)
+                id: id.clone(), ok: true, message: slice.trim().to_string(), more: (end_index < total_length)
             }).unwrap();
             //println!("Sending chunk:\n{}", data);
             self.send(&data);
@@ -421,7 +421,7 @@ impl OkOrError for WebSession {
                 slice = &message[index..end_index];
             }
             self.send(&serde_json::to_string(&OkOrErrorResponse{ 
-                id: id.clone(), ok: false, message: slice.to_string(), more: (end_index < total_length)
+                id: id.clone(), ok: false, message: slice.trim().to_string(), more: (end_index < total_length)
             }).unwrap());
             index = end_index;
             //println!("Chunked send percentage: {}%", 100.0 * index as f32/total_length as f32)

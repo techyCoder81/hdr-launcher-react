@@ -10,10 +10,6 @@ export class ExpandSidebar extends React.Component {
         contents: "No logs."
     }
 
-    componentDidMount(): void {
-        this.setState({isOpen: false, contents: this.state.contents});
-    }
-
     render() {
         return <div className={'sidebar-container' + (this.state.isOpen ? ' wide' : '')}>
                 <div className='button-container'>

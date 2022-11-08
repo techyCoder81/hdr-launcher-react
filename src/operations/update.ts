@@ -84,7 +84,7 @@ export default async function update(progressCallback?: (p: Progress) => void): 
           resolve(changelogs);
           return;
         }
-        reportProgress(new Progress("Checking for Updates", "checking for updates for " + version, 0));
+        reportProgress(new Progress("Updating to " + version_stripped, "Updating to version " + version, 0));
         let result = await backend.downloadFile(
             'https://github.com/HDR-Development/' + repoName + '/releases/download/' +
               version_stripped +
@@ -166,7 +166,7 @@ export async function handleDeletions(version: string, deletions_artifact: strin
           let exists = await backend.fileExists(sdroot + path);
           if (exists) {
             await backend.deleteFile(sdroot + path);
-            console.info("File deleted successfully");
+            console.debug("File deleted successfully");
           }
         } catch (e) {
           // for deleting individual files, we can just warn the user to verify later if it fails.
@@ -175,7 +175,7 @@ export async function handleDeletions(version: string, deletions_artifact: strin
         }
         count++
       }
-      console.info('done deleting files.');
+      console.info('done deleting removed files.');
       resolve("done deleting files.");
     } catch (e) {
       reject(e);

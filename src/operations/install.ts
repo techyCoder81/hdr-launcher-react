@@ -79,7 +79,9 @@ async function installArtifact(artifact: string, version: string, type: InstallT
       : 'https://github.com/HDR-Development/' + repoName + '/releases/download/' + version.split('-')[0] + '/' + artifact;
 
     console.info("downloading from: " + url);
-
+    if (progressCallback) {
+      progressCallback(new Progress("Downloading " + artifact, "Downloading", null));
+    }
     await backend.downloadFile(
         url,
         downloads + 'hdr-install.zip',

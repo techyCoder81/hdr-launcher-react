@@ -31,11 +31,7 @@ export class LogWindow extends React.Component implements LogListener {
 
     render() {
         function getOption(level: Level | string) {
-            if (level == Logs.instance().getLevel()) {
-                return <option value={level} key={level} selected>{level}</option>
-            } else {
-                return <option value={level} key={level}>{level}</option>
-            }
+            return <option value={level} key={level}>{level}</option>
         }
 
         return ( 
