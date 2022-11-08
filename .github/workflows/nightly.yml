@@ -22,9 +22,6 @@ jobs:
       with:
         node-version: 16
 
-    - run: apt-get update
-    - run: apt-get install npm -y
-
     - run: npm install
 
     - run: npm install -g yarn
