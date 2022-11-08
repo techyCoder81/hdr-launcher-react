@@ -108,7 +108,7 @@ jobs:
         overwrite: true
         body: Nightly build of hdr-launcher-react
 
-    - run: zip -r hdr-launcher-linux-x64.zip out/hdr-launcher-linux-x64
+  
   build_windows:
     env:
       PLUGIN_NAME: hdr-launcher
