@@ -46,12 +46,15 @@ jobs:
         overwrite: true
         body: Nightly build of hdr-launcher-react
 
+    run: mkdir frontend
+    run: cp -r .webpack frontend
+
     # upload built web files
     - name: Upload frontend artifact
       uses: actions/upload-artifact@v3
       with:
         name: frontend
-        path: .webpack
+        path: frontend
 
   build_plugin:
     needs: build_linux
