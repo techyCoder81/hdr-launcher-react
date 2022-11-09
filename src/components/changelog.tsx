@@ -1,6 +1,6 @@
 import React from "react";
 import { Remark } from "react-remark";
-import { Backend } from "../backend";
+import { Backend } from "../operations/backend";
 import { getInstallType, getRepoName } from "../operations/install";
 
 type Props = {

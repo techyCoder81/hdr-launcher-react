@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Backend } from "../../backend";
-import { getInstallType, InstallType, switchToBeta } from "../../operations/install";
-import { Progress } from "../../progress";
+import { Backend } from "../../operations/backend";
 import { FocusButton } from "./focus_button";
 
 export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onClick: (version: string) => void}) => {

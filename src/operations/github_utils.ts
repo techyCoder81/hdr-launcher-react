@@ -1,4 +1,4 @@
-import { Backend } from "../backend";
+import { Backend } from "./backend";
 
 export class Github {
 

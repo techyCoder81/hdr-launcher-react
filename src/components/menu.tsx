@@ -1,22 +1,15 @@
 import * as React from 'react';
-import { Backend, NodeBackend } from "../backend";
-import update from '../operations/update';
-import verify from '../operations/verify';
-import { installLatest, switchToBeta, switchToNightly } from '../operations/install';
-import { Progress } from '../progress';
+import { Backend, NodeBackend } from "../operations/backend";
 import "../styles/progress.css";
-import {FocusButton} from './buttons/focus_button';
-import * as skyline from "../skyline";
 import InfoBox from './info_box';
-import Sidebar from './sidebar';
 import { Header } from './header';
-import {UpdateButton} from './buttons/update_button';
 import { LogoRight } from './logo_right';
 import MainMenu from './menus/main_menu';
 import { CheckingInstalled } from './menus/checking_installed';
 import ToolsMenu from './menus/tools_menu';
 import OptionsMenu from './menus/options_menu';
 import NotInstalledMenu from './menus/not_installed_menu';
+import { skyline } from 'nx-request-api';
 
 export enum MenuType {
         MainMenu,
@@ -56,7 +49,7 @@ export default class Menu extends React.PureComponent {
         }
 
         setVersion(version: string) {
-                console.info("setting version: " + version);
+                console.debug("setting version: " + version);
                 this.setState({
                         currentMenu: this.state.currentMenu, 
                         version: version,
@@ -67,7 +60,7 @@ export default class Menu extends React.PureComponent {
         loadVersion() {
                 Backend.instance()
                         .getVersion()
-                        .then(ver => {console.info("loaded version: " + ver);this.setVersion(ver);})
+                        .then(ver => {console.debug("loaded version: " + ver);this.setVersion(ver);})
                         .catch(e => console.error("console error: " + e));
         }
 

@@ -1,9 +1,9 @@
-import { Backend } from "../../backend";
+import { Backend } from "../../operations/backend";
 import { installLatest, switchToBeta, switchToNightly } from "../../operations/install";
 import { PopupData } from "../../operations/popup_data";
 import update from "../../operations/update";
 import verify from "../../operations/verify";
-import { Progress } from "../../progress";
+import { Progress } from "nx-request-api";
 import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
 import { UpdateButton } from "../buttons/update_button";

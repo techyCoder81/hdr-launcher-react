@@ -1,8 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Messages from "../src/messages";
-import * as Responses from "../src/responses";
+import { Messages, Responses } from "nx-request-api";
 import { RequestHandler } from './request_handler';
 import { MessageHandler } from './message_handler';
 import Config from './config';

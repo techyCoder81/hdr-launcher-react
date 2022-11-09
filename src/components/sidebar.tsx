@@ -1,9 +1,5 @@
 import * as React from 'react';
-import * as Messages from "../messages";
-import { Backend } from "../backend";
-import { TwitterTimelineEmbed } from 'react-twitter-embed';
 import { LogWindow } from './log_window';
-import Changelog from './changelog';
 import LatestChanges from './latest_changes';
 import { TwitterEmbed } from './twitter_embed';
 import {FocusButton} from './buttons/focus_button';

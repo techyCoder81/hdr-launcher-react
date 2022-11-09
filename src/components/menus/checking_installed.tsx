@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Backend } from "../../backend";
+import { Backend } from "../../operations/backend";
 
 export const CheckingInstalled = (props: {onComplete: (isInstalled: boolean) => void}) => {
     const [installed, setInstalled] = useState(undefined);

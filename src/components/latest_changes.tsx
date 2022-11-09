@@ -1,6 +1,6 @@
 import React from "react";
 import { Remark } from "react-remark";
-import { Backend } from "../backend";
+import { Backend } from "../operations/backend";
 import { Github } from "../operations/github_utils";
 
 type Props = {

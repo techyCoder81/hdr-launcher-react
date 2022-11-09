@@ -1,4 +1,4 @@
-import { Backend } from "../backend";
+import { Backend } from "./backend";
 import { LogListener } from "./log_listener";
 
 class Node {

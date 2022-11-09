@@ -1,7 +1,7 @@
 import React from "react";
-import { Backend } from "../../backend";
+import { Backend } from "../../operations/backend";
 import { PopupData } from "../../operations/popup_data";
-import { Progress } from "../../progress";
+import { Progress } from "nx-request-api";
 import { MenuType } from "../menu";
 import { Popup } from "../popup";
 import { ProgressDisplay } from "../progress_bar";

@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import * as Messages from "../src/messages";
-import * as Responses from "../src/responses";
+import { Responses } from "nx-request-api";
 
 export const api = {
   /**

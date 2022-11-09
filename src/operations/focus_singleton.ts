@@ -1,4 +1,4 @@
-import { Backend } from "../backend";
+import { Backend } from "./backend";
 
 /**
  * This class exists to fill a specific need.

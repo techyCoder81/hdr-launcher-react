@@ -1,4 +1,4 @@
-import { Backend } from "../backend";
+import { Backend } from "../operations/backend";
 
 export default function SlidingBackground() {
     return <div>

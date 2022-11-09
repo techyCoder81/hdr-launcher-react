@@ -1,9 +1,9 @@
-import { Backend } from "../../backend";
+import { Backend } from "../../operations/backend";
 import { getInstallType, InstallType, switchToBeta, switchToNightly } from "../../operations/install";
 import { PopupData } from "../../operations/popup_data";
 import update from "../../operations/update";
 import verify from "../../operations/verify";
-import { Progress } from "../../progress";
+import { Progress } from "nx-request-api";
 import { NightlyBetaButton } from "../buttons/nightly_beta_button";
 import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
@@ -21,6 +21,10 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
 
     render(): JSX.Element {
         return <div className="main-menu">
+                <FocusButton text={'\u21e0 Main Menu\u00A0'}
+                        className={"main-buttons"} 
+                        onClick={() => this.props.switchTo(MenuType.MainMenu)}
+                        onFocus={() => this.props.setInfo("Return to the Main menu")}/>
                 <FocusButton text='Arcadia&nbsp;&nbsp;' 
                         className={"main-buttons"} 
                         onClick={() => Backend.instance().openModManager()}
@@ -57,10 +61,7 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                                 }
                         }
                 } />
-                <FocusButton text='Main Menu&nbsp;&nbsp;' 
-                        className={"main-buttons"} 
-                        onClick={() => this.props.switchTo(MenuType.MainMenu)}
-                        onFocus={() => this.props.setInfo("Return to the Main menu")}/>
+                
                 {super.render()}
         </div>
     }

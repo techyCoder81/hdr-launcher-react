@@ -23,6 +23,7 @@
     "electron-dl": "^3.3.1",
     "extract-zip": "^2.0.1",
     "md5-file": "^5.0.0",
+    "nx-request-api": "^0.1.7",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-markdown": "^8.0.3",

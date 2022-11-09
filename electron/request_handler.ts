@@ -1,7 +1,6 @@
 import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from 'electron'
-import * as Messages from "../src/messages";
-import * as Responses from "../src/responses";
-import { BaseResponse, BooleanResponse, DirTree, OkOrError, PathEntry, PathList, StringResponse } from '../src/responses';
+import { Progress, Messages, Responses } from "nx-request-api";
+
 import Config from './config';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,9 +10,10 @@ import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
 import * as extract from 'extract-zip';
 import * as axios from 'axios';
-import { Progress } from '../src/progress';
 
-function readDirAll(dir: string, tree: DirTree, depth: number) {
+
+
+function readDirAll(dir: string, tree: Responses.DirTree, depth: number) {
     //let tabs = "";
     //for (let i = 0; i < depth; ++i) {tabs += "\t";}
     let here = fs.readdirSync(dir);
@@ -24,7 +24,7 @@ function readDirAll(dir: string, tree: DirTree, depth: number) {
             tree.files.push(thispath);
         } else {
             //console.debug(tabs + "Directory: " + thispath);
-            let subtree = new DirTree(thispath);
+            let subtree = new Responses.DirTree(thispath);
             tree.dirs.push(subtree)
             readDirAll(fullpath, subtree, depth + 1);
         }
@@ -40,12 +40,12 @@ export class RequestHandler {
             function argcheck(count: number): boolean {
                 if (request.arguments == 0 || request.arguments === undefined) {
                     console.error("no arguments were provided for request" + request.call_name);
-                    resolve(new OkOrError(false, "no arguments were provided for request " + request.call_name, request.id));
+                    resolve(new Responses.OkOrError(false, "no arguments were provided for request " + request.call_name, request.id));
                     return false;
                 }
                 if (request.arguments.length < 1) {
                     console.error("not enough args passed for request " + request.call_name);
-                    resolve(new OkOrError(false, "not enough args passed for request" + request.call_name, request.id));
+                    resolve(new Responses.OkOrError(false, "not enough args passed for request" + request.call_name, request.id));
                     return false;
                 }
                 return true;
@@ -55,16 +55,16 @@ export class RequestHandler {
             console.info("handling request: " + name);
             switch (name) {
                 case "ping":
-                    resolve(new StringResponse("ping was received and processed!", request.id))
+                    resolve(new Responses.StringResponse("ping was received and processed!", request.id))
                     break;
                 case "get_platform":
-                    resolve(new StringResponse("Ryujinx", request.id));
+                    resolve(new Responses.StringResponse("Ryujinx", request.id));
                     break;
                 case "get_sdcard_root":
-                    resolve(new StringResponse(Config.getSdcardPath(), request.id));
+                    resolve(new Responses.StringResponse(Config.getSdcardPath(), request.id));
                     break;
                 case "is_installed":
-                    resolve(new BooleanResponse(
+                    resolve(new Responses.BooleanResponse(
                         fs.existsSync(path.join(Config.getSdcardPath(),"ultimate/mods/hdr")), 
                         request.id));
                     break;
@@ -74,16 +74,16 @@ export class RequestHandler {
                         let versionFile: string = path.join(Config.getSdcardPath(),"ultimate/mods/hdr/ui/hdr_version.txt");
                         let exists = fs.existsSync(versionFile);
                         if (!exists) {
-                            resolve(new OkOrError(false, "Version file does not exist! HDR may not be installed.", request.id));
+                            resolve(new Responses.OkOrError(false, "Version file does not exist! HDR may not be installed.", request.id));
                             break;
                         }
 
                         // read the version
                         let version = fs.readFileSync(versionFile, 'utf-8');
-                        resolve(new OkOrError(true, version, request.id));
+                        resolve(new Responses.OkOrError(true, version, request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "read_file":
@@ -95,16 +95,16 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
-                            resolve(new OkOrError(false, "specified file does not exist! HDR may not be installed.", request.id));
+                            resolve(new Responses.OkOrError(false, "specified file does not exist! HDR may not be installed.", request.id));
                             break;
                         }
 
                         // read the file
                         let text = fs.readFileSync(file, 'utf-8');
-                        resolve(new OkOrError(true, text, request.id));
+                        resolve(new Responses.OkOrError(true, text, request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "download_file":
@@ -118,7 +118,7 @@ export class RequestHandler {
                         console.log("preparing to download...\nurl: " + url + "\nlocation: " + location);
                         if (mainWindow == null) {
                             console.error("cannot download without a main window!");
-                            resolve(new OkOrError(false, "cannot download without a main window!", request.id));
+                            resolve(new Responses.OkOrError(false, "cannot download without a main window!", request.id));
                             break;
                         }
 
@@ -151,7 +151,7 @@ export class RequestHandler {
                                 if (out != null && !out.destroyed) {
                                     out.close();
                                 }
-                                outcome = new OkOrError(false, "download failed with status code: " + data.statusCode, request.id);
+                                outcome = new Responses.OkOrError(false, "download failed with status code: " + data.statusCode, request.id);
                                 complete = true;
                             }
                             total = data.headers[ 'content-length' ];
@@ -175,7 +175,7 @@ export class RequestHandler {
                                 out.close();
                             }
                             if (outcome == null) {
-                                resolve(new OkOrError(true, "download finished successfully", request.id));
+                                resolve(new Responses.OkOrError(true, "download finished successfully", request.id));
                             } else {
                                 resolve(outcome);
                             }
@@ -186,7 +186,7 @@ export class RequestHandler {
                             if (out != null && !out.destroyed) {
                                 out.close();
                             }
-                            resolve(new OkOrError(false, "download failed with error: " + e.message, request.id));
+                            resolve(new Responses.OkOrError(false, "download failed with error: " + e.message, request.id));
                         });
 
                         req.pipe(out);
@@ -196,7 +196,7 @@ export class RequestHandler {
                         if (out != null && !out.destroyed) {
                             out.close();
                         }
-                        resolve(new OkOrError(false, "Error during download: " + String(e), request.id));
+                        resolve(new Responses.OkOrError(false, "Error during download: " + String(e), request.id));
                         break;
                     }
                 case "get_md5":
@@ -208,18 +208,18 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
-                            resolve(new OkOrError(false, "specified file for md5 does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "specified file for md5 does not exist!", request.id));
                             console.info("Failed - file does not exist.");
                             break;
                         }
 
                         // get the md5
                         let hash = md5.sync(file);
-                        resolve(new OkOrError(true, hash, request.id));
+                        resolve(new Responses.OkOrError(true, hash, request.id));
                         console.info("Resolved.");
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "file_exists":
@@ -229,12 +229,12 @@ export class RequestHandler {
                         // read the given file path
                         let file: string = request.arguments[0];
 
-                        resolve(new BooleanResponse(
+                        resolve(new Responses.BooleanResponse(
                             fs.existsSync(file) && fs.statSync(file).isFile(), 
                             request.id));
                         break;
                     } catch (e) {
-                        resolve(new BooleanResponse(false, request.id));
+                        resolve(new Responses.BooleanResponse(false, request.id));
                         break;
                     }
                 case "dir_exists":
@@ -244,12 +244,12 @@ export class RequestHandler {
                         // read the given dir path
                         let dir: string = request.arguments[0];
 
-                        resolve(new BooleanResponse(
+                        resolve(new Responses.BooleanResponse(
                             fs.existsSync(dir) && fs.statSync(dir).isDirectory(), 
                             request.id));
                         break;
                     } catch (e) {
-                        resolve(new BooleanResponse(false, request.id));
+                        resolve(new Responses.BooleanResponse(false, request.id));
                         break;
                     }
                 case "list_dir":
@@ -260,11 +260,11 @@ export class RequestHandler {
                         let dir: string = request.arguments[0];
 
                         if (!fs.existsSync(dir)) {
-                            resolve(new OkOrError(false, "path does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "path does not exist!", request.id));
                             break;
                         } 
                         if (!fs.statSync(dir).isDirectory()) {
-                            resolve(new OkOrError(false, "path was not a directory!", request.id));
+                            resolve(new Responses.OkOrError(false, "path was not a directory!", request.id));
                             break;
                         }
                         
@@ -273,17 +273,17 @@ export class RequestHandler {
                         items.forEach(item => {
                             let fullpath = path.join(dir, item);
                             if (fs.statSync(fullpath).isDirectory()) {
-                                entries.push(new PathEntry(fullpath, PathEntry.DIRECTORY));
+                                entries.push(new Responses.PathEntry(fullpath, Responses.PathEntry.DIRECTORY));
                             } else {
-                                entries.push(new PathEntry(fullpath, PathEntry.FILE));
+                                entries.push(new Responses.PathEntry(fullpath, Responses.PathEntry.FILE));
                             }
                         });
                         
-                        let list = new PathList(entries);
-                        resolve(new OkOrError(true, JSON.stringify(list), request.id));
+                        let list = new Responses.PathList(entries);
+                        resolve(new Responses.OkOrError(true, JSON.stringify(list), request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "list_all_files":
@@ -294,21 +294,21 @@ export class RequestHandler {
                         let dir: string = request.arguments[0];
 
                         if (!fs.existsSync(dir)) {
-                            resolve(new OkOrError(false, "path does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "path does not exist!", request.id));
                             break;
                         } 
                         if (!fs.statSync(dir).isDirectory()) {
-                            resolve(new OkOrError(false, "path was not a directory!", request.id));
+                            resolve(new Responses.OkOrError(false, "path was not a directory!", request.id));
                             break;
                         }
                         
-                        let tree = new DirTree(dir);
+                        let tree = new Responses.DirTree(dir);
                         readDirAll(dir, tree, 0);
 
-                        resolve(new OkOrError(true, JSON.stringify(tree), request.id));
+                        resolve(new Responses.OkOrError(true, JSON.stringify(tree), request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
 
@@ -323,28 +323,28 @@ export class RequestHandler {
                         let destination: string = request.arguments[1];
 
                         if (!fs.existsSync(destination)) {
-                            resolve(new OkOrError(false, "destination does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "destination does not exist!", request.id));
                             break;
                         } 
                         if (!fs.statSync(destination).isDirectory()) {
-                            resolve(new OkOrError(false, "destination was not a directory!", request.id));
+                            resolve(new Responses.OkOrError(false, "destination was not a directory!", request.id));
                             break;
                         }
 
                         if (!fs.existsSync(filepath)) {
-                            resolve(new OkOrError(false, "filepath does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "filepath does not exist!", request.id));
                             break;
                         } 
                         if (!fs.statSync(filepath).isFile()) {
-                            resolve(new OkOrError(false, "filepath was not a file!", request.id));
+                            resolve(new Responses.OkOrError(false, "filepath was not a file!", request.id));
                             break;
                         }
                         
                         await extract.default(filepath, {dir: destination});
-                        resolve(new OkOrError(true, "file extracted successfully!", request.id));
+                        resolve(new Responses.OkOrError(true, "file extracted successfully!", request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "get_request":
@@ -357,20 +357,20 @@ export class RequestHandler {
                         axios.default.get(url)
                             .then(res => {
                                 if (res.status >= 300) {
-                                    resolve(new OkOrError(false, "Response code was not successful: " + res.status, request.id));
+                                    resolve(new Responses.OkOrError(false, "Response code was not successful: " + res.status, request.id));
                                     return;
                                 }
                                 console.info(JSON.stringify(res.data));
-                                resolve(new OkOrError(true, JSON.stringify(res.data), request.id));
+                                resolve(new Responses.OkOrError(true, JSON.stringify(res.data), request.id));
                             })
                             .catch(e => {
                                 console.error("Error during get: " + e);
-                                resolve(new OkOrError(false, String("Error during get: " + e), request.id));
+                                resolve(new Responses.OkOrError(false, String("Error during get: " + e), request.id));
                             })
                         
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "delete_file":
@@ -382,16 +382,16 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
-                            resolve(new OkOrError(false, "specified file already does not exist", request.id));
+                            resolve(new Responses.OkOrError(false, "specified file already does not exist", request.id));
                             break;
                         }
 
                         // delete the file
                         let text = fs.unlinkSync(file);
-                        resolve(new OkOrError(true, "File deleted successfully.", request.id));
+                        resolve(new Responses.OkOrError(true, "File deleted successfully.", request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 case "write_file":
@@ -409,10 +409,10 @@ export class RequestHandler {
 
                         // write the file
                         fs.writeFileSync(file, args[1]);
-                        resolve(new OkOrError(true, "File written successfully.", request.id));
+                        resolve(new Responses.OkOrError(true, "File written successfully.", request.id));
                         break;
                     } catch (e) {
-                        resolve(new OkOrError(false, String(e), request.id));
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
                 default:

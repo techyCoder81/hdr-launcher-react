@@ -1,6 +1,5 @@
-import { Backend } from '../backend'
-import { Progress } from '../progress'
-import { PathList } from '../responses'
+import { Backend } from './backend'
+import { Progress } from 'nx-request-api'
 import { getInstallType, getRepoName } from './install'
 
 export default async function verify (progressCallback?: (p: Progress) => void) {

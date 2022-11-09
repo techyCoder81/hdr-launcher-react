@@ -1,8 +1,8 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React from "react";
 import ReactModal from "react-modal";
-import { Backend } from "../backend";
-import { Progress } from "../progress";
+import { Backend } from "../operations/backend";
+import { Progress } from "nx-request-api";
 import "../styles/progress.css"
 import { ExpandSidebar } from "./expand_sidebar";
 import SlidingBackground from "./sliding_background";

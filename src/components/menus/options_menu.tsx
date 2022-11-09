@@ -1,8 +1,8 @@
-import { Backend } from "../../backend";
+import { Backend } from "../../operations/backend";
 import { switchToBeta, switchToNightly } from "../../operations/install";
 import { PopupData } from "../../operations/popup_data";
 import update from "../../operations/update";
-import { Progress } from "../../progress";
+import { Progress } from "nx-request-api";
 import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
 import { UpdateButton } from "../buttons/update_button";
@@ -19,7 +19,7 @@ export default class OptionsMenu extends AbstractMenu<{setInfo: (info: string) =
 
     render(): JSX.Element {
         return <div className="main-menu">
-                <FocusButton text='Main Menu&nbsp;&nbsp;' 
+                <FocusButton text={'\u21e0 Main Menu\u00A0'} 
                         className={"main-buttons"} 
                         onClick={() => this.props.switchTo(MenuType.MainMenu)}
                         onFocus={() => this.props.setInfo("Return to the Main menu")}/>

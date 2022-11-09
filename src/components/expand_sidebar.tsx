@@ -1,5 +1,5 @@
 import React from 'react';
-import { Backend } from '../backend';
+import { Backend } from '../operations/backend';
 import '../styles/sidebar.css';
 import { FocusButton } from './buttons/focus_button';
 import { LogWindow } from './log_window';

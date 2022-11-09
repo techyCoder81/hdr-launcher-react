@@ -1,6 +1,6 @@
 import { resolve } from '../../webpack/main.webpack';
-import { Backend } from '../backend'
-import { Progress } from '../progress';
+import { Backend } from './backend'
+import { Progress } from "nx-request-api";
 import { getInstallType, getRepoName } from './install';
 
 export async function isAvailable(progressCallback?: (p: Progress) => void): Promise<boolean> {

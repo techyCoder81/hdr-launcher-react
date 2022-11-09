@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import * as Messages from "../src/messages";
-import * as Responses from "../src/responses";
+import { Messages, Responses } from "nx-request-api";
 import { app } from 'electron'
 import * as Process from 'child_process';
 import Config from './config';

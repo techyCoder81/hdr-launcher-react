@@ -1,7 +1,7 @@
 import "core-js/stable"
 import ReactDOM from "react-dom";
 import App from "./components/app";
-import * as skyline from './skyline';
+import { skyline } from 'nx-request-api';
 
 ReactDOM.render(<App/>, document.getElementById("root"));
 

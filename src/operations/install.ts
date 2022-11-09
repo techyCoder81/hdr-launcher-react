@@ -1,5 +1,5 @@
-import { Backend } from '../backend'
-import { Progress } from '../progress';
+import { Backend } from './backend'
+import { Progress } from "nx-request-api";
 import { handleDeletions } from './update';
 import verify from './verify';
 
