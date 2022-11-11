@@ -61,7 +61,7 @@ export class Backend extends DefaultMessenger {
      * according to the backend itself. */
     async getPlatform(): Promise<string> {
         if (!Backend.platform) {
-            Backend.platform = await this.stringRequest("get_platform", null);
+            Backend.platform = await this.customRequest("get_platform", null);
         }
         return Backend.platform;
     }
@@ -69,7 +69,7 @@ export class Backend extends DefaultMessenger {
     /** gets the platform of the current backend, 
      * according to the backend itself. */
      async getSdRoot(): Promise<string> {
-        return this.stringRequest("get_sdcard_root", null);
+        return this.customRequest("get_sdcard_root", null);
     }
 
     /** gets whether hdr is installed */
@@ -79,22 +79,22 @@ export class Backend extends DefaultMessenger {
 
     /** gets the hdr version installed */
     async getVersion(): Promise<string> {
-        return this.okOrErrorRequest("get_version", null);
+        return this.customRequest("get_version", null);
     }
 
     /** sends the play message to the backend */
-    play() {
-        this.send(new Messages.Message("play", null));
+    play(): Promise<string> {
+        return this.exitSession();
     }
 
     /** sends the mod manager message to the backend */
-    openModManager() {
-        this.send(new Messages.Message("open_mod_manager", null));
+    openModManager(): Promise<string> {
+        return this.invoke("open_mod_manager", null);
     }
 
     /** sends the quit message to the backend */
-    quit() {
-        this.send(new Messages.Message("quit", null));
+    quit(): Promise<string> {
+        return this.invoke("quit", null);
     }
 }
 
@@ -103,12 +103,8 @@ export class Backend extends DefaultMessenger {
  */
 export class NodeBackend implements BackendSupplier {
 
-    send(message: Messages.Message) {
-        console.debug("sending to node backend:\n" + JSON.stringify(message));
-        window.Main.send("message", message);
-    }
-
-    invoke(message: Messages.Message, progressCallback?: (p: Progress) => void): Promise<string> {
+    invoke(call_name: string, args: string[] | null, progressCallback?: (p: Progress) => void): Promise<string> {
+        let message = new Messages.Message(call_name, args);
         console.debug("invoking on node backend:\n" + JSON.stringify(message));
         var retval = null;
         return new Promise<string>((resolve, reject) => {

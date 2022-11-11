@@ -10,6 +10,10 @@ import { mainWindow } from './main';
 import * as  md5 from 'md5-file';
 import * as extract from 'extract-zip';
 import * as axios from 'axios';
+import { OkOrError } from 'nx-request-api/lib/responses';
+import { app } from 'electron';
+import * as Process from 'child_process';
+import * as net from 'net';
 
 
 
@@ -33,8 +37,8 @@ function readDirAll(dir: string, tree: Responses.DirTree, depth: number) {
 }
 
 export class RequestHandler {
-    async handle(request: any): Promise<Responses.BaseResponse> {
-        return new Promise<Responses.BaseResponse>(async (resolve) => {
+    async handle(request: any): Promise<Responses.OkOrError> {
+        return new Promise<Responses.OkOrError>(async (resolve) => {
 
             // define the argument check "macro"
             function argcheck(count: number): boolean {
@@ -55,17 +59,17 @@ export class RequestHandler {
             console.info("handling request: " + name);
             switch (name) {
                 case "ping":
-                    resolve(new Responses.StringResponse("ping was received and processed!", request.id))
+                    resolve(new Responses.OkOrError(true, "ping was received and processed!", request.id))
                     break;
                 case "get_platform":
-                    resolve(new Responses.StringResponse("Ryujinx", request.id));
+                    resolve(new Responses.OkOrError(true, "Ryujinx", request.id));
                     break;
                 case "get_sdcard_root":
-                    resolve(new Responses.StringResponse(Config.getSdcardPath(), request.id));
+                    resolve(new Responses.OkOrError(true, Config.getSdcardPath(), request.id));
                     break;
                 case "is_installed":
-                    resolve(new Responses.BooleanResponse(
-                        fs.existsSync(path.join(Config.getSdcardPath(),"ultimate/mods/hdr")), 
+                    resolve(new Responses.OkOrError(true,
+                        String(fs.existsSync(path.join(Config.getSdcardPath(),"ultimate/mods/hdr"))), 
                         request.id));
                     break;
                 case "get_version":
@@ -143,7 +147,7 @@ export class RequestHandler {
                         let total = 0;
                         let complete = false;
                         
-                        let outcome: Responses.BaseResponse | null = null;
+                        let outcome: Responses.OkOrError | null = null;
                         req.on( 'response', function ( data: any ) {
                             console.info("status code: " + data.statusCode);
                             if (data.statusCode > 300 ) {
@@ -229,12 +233,12 @@ export class RequestHandler {
                         // read the given file path
                         let file: string = request.arguments[0];
 
-                        resolve(new Responses.BooleanResponse(
-                            fs.existsSync(file) && fs.statSync(file).isFile(), 
+                        resolve(new Responses.OkOrError(true,
+                            String(fs.existsSync(file) && fs.statSync(file).isFile()), 
                             request.id));
                         break;
                     } catch (e) {
-                        resolve(new Responses.BooleanResponse(false, request.id));
+                        resolve(new Responses.OkOrError(true, 'false', request.id));
                         break;
                     }
                 case "dir_exists":
@@ -244,12 +248,12 @@ export class RequestHandler {
                         // read the given dir path
                         let dir: string = request.arguments[0];
 
-                        resolve(new Responses.BooleanResponse(
-                            fs.existsSync(dir) && fs.statSync(dir).isDirectory(), 
+                        resolve(new Responses.OkOrError(true,
+                            String(fs.existsSync(dir) && fs.statSync(dir).isDirectory()), 
                             request.id));
                         break;
                     } catch (e) {
-                        resolve(new Responses.BooleanResponse(false, request.id));
+                        resolve(new Responses.OkOrError(true, 'false', request.id));
                         break;
                     }
                 case "list_dir":
@@ -354,20 +358,20 @@ export class RequestHandler {
                         // read the given url
                         let url: string = request.arguments[0];
 
-                        axios.default.get(url)
+                        await axios.default.get(url, {timeout: 30000})
                             .then(res => {
                                 if (res.status >= 300) {
+                                    console.info("failed status code: " + res.status);
                                     resolve(new Responses.OkOrError(false, "Response code was not successful: " + res.status, request.id));
-                                    return;
+                                } else {
+                                    console.info(JSON.stringify(res.data));
+                                    resolve(new Responses.OkOrError(true, JSON.stringify(res.data), request.id));
                                 }
-                                console.info(JSON.stringify(res.data));
-                                resolve(new Responses.OkOrError(true, JSON.stringify(res.data), request.id));
                             })
                             .catch(e => {
                                 console.error("Error during get: " + e);
                                 resolve(new Responses.OkOrError(false, String("Error during get: " + e), request.id));
                             })
-                        
                         break;
                     } catch (e) {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
@@ -415,9 +419,42 @@ export class RequestHandler {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
+                
+                case "exit_application":
+                    app.quit();
+                    break;
+                case "exit_session":
+                    // play the game
+                    resolve(new Responses.OkOrError(true, "starting the game...", request.id));
+                    let command = path.normalize(Config.getRyuPath() + " " + Config.getRomPath());
+                    if (process.platform == "win32") {
+                        command = "start cmd /k \"" + command + "\"";
+                    }
+                    console.log("Starting the game, with command: " + command);
+                    Process.exec(command, () => {
+                        mainWindow?.show();
+                    });
+                    mainWindow?.hide();
+                    
+                    let did_connect = false;
+                    let connect = () => {
+                        var s = net.createConnection(6969, "localhost");
+                        s.on('data', function(data) {
+                            did_connect = true;
+                            console.log(data.toString());
+                        });
+                        s.on('error', e => {
+                            if (!did_connect) {
+                                console.info("waiting for skyline logger...");
+                                setTimeout(connect, 1000);
+                            }
+                        });
+                    }
+                    setTimeout(connect, 1000);
+                    break;
                 default:
                     console.error("Could not handle request with name: " + name);
-                    resolve(new Error("unable to handle request " + name));
+                    resolve(new Responses.OkOrError(false, "unable to handle request " + name, request.id));
             }
         });
     }

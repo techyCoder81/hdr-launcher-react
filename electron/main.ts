@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Messages, Responses } from "nx-request-api";
 import { RequestHandler } from './request_handler';
-import { MessageHandler } from './message_handler';
 import Config from './config';
 import { platform } from 'process';
 import * as os from 'os';
@@ -179,18 +178,11 @@ async function findSdcard() {
 
 async function registerListeners () {
   let requestHandler = new RequestHandler();
-  let messageHandler = new MessageHandler();
 
   // register listening to the request channel
-  ipcMain.handle("request", (event, request): Promise<Responses.BaseResponse> => {
+  ipcMain.handle("request", (event, request): Promise<Responses.OkOrError> => {
     //console.log("main thread received request: " + JSON.stringify(request));
     return requestHandler.handle(request);
-  });
-
-  // register listening to the message channel
-  ipcMain.on("message", (event, message) => {
-    //console.log("main thread received message: " + JSON.stringify(message));
-    messageHandler.handle(message as Messages.Message);
   });
 }
 

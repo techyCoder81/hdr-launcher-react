@@ -2,19 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { Responses } from "nx-request-api";
 
 export const api = {
-  /**
-   * Here you can expose functions to the renderer process
-   * so they can interact with the main (electron) side
-   * without security problems.
-   *
-   * The function below can accessed using `window.Main.send`
-   */
 
-  send: (message: string, object: Object) => {
-    ipcRenderer.send(message, object)
-  },
-
-  invoke: (message: string, object: Object): Promise<Responses.BaseResponse> => {
+  invoke: (message: string, object: Object): Promise<Responses.OkOrError> => {
     return ipcRenderer.invoke(message, object)
   },
 

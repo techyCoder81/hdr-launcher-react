@@ -21,26 +21,30 @@ export async function isAvailable(progressCallback?: (p: Progress) => void): Pro
 }
 
 export async function getLatest(progressCallback?: (p: Progress) => void): Promise<string> {
-  return new Promise(async (resolve) => {
-    var reportProgress = (prog: Progress) => {
-      if (typeof progressCallback !== 'undefined') {
-        progressCallback(prog);
+  return new Promise(async (resolve, reject) => {
+    try {
+      var reportProgress = (prog: Progress) => {
+        if (typeof progressCallback !== 'undefined') {
+          progressCallback(prog);
+        }
       }
-    }
 
-    let backend = Backend.instance();
-    let current_version = await backend.getVersion();
-    let repoName = getRepoName(getInstallType(current_version));
+      let backend = Backend.instance();
+      let current_version = await backend.getVersion();
+      let repoName = getRepoName(getInstallType(current_version));
 
-    // get the latest for that repo
-    let latest = String(await backend.getRequest(
-      'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/hdr_version.txt'
-    ));
-    if (latest.startsWith("\"") && latest.endsWith("\"")) {
-      latest = latest.substring(1, latest.length-1);
+      // get the latest for that repo
+      let latest = await backend.getRequest(
+        'https://github.com/HDR-Development/' + repoName + '/releases/latest/download/hdr_version.txt'
+      );
+      if (latest.startsWith("\"") && latest.endsWith("\"")) {
+        latest = latest.substring(1, latest.length-1);
+      }
+      console.info('Latest is ' + latest);
+      resolve(latest);
+    } catch (e) {
+      reject(e);
     }
-    console.info('Latest is ' + latest);
-    resolve(latest);
   });
 }
 

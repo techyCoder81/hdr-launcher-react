@@ -5,17 +5,12 @@ use arcropolis_api::{self, ApiVersion, get_api_version};
 use serde_json::Result;
 use std::fmt;
 use std::path::Path;
+use nx_request_handler::*;
+use std::fs;
 
 pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
 }
-
-mod response;
-mod message;
-mod unzipper;
-use response::*;
-use message::*;
-use unzipper::*;
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
@@ -43,36 +38,42 @@ pub fn main() {
         session.show();
 
         println!("session is open");
-        listen_for_messages(&session);
-        println!("waiting for session to close");
-        session.wait_for_exit();
-        println!("session has closed!");
+        RequestEngine::new(session)
+            .register_defaults()
+            .register("open_mod_manager", None, |context| {
+                context.shutdown();
+                try_open_arcropolis();
+                unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
+                Ok("unreachable".to_string())
+            })
+            .register("get_platform", None, |context| {
+                Ok("Switch".to_string())
+            })
+            .register("get_sdcard_root", None, |context| {
+                Ok("sd:/".to_string())
+            })
+            .register("is_installed", None, |context| {
+                let exists = Path::new("sd:/ultimate/mods/hdr").exists();
+                Ok(exists.to_string())
+            })
+            .register("get_version", None, |context| {
+                let path = "sd:/ultimate/mods/hdr/ui/hdr_version.txt";
+                let exists = Path::new(path).exists();
+                if !exists {
+                    return Err("Version file does not exist!".to_string());
+                } else {
+                    return match fs::read_to_string(path) {
+                        Ok(version) => Ok(version.trim().to_string()),
+                        Err(e) => Err(e.to_string())
+                    }
+                }
+            })
+            .start();
+        
     });
 
     // End thread so match can actually start
     browser_thread.join();
-}
-
-fn listen_for_messages(session: &WebSession) {
-    loop {
-        println!("listening");
-        let msg = session.recv();
-            //println!("received a message: {}" , msg);
-            let keep_listening = match serde_json::from_str::<Message>(&msg) {
-                Ok(message) => message.handle(&session),
-                Err(_) => {
-                    println!("This is not a valid Message: {}", msg);
-                    true
-                }
-            };
-            
-            // if the handling of one of our messages said to stop listening, then break.
-            if !keep_listening {
-                println!("STOPPING LISTENING FOR MESSAGES.");
-                return;
-            }
-        
-    }
 }
 
 /// tries to open the main arcropolis configuration ui

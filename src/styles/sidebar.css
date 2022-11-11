@@ -19,8 +19,8 @@
 }
 
 .sidebar-container {
-    transition: 1000ms linear;
-    -webkit-transition: 1000ms linear;
+    transition: 400ms linear;
+    -webkit-transition: 400ms linear;
     position: absolute;
     right: 0px;
     top: 10%;

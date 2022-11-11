@@ -188,6 +188,7 @@ version = "0.1.0"
 dependencies = [
  "arcropolis-api",
  "md5",
+ "nx-request-handler",
  "prettify-js",
  "serde",
  "serde_json",
@@ -330,6 +331,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e0f4537c7470ba25f406d42c8cbfe26f64099af4b613e715c6bcb3d25856896c"
 dependencies = [
  "libc-nnsdk",
+]
+
+[[package]]
+name = "nx-request-handler"
+version = "0.1.0"
+source = "git+https://github.com/techyCoder81/nx-request-handler#76ea907c6063a71ee4765eda187c1e6be7d67e05"
+dependencies = [
+ "md5",
+ "prettify-js",
+ "serde",
+ "serde_json",
+ "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "skyline-web",
+ "smashnet",
+ "walkdir",
+ "zip",
 ]
 
 [[package]]
@@ -622,7 +639,7 @@ dependencies = [
 [[package]]
 name = "smashnet"
 version = "0.1.0"
-source = "git+https://github.com/techyCoder81/smashnet.git?branch=no-plugin-required#bf228c6d31d6e2aed08d9037a505a381c9a24943"
+source = "git+https://github.com/techyCoder81/smashnet.git#feae82c1d0b836a8418a15dc551b2210bb5bd57c"
 dependencies = [
  "skyline 0.2.1 (git+https://github.com/ultimate-research/skyline-rs.git)",
 ]
