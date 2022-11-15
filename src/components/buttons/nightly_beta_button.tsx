@@ -14,7 +14,7 @@ export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onCli
             .catch(e => console.error("Error while loading version for switch button: " + e));
     }, []);
 
-    let buttonText = "Unk";
+    let buttonText = "...";
     if (version.toLowerCase().includes("nightly")) {
         buttonText = "Beta";
     } else if (version.toLowerCase().includes("beta")) {
