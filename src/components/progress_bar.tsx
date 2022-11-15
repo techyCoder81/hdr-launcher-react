@@ -31,7 +31,7 @@ function ProgressDisplayInner(props: {progress: Progress, animate: boolean}) {
         <ProgressBar 
           className="progress-wrapper" 
           completed={
-            props.progress.progress == null ? 0 : props.progress.progress
+            props.progress.progress == null ? 0 : (props.progress.progress * 100)
           }
           transitionDuration="100ms"
           isLabelVisible={false}

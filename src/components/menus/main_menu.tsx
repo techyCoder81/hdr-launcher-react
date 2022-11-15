@@ -16,9 +16,14 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
         super(props);
     }
 
+    override showMenu(): void {
+        super.showMenu();
+        this.props.switchTo(MenuType.MainMenu);
+    }
+
     render(): JSX.Element {
         return <div className="main-menu" id="menu">
-            <FocusButton text='Play&nbsp;&nbsp;' 
+            <FocusButton text='Play&nbsp;' 
                     className={"main-buttons"} 
                     onClick={() => Backend.instance().play()}
                     autofocus={Backend.isSwitch()}
@@ -35,15 +40,15 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
                     }}
                     onFocus={() => this.props.setInfo("Update your HDR Installation")}
             />
-            <FocusButton text='Tools&nbsp;&nbsp;' 
+            <FocusButton text='Tools&nbsp;' 
                     className={"main-buttons"} 
                     onClick={() => this.props.switchTo(MenuType.Tools)}
                     onFocus={() => this.props.setInfo("Open the Tools menu")}/>
-            <FocusButton text='Options&nbsp;&nbsp;' 
+            <FocusButton text='Options&nbsp;' 
                     className={"main-buttons"} 
                     onClick={() => this.props.switchTo(MenuType.Options)}
                     onFocus={() => this.props.setInfo("Open the Options menu")}/>
-            <FocusButton text='Exit&nbsp;&nbsp;' 
+            <FocusButton text='Exit&nbsp;' 
                     className={"main-buttons"} 
                     onClick={() => Backend.instance().quit()}
                     onFocus={() => this.props.setInfo("Exit the game")}/>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Menu from "./menu";
-import { Backend, NodeBackend, SwitchBackend } from "../operations/backend";
+import { Backend } from "../operations/backend";
 import '../styles/index.css';
 import SlidingBackground from './sliding_background';
 import Loading from './loading';

@@ -78,7 +78,7 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
             new Progress(
               "Verifying Files", 
               "File: " + path, 
-              (Math.trunc((1000 * count) / entries.length) /10)
+              count / entries.length
             )
           );
         }
@@ -129,7 +129,7 @@ export default async function verify (progressCallback?: (p: Progress) => void) 
             new Progress(
               "Checking " + folder, 
               "Folder: " + folder, 
-              Math.trunc((100 * count) / hdr_folders.length)
+              count / hdr_folders.length
             )
           );
         }

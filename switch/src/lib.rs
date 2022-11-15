@@ -23,8 +23,6 @@ pub fn main() {
         return;
     }
 
-    println!("Checking if smashnet is available...");
-    
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
         let session = Webpage::new()

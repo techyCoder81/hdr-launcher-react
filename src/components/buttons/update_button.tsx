@@ -15,7 +15,7 @@ export const UpdateButton = (props: { onClick: () => void, onFocus: () => void }
 
     return <FocusButton 
         className="main-buttons"
-        text={'Update' + (available ? '(!)\u00A0' : '\u00A0\u00A0')}
+        text={'Update' + (available ? '(!)\u00A0' : '\u00A0')}
         onClick={() => props.onClick()}
         onFocus={() => props.onFocus()}
     />

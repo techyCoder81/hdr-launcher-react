@@ -17,7 +17,7 @@
   }
 
 .loading {
-    top: 200px;
+    top: 220px;
     position:relative;
     overflow: hidden;
   }
@@ -63,8 +63,8 @@
       opacity: 0;
     }
     30%,70% { 
-      transform:translateX(32%);
-      -webkit-transform:translateX(32%);
+      transform:translateX(36%);
+      -webkit-transform:translateX(36%);
       opacity: 1;
     }
     100% {

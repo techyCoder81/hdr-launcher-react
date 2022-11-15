@@ -7545,10 +7545,10 @@ nwsapi@^2.2.0:
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.2.2.tgz#e5418863e7905df67d51ec95938d67bf801f0bb0"
   integrity sha512-90yv+6538zuvUMnN+zCr8LuV6bPFdq50304114vJYJ8RDyK8D5O9Phpbd6SZWgI7PwzmmfN1upeOJlvybDSgCw==
 
-nx-request-api@^0.1.14:
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/nx-request-api/-/nx-request-api-0.1.14.tgz#30a72f50f03698a383841ada9e77542307d14774"
-  integrity sha512-FxThmsSx6L7RNeWoqrg8VEeWYp2d9Q6Co/65VgWdQX17lgwTcYb2qbyfMJ2LrzbQGOPmATSHY6qHUq4qT5CocA==
+nx-request-api@^0.1.19:
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/nx-request-api/-/nx-request-api-0.1.19.tgz#ef2b7d03e28e05d857fd44ed41de4eb28ee38ac3"
+  integrity sha512-pI+GkPr/hQEvpxcxco0ezNQlbDAtP0+rOVKBPTbi+WWlHdkg9isYZh94snG9TlxOOtKDNypKH9SZ4jCrGPYmvA==
 
 oauth-sign@~0.9.0:
   version "0.9.0"

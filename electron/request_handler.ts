@@ -169,7 +169,7 @@ export class RequestHandler {
                                 new Progress(
                                     "Downloading...", 
                                     "Downloading from " + url, 
-                                    Math.trunc(100 * current/total)
+                                    current/total
                                 )
                             );
                         });

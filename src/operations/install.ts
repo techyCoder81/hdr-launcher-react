@@ -92,7 +92,7 @@ async function installArtifact(artifact: string, version: string, type: InstallT
           progressCallback(new Progress("Extracting", "Extracting files", 0));
         }
       })
-      .then(() => backend.unzip(downloads + "hdr-install.zip", sdroot))
+      .then(() => backend.unzip(downloads + "hdr-install.zip", sdroot, progressCallback))
       .then(result => console.info("Result of extraction: " + result))
       .catch(e => {
         console.error("Error during install! " + e);

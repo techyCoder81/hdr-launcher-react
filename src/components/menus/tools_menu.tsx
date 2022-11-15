@@ -19,22 +19,27 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
         super(props);
     }
 
+    override showMenu(): void {
+        super.showMenu();
+        this.props.switchTo(MenuType.Tools);
+    }
+
     render(): JSX.Element {
         return <div className="main-menu">
                 <FocusButton text={'\u21e0 Main Menu\u00A0'}
                         className={"main-buttons"} 
                         onClick={() => this.props.switchTo(MenuType.MainMenu)}
                         onFocus={() => this.props.setInfo("Return to the Main menu")}/>
-                <FocusButton text='Arcadia&nbsp;&nbsp;' 
+                <FocusButton text='Arcadia&nbsp;' 
                         className={"main-buttons"} 
                         onClick={() => Backend.instance().openModManager()}
                         onFocus={() => this.props.setInfo("Open the Mod Manager")}/>
-                <FocusButton text='Verify&nbsp;&nbsp;' 
+                <FocusButton text='Verify&nbsp;' 
                         className={"main-buttons"} 
                         onClick={() => {
                                 verify((p: Progress) => this.showProgress(p))
-                                        .then(() => this.showMenu())
-                                        .catch(e => this.showMenu());
+                                        .then(() => this.props.switchTo(MenuType.MainMenu))
+                                        .catch(e => this.props.switchTo(MenuType.MainMenu));
                         }}
                         onFocus={() => this.props.setInfo("Verify your HDR files")}
                 />
@@ -45,14 +50,14 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                                         case InstallType.Beta:
                                                 await switchToNightly(version, (p: Progress) => this.showProgress(p))
                                                         //.then(() => verify((p: Progress) => this.setProgress(p)))
-                                                        .then(() => {alert("Switched successfully!");this.showMenu();})
-                                                        .catch(e => {this.showMenu(); alert("Error during nightly switch: " + e)});
+                                                        .then(() => {alert("Switched successfully!");this.props.switchTo(MenuType.MainMenu);})
+                                                        .catch(e => {this.props.switchTo(MenuType.MainMenu); alert("Error during nightly switch: " + e)});
                                                 break;
                                         case InstallType.Nightly:
                                                 await switchToBeta(version, (p: Progress) => this.showProgress(p))
                                                         //.then(() => verify((p: Progress) => this.setProgress(p)))
-                                                        .then(() => {alert("Switched successfully!");this.showMenu();})
-                                                        .catch(e => {this.showMenu(); alert("Error during beta switch: " + e)});
+                                                        .then(() => {alert("Switched successfully!");this.props.switchTo(MenuType.MainMenu)})
+                                                        .catch(e => {this.props.switchTo(MenuType.MainMenu); alert("Error during beta switch: " + e)});
                                                 break;
                                         default:
                                                 console.error("Could not switch! Current version is unknown!");

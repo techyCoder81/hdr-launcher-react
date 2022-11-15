@@ -3,13 +3,13 @@ import { Backend } from "../../operations/backend";
 import { FocusButton } from "./focus_button";
 
 export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onClick: (version: string) => void}) => {
-    const [version, serVersion] = useState('unknown');
+    const [version, setVersion] = useState('...');
     
     useEffect(() => {
         Backend.instance()
             .getVersion()
             .then(version => {
-                serVersion(version)
+                setVersion(version)
             })
             .catch(e => console.error("Error while loading version for switch button: " + e));
     }, []);
@@ -21,7 +21,7 @@ export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onCli
         buttonText = "Nightly";
     }
 
-    return <FocusButton text={'Install ' + buttonText + '\u00A0\u00A0'} 
+    return <FocusButton text={'Install ' + buttonText + '\u00A0'} 
         className={"main-buttons"} 
         onClick={async () => {
             props.onClick(version);

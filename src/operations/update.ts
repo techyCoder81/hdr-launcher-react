@@ -59,7 +59,7 @@ export default async function update(progressCallback?: (p: Progress) => void): 
       
       var backend = Backend.instance();
       let sdroot = await backend.getSdRoot();
-      reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
+      reportProgress(new Progress("Checking for Updates", "checking for updates", 1.0));
       let downloads = sdroot + 'downloads/'
       let version_stripped = 'unknown'
       let latest = await getLatest(progressCallback);
@@ -71,11 +71,11 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         resolve(["The latest version is already installed!"]);
       }
 
-      let changelogs = ["Changes:"];
+      //let changelogs = ["Changes:"];
 
       console.info('attempting to update chain')
       while (!(version === latest)) {
-        reportProgress(new Progress("Checking for Updates", "checking for updates", 100));
+        reportProgress(new Progress("Checking for Updates", "checking for updates", 1.0));
         version = await backend.getVersion();
         version_stripped = version.split('-')[0];
         console.info('version is: ' + version);
@@ -85,7 +85,8 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         }
         console.info('latest is: ' + latest);
         if (String(version) == latest) {
-          resolve(changelogs);
+          //resolve(changelogs);
+          resolve(["Your install has been updated."]);
           return;
         }
         reportProgress(new Progress("Updating to " + version_stripped, "Updating to version " + version, 0));
@@ -99,13 +100,14 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         console.info(result);
           
         reportProgress(new Progress("Extracting", "Extracting update" + version, 0));
-        await backend.unzip(downloads + 'upgrade.zip', sdroot);
+        await backend.unzip(downloads + 'upgrade.zip', sdroot, progressCallback);
         await backend.deleteFile(downloads + 'upgrade.zip');
         await handleDeletions(version, "deletions.json", progressCallback);
-        let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
-              version_stripped + '/CHANGELOG.md');
-        let changes = processChangelog(changelog);
-        changes.forEach(entry => changelogs.push(entry));
+        //reportProgress(new Progress("Getting Changelog", "Getting changelog" + version, 0));
+        //let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+        //      version_stripped + '/CHANGELOG.md');
+        //let changes = processChangelog(changelog);
+        //changes.forEach(entry => changelogs.push(entry));
       }
     } catch (e) {
       console.error("During update: " + e);
@@ -162,7 +164,7 @@ export async function handleDeletions(version: string, deletions_artifact: strin
         reportProgress(new Progress(
               "deleting removed files", 
               "file: " + path, 
-              Math.trunc((100 * count) / entries.length)
+              count / entries.length
             ));
 
         try {

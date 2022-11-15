@@ -21,12 +21,12 @@ export default class NotInstalledMenu extends AbstractMenu<{setInfo: (info: stri
     render(): JSX.Element {
         return <div id="menu">
                 <div className="main-menu">
-                        <FocusButton text='Play Vanilla&nbsp;&nbsp;' 
+                        <FocusButton text='Play Vanilla&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={() => Backend.instance().play()}
                                 onFocus={() => this.props.setInfo("Play vanilla Ultimate")}/>
                         
-                        <FocusButton text='Install HDR&nbsp;&nbsp;' 
+                        <FocusButton text='Install HDR&nbsp;' 
                                 className={"main-buttons"} 
                                 onClick={async () => {
                                         await installLatest((p: Progress) => this.showProgress(p))
