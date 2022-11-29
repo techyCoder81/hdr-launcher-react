@@ -25,6 +25,12 @@ export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onCli
         className={"main-buttons"} 
         onClick={async () => {
             props.onClick(version);
+            Backend.instance()
+                .getVersion()
+                .then(version => {
+                    setVersion(version)
+                })
+                .catch(e => console.error("Error while loading version for switch button: " + e));
         }}
         onFocus={() => props.setInfo("Switch to the " + buttonText + " version of HDR")}
     />
