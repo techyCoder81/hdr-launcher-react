@@ -96,6 +96,16 @@ export class Backend extends DefaultMessenger {
     quit(): Promise<string> {
         return this.invoke("quit", null);
     }
+
+    /** checks if the given mod path is enabled (relative to sd:/) */
+    is_mod_enabled(mod_path: string): Promise<boolean> {
+        return this.booleanRequest("is_mod_enabled", [mod_path]);
+    }
+
+    /** gets the arcropolis api version */
+    get_arcrop_api_version(): Promise<string> {
+        return this.customRequest("get_arcrop_api_version", null);
+    }
 }
 
 /**

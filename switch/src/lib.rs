@@ -54,6 +54,15 @@ pub fn main() {
                 let exists = Path::new("sd:/ultimate/mods/hdr").exists();
                 Ok(exists.to_string())
             })
+            .register("is_mod_enabled", Some(1), |context| {
+                let mod_path = &context.arguments.as_ref().unwrap()[0];
+                let enabled = arcropolis_api::is_mod_enabled(arcropolis_api::hash40(mod_path).as_u64());
+                Ok(enabled.to_string())
+            })
+            .register("get_arcrop_api_version", None, |context| {
+                let api_version = arcropolis_api::get_api_version();
+                Ok(format!("{}.{}", api_version.major, api_version.minor))
+            })
             .register("get_version", None, |context| {
                 let path = "sd:/ultimate/mods/hdr/ui/hdr_version.txt";
                 let exists = Path::new(path).exists();

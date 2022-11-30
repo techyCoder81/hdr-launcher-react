@@ -15,10 +15,19 @@ const always_disable_plugins = [
   plugins_dir + "/libacmd_hook.nro",
 ];
 
+const deprecated_ryu_mods_dir = "../mods/contents/01006A800016E000/";
+
+const dev_nro_path = "atmosphere/contents/01006A800016E000/romfs/smashline/development.nro";
+
 const hdr_folders = [
   "ultimate/mods/hdr",
   "ultimate/mods/hdr-stages",
   "ultimate/mods/hdr-assets",
+];
+
+const always_ignore_files = [
+  "changelog.toml",
+  "hdr-launcher.nro"
 ];
 
 export default async function verify (progressCallback?: (p: Progress) => void): Promise<string> {
@@ -67,11 +76,25 @@ export default async function verify (progressCallback?: (p: Progress) => void):
     let missing = [];
     let wrong: any[] = [];
     let errors: string[] = [];
+    let result_str = "";
 
     // check to make sure every file has the right hash
     while (count < total) {
       let path = entries[count].path
       let expected_hash = entries[count].hash
+
+      // continue if we arent supposed to hash-check this file.
+      let ignored = false;
+      always_ignore_files.forEach(ignored_file => {
+        if (path.includes(ignored_file)) {
+          ignored = true;
+        }
+      });
+      if (ignored) {
+        console.info("Ignoring: " + path);
+        count++;
+        continue;
+      }
 
       reportProgress(new Progress(
             "Verifying Files", 
@@ -173,6 +196,28 @@ export default async function verify (progressCallback?: (p: Progress) => void):
       }
     }
 
+    // warn the user if there is a development.nro
+    if (await backend.fileExists(sdroot + dev_nro_path)) {
+      let ok = confirm("You have a development nro, would you like to delete it?");
+      if (ok) {
+        await backend.deleteFile(sdroot + dev_nro_path);
+      } else {
+        result_str += "\nWarning: A development.nro is present on this machine.";
+      }
+    }
+
+    // check if there are mods in the ryu mods folder
+    if (Backend.isNode() && await backend.dirExists(sdroot + deprecated_ryu_mods_dir)) {
+      await backend.listDir(sdroot + deprecated_ryu_mods_dir)
+        .then(contents => {
+          if (contents.list.length > 0) {
+            result_str += "\nThere are files in " + sdroot + deprecated_ryu_mods_dir 
+              + " which may cause conflicts with HDR, as we do not use this form of mod loading."
+          }
+        })
+        .catch(e => console.error(e));
+    }
+
     // launcher nro is unnecessary on ryujinx and will actually cause a crash (for the old launcher)
     if (Backend.isNode() && (await backend.fileExists(sdroot + plugins_dir + "/hdr-launcher.nro"))) {
       await backend.deleteFile(sdroot + plugins_dir + "/hdr-launcher.nro")
@@ -180,9 +225,37 @@ export default async function verify (progressCallback?: (p: Progress) => void):
         .catch(e => alert("Failed to delete old launcher nro for Ryujinx, which will likely crash on game boot."));
     }
 
-    let result_str = "";
+    if (Backend.isSwitch()) {
+      let api_version = (await backend.get_arcrop_api_version()).split(".");
+      if (Number(api_version[0]) >= 1 && Number(api_version[1]) >= 7) {
+          // check if hdr is enabled
+          let hdr_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr");
+          let hdr_assets_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-assets");
+          let hdr_stages_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-stages");
+          let hdr_dev_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-dev");
+          let hdr_pr_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-pr");
+
+          if (!hdr_enabled) {
+            result_str += "\nThe main hdr mod folder is not enabled in Arcropolis config! Please enable this in the options menu or the mod manager.";
+          }
+          if (!hdr_assets_enabled) {
+            result_str += "\nThe hdr-assets mod folder is not enabled in Arcropolis config! Please enable this in the options menu or the mod manager.";
+          }
+          if (!hdr_stages_enabled) {
+            result_str += "\nThe hdr-stages mod folder is not enabled in Arcropolis config! Please enable this in the options menu or the mod manager.";
+          }
+          if (hdr_dev_enabled) {
+            result_str += "\nhdr-dev is currently enabled! Be aware that this is not currently an official build.";
+          }
+          if (hdr_pr_enabled) {
+            result_str += "\nA Pull Request build (hdr-pr) is currently enabled! Be aware that this is not currently an official build.";
+          }
+      }
+    }
+
+    // build the results of hash checking
     if (missing.length > 0) {
-      result_str += "Missing files: \n" + missing.join("\n");
+      result_str += "\nMissing files: \n" + missing.join("\n");
     }
     if (wrong.length > 0) {
       result_str += "\nWrong: \n" + wrong.join("\n");
