@@ -1,11 +1,5 @@
-import { Backend } from "../../operations/backend";
-import { switchToBeta, switchToNightly } from "../../operations/install";
-import { PopupData } from "../../operations/popup_data";
-import update from "../../operations/update";
-import { Progress } from "nx-request-api";
 import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
-import { UpdateButton } from "../buttons/update_button";
 import { AbstractMenu } from "./abstract_menu";
 
 /**

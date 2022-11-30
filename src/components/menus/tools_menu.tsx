@@ -1,14 +1,12 @@
 import { Backend } from "../../operations/backend";
 import { getInstallType, InstallType, switchToBeta, switchToNightly } from "../../operations/install";
-import { PopupData } from "../../operations/popup_data";
-import update from "../../operations/update";
 import verify from "../../operations/verify";
 import { Progress } from "nx-request-api";
 import { NightlyBetaButton } from "../buttons/nightly_beta_button";
 import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
-import { UpdateButton } from "../buttons/update_button";
 import { AbstractMenu } from "./abstract_menu";
+import { PopupData } from "../../operations/popup_data";
 
 /**
  * builds the tools menu components
@@ -38,8 +36,16 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                         className={"main-buttons"} 
                         onClick={() => {
                                 verify((p: Progress) => this.showProgress(p))
-                                        .then(() => this.props.switchTo(MenuType.MainMenu))
-                                        .catch(e => this.props.switchTo(MenuType.MainMenu));
+                                        .then(results => {
+                                                console.info("finished verifying successfully");    
+                                                this.showMenu();
+                                                this.showPopupData(new PopupData(['Ok'], results, () => this.showMenu()));
+                                        })
+                                        .catch(results => {
+                                                console.info("finished verifying, issues reported.");    
+                                                this.showMenu();
+                                                this.showPopupData(new PopupData(['Ok'], results, () => this.showMenu()));
+                                        });
                         }}
                         onFocus={() => this.props.setInfo("Verify your HDR files")}
                 />
