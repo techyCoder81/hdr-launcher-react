@@ -7,8 +7,7 @@ use std::fmt;
 use std::path::Path;
 use nx_request_handler::*;
 use std::fs;
-
-
+use semver::{BuildMetadata, Prerelease, Version, VersionReq};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -16,13 +15,42 @@ pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
 }
 
-#[cfg(feature = "updater")]
+//#[cfg(feature = "updater")]
 pub fn check_for_self_updates() {
-    let mut curler = smashnet::curl::Curler::new();
-    let result = curler.get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest".to_string());
-    let json: serde_json::Value = serde_json::from_str(&result.unwrap()).unwrap();
-    let tag = &json["tag_name"];
+    println!("checking for updates");
+    let response = match minreq::get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest")
+        .with_header("User-Agent", "hdr-launcher")    
+        .send() {
+        Ok(resp) => resp,
+        Err(err) => {
+            println!("{:?}", err);
+            return;
+        },
+    };
+    let result = response.as_str().unwrap();
+    println!("result: {}", &result);
+    let json: serde_json::Value = serde_json::from_str(&result).unwrap();
+    let tag = &json["tag_name"].as_str().unwrap();
     println!("Latest is: {}", tag);
+    println!("Current is: {}" , VERSION);
+
+    let current_version = Version::parse(VERSION).unwrap();
+    let latest_version = Version::parse(&tag[1..]).unwrap();
+    if latest_version > current_version {
+        println!("We should update!");
+        /*let update = match minreq::Request::new(minreq::Method::Get, "https://github.com/techyCoder81/hdr-launcher-react/releases/latest/download/hdr-launcher.nro")
+            .with_header("Accept", "application/octet-stream")
+            .with_header("User-Agent", "hdr-launcher")
+            .send() {
+            Ok(resp) => resp,
+            Err(err) => {
+                println!("{:?}", err);
+                return;
+            },
+        };*/
+        println!("finished get");
+        //std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/hdr-launcher.nro", file.as_bytes()).unwrap();
+    }
 }
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
@@ -31,13 +59,13 @@ static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
-    #[cfg(feature = "updater")]
-    check_for_self_updates();
-
     if is_emulator() {
         println!("HDR Launcher nro cannot run on emulator! Exiting launcher nro!");
         return;
     }
+
+    //#[cfg(feature = "updater")]
+    check_for_self_updates();
 
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
