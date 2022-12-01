@@ -226,14 +226,14 @@ export default async function verify (progressCallback?: (p: Progress) => void):
     }
 
     if (Backend.isSwitch()) {
-      let api_version = (await backend.get_arcrop_api_version()).split(".");
+      let api_version = (await backend.getArcropApiVersion()).split(".");
       if (Number(api_version[0]) >= 1 && Number(api_version[1]) >= 7) {
           // check if hdr is enabled
-          let hdr_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr");
-          let hdr_assets_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-assets");
-          let hdr_stages_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-stages");
-          let hdr_dev_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-dev");
-          let hdr_pr_enabled = await backend.is_mod_enabled("sd:/ultimate/mods/hdr-pr");
+          let hdr_enabled = await backend.isModEnabled("sd:/ultimate/mods/hdr");
+          let hdr_assets_enabled = await backend.isModEnabled("sd:/ultimate/mods/hdr-assets");
+          let hdr_stages_enabled = await backend.isModEnabled("sd:/ultimate/mods/hdr-stages");
+          let hdr_dev_enabled = await backend.isModEnabled("sd:/ultimate/mods/hdr-dev");
+          let hdr_pr_enabled = await backend.isModEnabled("sd:/ultimate/mods/hdr-pr");
 
           if (!hdr_enabled) {
             result_str += "\nThe main hdr mod folder is not enabled in Arcropolis config! Please enable this in the options menu or the mod manager.";

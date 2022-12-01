@@ -146,6 +146,7 @@ pub fn main() {
                 let api_version = arcropolis_api::get_api_version();
                 Ok(format!("{}.{}", api_version.major, api_version.minor))
             })
+            .register("get_launcher_version", None, |_|{Ok(VERSION.to_string())})
             .register("get_version", None, |context| {
                 let path = "sd:/ultimate/mods/hdr/ui/hdr_version.txt";
                 let exists = Path::new(path).exists();
