@@ -27,15 +27,46 @@ pub fn check_for_self_updates() {
             return;
         },
     };
-    let result = response.as_str().unwrap();
+    let result = match response.as_str() {
+        Ok(res) => res,
+        Err(e) => {
+            println!("{:?}", e);
+            return;
+        }
+    };
     println!("result: {}", &result);
-    let json: serde_json::Value = serde_json::from_str(&result).unwrap();
-    let tag = &json["tag_name"].as_str().unwrap();
+    let json: serde_json::Value = match serde_json::from_str(&result) {
+        Ok(res) => res,
+        Err(e) => {
+            println!("{:?}", e);
+            return;
+        }
+    };
+    let tag = json["tag_name"].as_str();
+    let tag = match &tag {
+        Some(res) => res,
+        None => {
+            println!("tag name not found!");
+            return;
+        }
+    };
     println!("Latest is: {}", tag);
     println!("Current is: {}" , VERSION);
 
-    let current_version = Version::parse(VERSION).unwrap();
-    let latest_version = Version::parse(&tag[1..]).unwrap();
+    let current_version = match Version::parse(VERSION) {
+        Ok(res) => res,
+        Err(e) => {
+            println!("{:?}", e);
+            return;
+        }
+    };
+    let latest_version = match Version::parse(&tag[1..]) {
+        Ok(res) => res,
+        Err(e) => {
+            println!("{:?}", e);
+            return;
+        }
+    };
     if latest_version > current_version {
         println!("We should update!");
         let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it?");
@@ -53,7 +84,10 @@ pub fn check_for_self_updates() {
             },
         };
         println!("finished get");
-        std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/hdr-launcher.nro", update.into_bytes()).unwrap();
+        match std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro", update.into_bytes()){
+            Ok(_) => println!("new update installed!"),
+            Err(err) => println!("{:?}", err)
+        };
         unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
     }
 }

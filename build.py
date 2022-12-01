@@ -37,9 +37,9 @@ if success != 0:
 
 if not ip == "":
     if os.name == 'nt':
-        os.system('curl.exe -T target\\aarch64-skyline-switch\\release\\libhdr_launcher_react.nro ftp://' + ip + ':5000/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr_launcher_react.nro')
+        os.system('curl.exe -T target\\aarch64-skyline-switch\\release\\libhdr_launcher_react.nro ftp://' + ip + ':5000/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro')
     else:
-        os.system('curl -T target/aarch64-skyline-switch/release/libhdr_launcher_react.nro ftp://' + ip + ':5000/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr_launcher_react.nro')
+        os.system('curl -T target/aarch64-skyline-switch/release/libhdr_launcher_react.nro ftp://' + ip + ':5000/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro')
 
 if listen:
     os.system("cargo skyline listen")
