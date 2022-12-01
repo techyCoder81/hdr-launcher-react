@@ -428,7 +428,18 @@ export class RequestHandler {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }
-                    
+                case "mkdir":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        let args = request.arguments;
+                        fs.mkdirSync(args[0], { recursive: true })
+                        resolve(new Responses.OkOrError(true, pjson.version, request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
+                        break;
+                    }    
                 case "exit_application":
                     app.quit();
                     break;

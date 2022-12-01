@@ -107,7 +107,7 @@ export class Backend extends DefaultMessenger {
         return this.customRequest("get_arcrop_api_version", null);
     }
 
-    /** gets the arcropolis api version */
+    /** gets the the launcher version */
     getLauncherVersion(): Promise<string> {
         return this.customRequest("get_launcher_version", null);
     }

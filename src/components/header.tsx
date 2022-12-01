@@ -14,7 +14,6 @@ import { Backend } from "../operations/backend";
             .catch(e => alert(e));
     }, []);
 
-
     return (
     <div id="header" className='header'>
         <p id="title" className='header-item'>HDR {Backend.platformName()} Launcher {(props.submenu.length > 0) ? (" > " + props.submenu.join('>')) : ''}</p>
