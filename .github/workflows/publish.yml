@@ -70,7 +70,7 @@ jobs:
     - run: |
         md5sum hdr-launcher.nro > checksum.txt
 
-     upload asset
+    # upload asset
     - name: Upload plugin to release
       uses: svenstaro/upload-release-action@v2
       with:
@@ -83,7 +83,7 @@ jobs:
         overwrite: true
         body: Automatic build of hdr-launcher-react
 
-     upload asset
+    # upload asset
     - name: Upload checksum to release
       uses: svenstaro/upload-release-action@v2
       with:
