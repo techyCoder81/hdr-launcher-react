@@ -18,7 +18,7 @@ import { Backend } from "../operations/backend";
     return (
     <div id="header" className='header'>
         <p id="title" className='header-item'>HDR {Backend.platformName()} Launcher {(props.submenu.length > 0) ? (" > " + props.submenu.join('>')) : ''}</p>
-        <p id="version" className='header-right'>HDR {props.version}, Launcher {launcherVersion}</p>
+        <p id="version" className='header-right'>HDR {props.version}, Launcher v{launcherVersion}</p>
     </div>
     );
 }
