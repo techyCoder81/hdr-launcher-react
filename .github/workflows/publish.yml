@@ -44,7 +44,7 @@ jobs:
         name: frontend
         path: frontend
 
-  build_plugin:
+  build_the_plugin:
     needs: build_frontend
     runs-on: ubuntu-latest
     container: 
