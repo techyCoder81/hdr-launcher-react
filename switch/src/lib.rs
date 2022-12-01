@@ -15,7 +15,7 @@ pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
 }
 
-//#[cfg(feature = "updater")]
+#[cfg(feature = "updater")]
 pub fn check_for_self_updates() {
     println!("checking for updates");
     let response = match minreq::get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest")
@@ -38,7 +38,11 @@ pub fn check_for_self_updates() {
     let latest_version = Version::parse(&tag[1..]).unwrap();
     if latest_version > current_version {
         println!("We should update!");
-        /*let update = match minreq::Request::new(minreq::Method::Get, "https://github.com/techyCoder81/hdr-launcher-react/releases/latest/download/hdr-launcher.nro")
+        let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it?");
+        if !ok {
+            return;
+        }
+        let update = match minreq::Request::new(minreq::Method::Get, "https://github.com/techyCoder81/hdr-launcher-react/releases/latest/download/hdr-launcher.nro")
             .with_header("Accept", "application/octet-stream")
             .with_header("User-Agent", "hdr-launcher")
             .send() {
@@ -47,9 +51,10 @@ pub fn check_for_self_updates() {
                 println!("{:?}", err);
                 return;
             },
-        };*/
+        };
         println!("finished get");
-        //std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/hdr-launcher.nro", file.as_bytes()).unwrap();
+        std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/hdr-launcher.nro", update.into_bytes()).unwrap();
+        unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
     }
 }
 
@@ -64,11 +69,11 @@ pub fn main() {
         return;
     }
 
-    //#[cfg(feature = "updater")]
-    check_for_self_updates();
-
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
+        #[cfg(feature = "updater")]
+        check_for_self_updates();
+
         let session = Webpage::new()
             .htdocs_dir("hdr-launcher")
             .file("index.html", &HTML_TEXT)

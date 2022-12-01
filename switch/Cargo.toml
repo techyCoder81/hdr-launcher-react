@@ -1,6 +1,6 @@
 [package]
 name = "hdr-launcher-react"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["techyCoder81"]
 edition = "2021"
 
@@ -20,7 +20,6 @@ skyline-web = { version = "0.1.0", features = ["json"] }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
 arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
-smashnet = "0.2.0"
 md5 = "0.7.0"
 walkdir = "2"
 zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
