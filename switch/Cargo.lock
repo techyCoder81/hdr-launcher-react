@@ -195,7 +195,7 @@ dependencies = [
  "skyline 0.2.1 (git+https://github.com/ultimate-research/skyline-rs.git)",
  "skyline-config",
  "skyline-web",
- "smashnet 0.2.0 (git+https://github.com/techyCoder81/smashnet.git)",
+ "smashnet",
  "walkdir",
  "zip",
 ]
@@ -343,7 +343,7 @@ dependencies = [
  "serde_json",
  "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "skyline-web",
- "smashnet 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "smashnet",
  "walkdir",
  "zip",
 ]
@@ -641,14 +641,6 @@ name = "smashnet"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9371bdc9b319f649ca6a7f75ee397eae5247735979632cc39dcfb20ea85152e6"
-dependencies = [
- "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "smashnet"
-version = "0.2.0"
-source = "git+https://github.com/techyCoder81/smashnet.git#dff33beeaf5dd6cf8de883b755e177172509b236"
 dependencies = [
  "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

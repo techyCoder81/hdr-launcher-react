@@ -8,8 +8,16 @@ use std::path::Path;
 use nx_request_handler::*;
 use std::fs;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
+}
+
+#[cfg(feature = "updater")]
+pub fn check_for_self_updates() {
+    let mut curler = smashnet::curl::Curler::new();
+    let result = curler.get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases?per_page=1".to_string());
 }
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
@@ -18,6 +26,9 @@ static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
+    #[cfg(feature = "updater")]
+    check_for_self_updates();
+
     if is_emulator() {
         println!("HDR Launcher nro cannot run on emulator! Exiting launcher nro!");
         return;

@@ -7,6 +7,7 @@ ip = ""
 electron = False
 listen = False
 package = False
+updater = ""
 
 for arg in sys.argv:
     if "ip" in arg:
@@ -20,6 +21,8 @@ for arg in sys.argv:
         listen = True
     if "package" in arg:
         package = True
+    if "updater" in arg:
+        updater = " --features updater"
 
 if package:
     success = os.system("yarn package")
@@ -28,7 +31,7 @@ if package:
 
 os.chdir("switch")
 
-success = os.system("cargo skyline build --release");
+success = os.system("cargo skyline build --release" + updater);
 if success != 0:
     exit("SWITCH BUILD FAILED!")
 

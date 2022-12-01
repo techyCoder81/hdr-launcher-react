@@ -34,17 +34,17 @@ jobs:
         dest: hdr-launcher-linux-x64.zip
 
     # upload desktop app
-    - name: Upload outfiles to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'hdr-launcher-linux-x64.zip'
-        prerelease: true
-        file_glob: true
-        asset_name: hdr-launcher-linux-x64
-        release_name: nightly
-        tag: nightly
-        overwrite: true
-        body: Nightly build of hdr-launcher-react
+    #- name: Upload outfiles to release
+    #  uses: svenstaro/upload-release-action@v2
+    #  with:
+    #    file: 'hdr-launcher-linux-x64.zip'
+    #    prerelease: true
+    #    file_glob: true
+    #    asset_name: hdr-launcher-linux-x64
+    #    release_name: nightly
+    #    tag: nightly
+    #    overwrite: true
+    #    body: Nightly build of hdr-launcher-react
 
     - run: mkdir frontend
     - run: cp -r .webpack frontend
@@ -83,30 +83,30 @@ jobs:
         md5sum hdr-launcher.nro > checksum.txt
 
     # upload asset
-    - name: Upload plugin to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'hdr-launcher.nro'
-        prerelease: true
-        file_glob: true
-        asset_name: plugin
-        release_name: nightly
-        tag: nightly
-        overwrite: true
-        body: Nightly build of hdr-launcher-react
+    #- name: Upload plugin to release
+    #  uses: svenstaro/upload-release-action@v2
+    #  with:
+    #    file: 'hdr-launcher.nro'
+    #    prerelease: true
+    #    file_glob: true
+    #    asset_name: plugin
+    #    release_name: nightly
+    #    tag: nightly
+    #    overwrite: true
+    #    body: Nightly build of hdr-launcher-react
 
     # upload asset
-    - name: Upload checksum to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'checksum.txt'
-        prerelease: true
-        file_glob: true
-        asset_name: checksum
-        release_name: nightly
-        tag: nightly
-        overwrite: true
-        body: Nightly build of hdr-launcher-react
+    #- name: Upload checksum to release
+    #  uses: svenstaro/upload-release-action@v2
+    #  with:
+    #    file: 'checksum.txt'
+    #    prerelease: true
+    #    file_glob: true
+    #    asset_name: checksum
+    #    release_name: nightly
+    #    tag: nightly
+    #    overwrite: true
+    #    body: Nightly build of hdr-launcher-react
 
   
   build_windows:
@@ -140,16 +140,16 @@ jobs:
         dest: hdr-launcher-win32-x64.zip
 
     # upload desktop app
-    - name: Upload outfiles to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'hdr-launcher-win32-x64.zip'
-        prerelease: true
-        file_glob: true
-        asset_name: hdr-launcher-win32-x64
-        release_name: nightly
-        tag: nightly
-        overwrite: true
-        body: Nightly build of hdr-launcher-react
+    #- name: Upload outfiles to release
+    #  uses: svenstaro/upload-release-action@v2
+    #  with:
+    #    file: 'hdr-launcher-win32-x64.zip'
+    #    prerelease: true
+    #    file_glob: true
+    #    asset_name: hdr-launcher-win32-x64
+    #    release_name: nightly
+    #    tag: nightly
+    #    overwrite: true
+    #    body: Nightly build of hdr-launcher-react
     
 
