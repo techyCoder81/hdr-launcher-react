@@ -8,6 +8,8 @@ use std::path::Path;
 use nx_request_handler::*;
 use std::fs;
 
+
+
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn is_emulator() -> bool {
@@ -17,7 +19,10 @@ pub fn is_emulator() -> bool {
 #[cfg(feature = "updater")]
 pub fn check_for_self_updates() {
     let mut curler = smashnet::curl::Curler::new();
-    let result = curler.get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases?per_page=1".to_string());
+    let result = curler.get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest".to_string());
+    let json: serde_json::Value = serde_json::from_str(&result.unwrap()).unwrap();
+    let tag = &json["tag_name"];
+    println!("Latest is: {}", tag);
 }
 
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
