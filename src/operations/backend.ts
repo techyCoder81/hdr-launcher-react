@@ -92,11 +92,6 @@ export class Backend extends DefaultMessenger {
         return this.invoke("open_mod_manager", null);
     }
 
-    /** sends the quit message to the backend */
-    quit(): Promise<string> {
-        return this.invoke("quit", null);
-    }
-
     /** checks if the given mod path is enabled (relative to sd:/) */
     isModEnabled(mod_path: string): Promise<boolean> {
         return this.booleanRequest("is_mod_enabled", [mod_path]);

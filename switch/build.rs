@@ -8,6 +8,7 @@ use prettify_js::*;
 static JS_FILE_PATH: &str = "../.webpack/renderer/main_window/index.js";
 static HTML_FILE_PATH: &str = "../.webpack/renderer/main_window/index.html";
 static LOGO_FILE_PATH: &str = "../.webpack/renderer/assets/logo_full.png";
+static MUSIC_FILE_PATH: &str = "../.webpack/renderer/assets/theme.wav";
 
 fn main() -> std::io::Result<()> {
     println!("current dir: {}", env::current_dir()?.display());
@@ -56,6 +57,9 @@ fn main() -> std::io::Result<()> {
 
     // copy the logo image file
     fs::copy(LOGO_FILE_PATH, "web-build/logo_full.png")?;
+
+    // copy the music file
+    fs::copy(MUSIC_FILE_PATH, "web-build/theme.wav")?;
 
     Ok(()) 
 } 

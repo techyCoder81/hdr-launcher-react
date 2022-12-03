@@ -28,6 +28,12 @@ export default class NotInstalledMenu extends AbstractMenu<{setInfo: (info: stri
                                 onClick={async () => {
                                         await installLatest((p: Progress) => this.showProgress(p))
                                                 .then(() => verify((p: Progress) => this.showProgress(p)))
+                                                .then(async () => {
+                                                        if (Backend.isSwitch()) {
+                                                                alert("HDR's files have been installed. Please enable hdr, hdr-assets, and hdr-stages when the Arcadia menu opens.");
+                                                                await Backend.instance().openModManager();
+                                                        }
+                                                })
                                                 .then(() => this.showMenu())
                                                 .then(() => this.props.switchTo(MenuType.CheckingInstalled))
                                                 .catch(e => {

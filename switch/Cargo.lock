@@ -766,8 +766,7 @@ dependencies = [
 [[package]]
 name = "skyline-web"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63c83a459fd36e8bfc32e2920954f39f538af6a886e3c3976967567fb3a02892"
+source = "git+https://github.com/techyCoder81/skyline-web#f7f24d2721661e6c04927023972d03be4ace0f39"
 dependencies = [
  "nnsdk 0.2.0 (git+https://github.com/Raytwo/nnsdk-rs?branch=account_fs)",
  "ramhorns",

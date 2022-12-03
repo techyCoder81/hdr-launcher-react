@@ -6,6 +6,7 @@ import { FocusButton } from "../buttons/focus_button";
 import { MenuType } from "../menu";
 import { UpdateButton } from "../buttons/update_button";
 import { AbstractMenu } from "./abstract_menu";
+import BackgroundMusic from "../../operations/background_music";
 
 /**
  * builds the main menu components
@@ -25,7 +26,13 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
         return <div className="main-menu" id="menu">
             <FocusButton text='Play&nbsp;' 
                     className={"main-buttons"} 
-                    onClick={() => Backend.instance().play()}
+                    onClick={() => {
+                        //BackgroundMusic.singleton().fadeOut().then(() => BackgroundMusic.singleton().pause());
+                        Backend.instance().play().then(() => {
+                            //BackgroundMusic.singleton().play();
+                            //BackgroundMusic.singleton().fadeIn();
+                        });
+                    }}
                     autofocus={Backend.isSwitch()}
                     onFocus={() => this.props.setInfo("Play HDR!")}/>
             <UpdateButton 
@@ -50,7 +57,7 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
                     onFocus={() => this.props.setInfo("Open the Options menu")}/>
             <FocusButton text='Exit&nbsp;' 
                     className={"main-buttons"} 
-                    onClick={() => Backend.instance().quit()}
+                    onClick={() => Backend.instance().exitApplication()}
                     onFocus={() => this.props.setInfo("Exit the game")}/>
             {super.render()}
     </div>

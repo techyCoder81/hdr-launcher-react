@@ -445,14 +445,15 @@ export class RequestHandler {
                     break;
                 case "exit_session":
                     // play the game
-                    resolve(new Responses.OkOrError(true, "starting the game...", request.id));
+                    //resolve(new Responses.OkOrError(true, "starting the game...", request.id));
                     let command = path.normalize(Config.getRyuPath() + " " + Config.getRomPath());
                     if (process.platform == "win32") {
                         command = "start cmd /k \"" + command + "\"";
                     }
                     console.log("Starting the game, with command: " + command);
-                    Process.exec(command, () => {
+                    Process.exec(command, result => {
                         mainWindow?.show();
+                        resolve(new Responses.OkOrError(true, "Exit status: " + String(result), request.id));
                     });
                     mainWindow?.hide();
                     

@@ -95,6 +95,7 @@ pub fn check_for_self_updates() {
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
 static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
+static THEME_WAV: &[u8] = include_bytes!("../web-build/theme.wav");
 
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
@@ -108,11 +109,22 @@ pub fn main() {
         #[cfg(feature = "updater")]
         check_for_self_updates();
 
+        unsafe {
+            extern "C" {
+                #[link_name = "_ZN2nn2oe24SetExpectedVolumeBalanceEff"]
+                fn set_volume_balance(applet: f32, system: f32);
+            }
+    
+            set_volume_balance(0.5, 1.0);
+        }
+
         let session = Webpage::new()
             .htdocs_dir("hdr-launcher")
             .file("index.html", &HTML_TEXT)
             .file("index.js", &JS_TEXT)
             .file("logo_full.png", &LOGO_PNG)
+            .file("theme.wav", &THEME_WAV)
+            .web_audio(true)
             .background(skyline_web::Background::Default)
             .boot_display(skyline_web::BootDisplay::Black)
             .open_session(skyline_web::Visibility::InitiallyHidden).unwrap();
