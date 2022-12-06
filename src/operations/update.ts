@@ -71,7 +71,7 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         resolve(["The latest version is already installed!"]);
       }
 
-      let changelogs = ["Changes:"];
+      //let changelogs = ["Changes:"];
 
       console.info('attempting to update chain')
       while (!(version === latest)) {
@@ -85,8 +85,8 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         }
         console.info('latest is: ' + latest);
         if (String(version) == latest) {
-          resolve(changelogs);
-          //resolve(["Your install has been updated."]);
+          //resolve(changelogs);
+          resolve(["Your install has been updated."]);
           return;
         }
         reportProgress(new Progress("Updating to " + version_stripped, "Updating to version " + version, 0));
@@ -103,11 +103,11 @@ export default async function update(progressCallback?: (p: Progress) => void): 
         await backend.unzip(downloads + 'upgrade.zip', sdroot, progressCallback);
         await backend.deleteFile(downloads + 'upgrade.zip');
         await handleDeletions(version, "deletions.json", progressCallback);
-        reportProgress(new Progress("Getting Changelog", "Getting changelog" + version, 0));
-        let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
-              version_stripped + '/CHANGELOG.md');
-        let changes = processChangelog(changelog);
-        changes.forEach(entry => changelogs.push(entry));
+        //reportProgress(new Progress("Getting Changelog", "Getting changelog" + version, 0));
+        //let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+        //      version_stripped + '/CHANGELOG.md');
+        //let changes = processChangelog(changelog);
+        //changes.forEach(entry => changelogs.push(entry));
       }
     } catch (e) {
       console.error("During update: " + e);
