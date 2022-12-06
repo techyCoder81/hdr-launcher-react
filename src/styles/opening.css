@@ -3,18 +3,29 @@
 }
 
 .overlay-opening {
-    z-index: 999;
-    background-color: black;
-    position: absolute;
-    top:0px;
-    right:0px;
-    bottom:0px;
-    left:0px;
-    animation: fade-out var(--loading-time) ease;
-    animation-fill-mode: forwards;
-    -webkit-animation: fade-out var(--loading-time) ease;
-    -webkit-animation-fill-mode: forwards;
-  }
+  z-index: 998;
+  background-color: black;
+  position: absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+  animation: fade-out var(--loading-time) ease;
+  animation-fill-mode: forwards;
+  -webkit-animation: fade-out var(--loading-time) ease;
+  -webkit-animation-fill-mode: forwards;
+}
+.loading-button {
+  font-size: 2rem;
+  font-weight: bold; 
+  color: rgb(112, 226, 112);
+  position:absolute;
+  bottom: 30px;
+  right: 10px;
+  background-color: transparent;
+  border:none;
+  box-shadow: none;
+}
 
 .loading {
     top: 220px;

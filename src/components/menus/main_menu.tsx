@@ -41,6 +41,7 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
                             .then(text => {
                                 console.info("finished updating");    
                                 this.showMenu();
+                                this.props.switchTo(MenuType.MainMenu);
                                 this.showPopupData(new PopupData(['Ok'], text.join("\n"), () => this.showMenu()));
                             })
                             .catch(e => {alert("Error while updating: " + e);this.showMenu()});

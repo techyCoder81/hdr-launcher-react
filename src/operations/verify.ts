@@ -1,6 +1,7 @@
 import { Backend } from './backend'
 import { Progress } from 'nx-request-api'
 import { getInstallType, getRepoName } from './install'
+import * as config from "./launcher_config";
 
 // if these files are present, we will always move them into disabled_plugins
 const plugins_dir = "atmosphere/contents/01006A800016E000/romfs/skyline/plugins";
@@ -13,6 +14,15 @@ const always_disable_plugins = [
   plugins_dir + "/libHDR-Launcher.nro",
   plugins_dir + "/libnn_hid_hook.nro",
   plugins_dir + "/libacmd_hook.nro",
+];
+
+const music_files = [  
+  "bgm_property.bin",
+  "ui_bgm_db.prc",
+  "ui_series_db.prc",
+  "msg_bgm+us_en.msbt",
+  "msg_title+us_en.mbst",
+  "bgm_property.bin"
 ];
 
 const deprecated_ryu_mods_dir = "../mods/contents/01006A800016E000/";
@@ -49,6 +59,7 @@ export default async function verify (progressCallback?: (p: Progress) => void):
     let downloads = sdroot + 'downloads/'
     let version = await backend.getVersion();
     console.debug('version is: ' + version);
+    let ignore_music = await config.getBoolean("ignore_music");
   
     let version_stripped = version.split('-')[0]
     let hash_file = downloads + 'content_hashes.json'
@@ -90,6 +101,16 @@ export default async function verify (progressCallback?: (p: Progress) => void):
           ignored = true;
         }
       });
+      // check if this is an ignored music file
+      if (ignore_music) {
+        music_files.forEach(ignored_file => {
+          if (path.includes(ignored_file)) {
+            ignored = true;
+          }
+        });
+      }
+
+      //if we're supposed to ignore this file, break out
       if (ignored) {
         console.info("Ignoring: " + path);
         count++;

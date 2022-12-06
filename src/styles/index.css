@@ -68,8 +68,12 @@ body {
   height:100%;
 }
 
+.on-top {
+  z-index: 999
+}
+
 .overlay {
-  z-index: 999;
+  z-index: 998;
   background-color: var(--slide-2);
   position: absolute;
   top:0px;
@@ -104,6 +108,11 @@ body {
   text-align: right;
 }
 
+.smaller-main-button {
+  height: var(--main-button-height) * 0.85;
+  font-size: 2rem;
+}
+
 .main-buttons:focus {
   width: var(--main-button-hover-width);
   background-color: var(--main-button-bg-hover-color);
@@ -122,6 +131,11 @@ body {
   overflow-wrap: break-word;
   opacity: 0.5;
   z-index: 99;
+}
+
+.popup-button {
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .sidebar {

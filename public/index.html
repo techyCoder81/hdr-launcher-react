@@ -17,6 +17,10 @@
         }
         return original(msg, url, linenumber);
     }
+    if (window.nx !== undefined) {
+      window.nx.footer.setAssign("B", "", ()=>{});
+      window.nx.footer.setAssign("X", "", ()=>{});
+    }
   </script>
 </head>
 <body>

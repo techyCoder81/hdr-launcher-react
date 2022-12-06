@@ -434,7 +434,7 @@ export class RequestHandler {
 
                         let args = request.arguments;
                         fs.mkdirSync(args[0], { recursive: true })
-                        resolve(new Responses.OkOrError(true, pjson.version, request.id));
+                        resolve(new Responses.OkOrError(true, "directory now exists.", request.id));
                         break;
                     } catch (e) {
                         resolve(new Responses.OkOrError(false, String(e), request.id));

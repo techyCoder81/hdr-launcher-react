@@ -9,21 +9,18 @@ import { Logs } from '../operations/log_singleton';
 import { SourceMapDevToolPlugin } from 'webpack';
 import '../operations/background_music';
 import BackgroundMusic from '../operations/background_music';
+import * as launcher_config from '../operations/launcher_config';
+import { skyline } from 'nx-request-api';
 
 export default class App extends React.Component {
 
   state = {
-    loading: true
+    loading: true,
   }
 
   componentDidMount(): void {
     //BackgroundMusic.singleton().fadeIn();
     Logs.instance();
-    Backend.instance()
-      .getVersion()
-      .then(version => this.setState({loading: this.state.loading}))
-      .then(() => setTimeout(() => {this.setState({loading: false})}, 3000))
-      .catch(e => console.error(e));
   }
 
   componentWillUnmount(): void {
@@ -37,9 +34,11 @@ export default class App extends React.Component {
         {Backend.isNode() ? (<SlidingBackground/>) : <div className='gradient-background'></div>
         }
         {this.state.loading ?
-          <Loading/> : <div/>}
+            <Loading onLoad={() => {
+              this.setState({loading: false});
+            }}/>: <div/>}
           <Menu/>
-          <ExpandSidebar/>
+        <ExpandSidebar/>
       </div>
     )
   }

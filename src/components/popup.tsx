@@ -4,7 +4,7 @@ import { PopupData } from "../operations/popup_data"
 
 export const Popup = (props: {data: PopupData}) => {
     return <div className="overlay-progress">
-        <div className="progress-block vertical-center">
+        <div className="progress-block vertical-center popup-button">
             {
                 props.data.text.split("\n").map((entry,index) => <h3 key={index}>{entry}</h3>)
             }
