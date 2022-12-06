@@ -41,7 +41,7 @@ export default class OptionsMenu extends AbstractMenu<{setInfo: (info: string) =
                     return await !config.getBoolean("ignore_music");
                 }} 
                 text={"Verify Music\u00A0"}
-                onFocus={() => this.props.setInfo("Skip the launcher on boot unless updates are available.")}/> 
+                onFocus={() => this.props.setInfo("Disable this if you wish to use music mods which conflict with HDR.")}/> 
             {super.render()}
         </div>
     }
