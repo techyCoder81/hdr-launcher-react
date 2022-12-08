@@ -72,7 +72,10 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                                 }
                         }
                 } />
-                
+                <FocusButton text={'Stage Config\u00A0'} 
+                    className={"main-buttons smaller-main-button"} 
+                    onClick={() => this.props.switchTo(MenuType.StageConfig)}
+                    onFocus={() => this.props.setInfo("Return to the Main menu")}/>
                 {super.render()}
         </div>
     }

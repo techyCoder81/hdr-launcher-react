@@ -37,14 +37,17 @@ export default class MainMenu extends AbstractMenu<{setInfo: (info: string) => v
                     onFocus={() => this.props.setInfo("Play HDR!")}/>
             <UpdateButton 
                     onClick={() => {
-                        update((p: Progress) => this.showProgress(p))
-                            .then(text => {
-                                console.info("finished updating");    
-                                this.showMenu();
-                                this.props.switchTo(MenuType.MainMenu);
-                                this.showPopupData(new PopupData(['Ok'], text.join("\n"), () => this.showMenu()));
-                            })
-                            .catch(e => {alert("Error while updating: " + e);this.showMenu()});
+                        return new Promise<void>(async (resolve, reject) => {
+                            await update((p: Progress) => this.showProgress(p))
+                                .then(text => {
+                                    console.info("finished updating");    
+                                    this.showMenu();
+                                    this.props.switchTo(MenuType.MainMenu);
+                                    this.showPopupData(new PopupData(['Ok'], text.join("\n"), () => {this.showMenu(); resolve();}));
+                                })
+                                .catch(e => {alert("Error while updating: " + e);this.showMenu();resolve(e);});
+                        });
+                        
                     }}
                     onFocus={() => this.props.setInfo("Update your HDR Installation")}
             />

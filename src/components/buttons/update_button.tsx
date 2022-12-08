@@ -4,7 +4,7 @@ import * as update from "../../operations/update";
 import { FocusButton } from "./focus_button";
 
 /// check for updates when the button is loaded
-export const UpdateButton = (props: { onClick: () => void, onFocus: () => void }) => {
+export const UpdateButton = (props: { onClick: () => Promise<void>, onFocus: () => void }) => {
     const [available, setAvailable] = useState(false);
     
     useEffect(() => {
@@ -17,10 +17,11 @@ export const UpdateButton = (props: { onClick: () => void, onFocus: () => void }
         className="main-buttons"
         text={'Update' + (available ? '(!)\u00A0' : '\u00A0')}
         onClick={() => {
-            props.onClick();
-            update.isAvailable()
-            .then(isAvailable => setAvailable(isAvailable))
-            .catch(e => alert(e));
+            props.onClick()
+                .then(() => setAvailable(false))
+                .then(() => update.isAvailable())
+                .then(isAvailable => setAvailable(isAvailable))
+                .catch(e => alert(e));
         }}
         onFocus={() => props.onFocus()}
     />

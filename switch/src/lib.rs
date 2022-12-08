@@ -9,6 +9,8 @@ use nx_request_handler::*;
 use std::fs;
 use semver::{BuildMetadata, Prerelease, Version, VersionReq};
 
+mod stage_config;
+
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn is_emulator() -> bool {
@@ -92,6 +94,7 @@ pub fn check_for_self_updates() {
     }
 }
 
+
 static HTML_TEXT: &str = include_str!("../web-build/index.html");
 static JS_TEXT: &str = include_str!("../web-build/index.js");
 static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
@@ -137,7 +140,7 @@ pub fn main() {
                 context.shutdown();
                 try_open_arcropolis();
                 unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
-                Ok("unreachable".to_string())
+                //unreachable
             })
             .register("get_platform", None, |context| {
                 Ok("Switch".to_string())
@@ -170,6 +173,22 @@ pub fn main() {
                         Err(e) => Err(e.to_string())
                     }
                 }
+            })
+            .register("read_stage_xml", None, |ctx| {
+                return stage_config::read_file();
+            })
+            .register("read_temp_stage_xml", None, |ctx| {
+                return stage_config::read_temp_file();
+            })
+            .register("new_temp_stage_data", None, |ctx|{
+                return stage_config::new_temp_file();
+            })
+            .register("append_temp_stage_line", Some(1), |ctx|{
+                let data = &ctx.arguments.as_ref().unwrap()[0];
+                return stage_config::append_temp_line(data);
+            })
+            .register("overwrite_stage_file", None, |ctx|{
+                return stage_config::overwrite_stage_file();
             })
             .start();
         

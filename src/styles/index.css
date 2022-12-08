@@ -151,6 +151,12 @@ body {
   z-index: 0;
 }
 
+.focus-check {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
 .simple-buttons {
   flex: 0 1 auto;
 }

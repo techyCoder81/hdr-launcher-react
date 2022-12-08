@@ -10,6 +10,7 @@ import ToolsMenu from './menus/tools_menu';
 import OptionsMenu from './menus/options_menu';
 import NotInstalledMenu from './menus/not_installed_menu';
 import { skyline } from 'nx-request-api';
+import StageConfigMenu from './stage_config/stage_config_menu';
 
 export enum MenuType {
         MainMenu,
@@ -17,6 +18,7 @@ export enum MenuType {
         Tools,
         NotInstalled,
         CheckingInstalled,
+        StageConfig
 }
 
 /**
@@ -84,6 +86,8 @@ export default class Menu extends React.PureComponent {
                                 }/>
                         case MenuType.NotInstalled:
                                 return <NotInstalledMenu setInfo={(info: string) => this.setInfo(info)} switchTo={(menu:MenuType) => this.switchTo(menu)}/>
+                        case MenuType.StageConfig:
+                                return <StageConfigMenu onComplete={() => this.switchTo(MenuType.MainMenu)}/>
                         default:
                                 return <MainMenu setInfo={(info: string) => this.setInfo(info)} switchTo={(menu:MenuType) => this.switchTo(menu)}/>
                 }

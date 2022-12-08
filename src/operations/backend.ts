@@ -106,6 +106,40 @@ export class Backend extends DefaultMessenger {
     getLauncherVersion(): Promise<string> {
         return this.customRequest("get_launcher_version", null);
     }
+
+    /** reads the ui_stage_db.prcxml file */
+    readStageXml(): Promise<string> {
+        return this.customRequest("read_stage_xml", null);
+    }
+
+    writeStageXml(xml: string): Promise<string> {
+        if (Backend.isNode()) {
+            return this.customRequest("write_stage_xml", [xml])
+        }
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                // create a temp file
+                await this.customRequest("new_temp_stage_data", null);
+                let trimmed = xml.trim();
+                let chunks = trimmed.split("<string");
+                console.info("length of xml data: " + xml.length);
+                for (var i = 0; i < chunks.length; ++i) {
+                    //let line_trimmed = lines[i].trim();
+                    //console.info("appending: " + line_trimmed);
+                    let chunk = chunks[i];
+                    if (i != 0) {
+                        chunk = "<string" +  chunk;
+                    }
+                    await this.customRequest("append_temp_stage_line", [chunk]);
+                }
+                
+                let result = await this.customRequest("overwrite_stage_file", null);
+                resolve(result);
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
 }
 
 /**
@@ -128,7 +162,7 @@ export class NodeBackend implements BackendSupplier {
             window.Main.invoke("request", message).then(response => {
                 console.debug("got response: " + JSON.stringify(response));
                 let output = JSON.stringify(response);
-                console.debug("resolving with: " + output);
+                //console.debug("resolving with: " + output);
                 resolve(output);
                 return;
             }).catch(e => {

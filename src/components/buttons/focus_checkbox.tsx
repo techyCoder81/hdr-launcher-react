@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FocusTimer from "../../operations/focus_singleton";
 
-function FocusCheckboxInner(props: {onClick: () => Promise<void>, text: string, autofocus?: boolean, checkStatus?: () => Promise<boolean>, onFocus?: () => void}) {
+function FocusCheckboxInner(props: {onClick: () => Promise<void>, className: string, text: string, autofocus?: boolean, checkStatus?: () => Promise<boolean>, onFocus?: () => void}) {
     const [isChecked, setChecked] = useState(false);
     
     useEffect(() => {
@@ -13,8 +13,9 @@ function FocusCheckboxInner(props: {onClick: () => Promise<void>, text: string, 
     }, []);
 
     return <button
+            key={props.text}
             //type="checkbox" 
-            className={"main-buttons smaller-main-button"}
+            className={props.className}
             //name={props.text}
             autoFocus={props.autofocus}
             onMouseMove={ e => e.currentTarget.focus() }
@@ -43,7 +44,7 @@ function FocusCheckboxInner(props: {onClick: () => Promise<void>, text: string, 
                 }).catch(e => alert(e));
                 
             }}
-        >{props.text}<input type="checkbox" readOnly checked={isChecked}/></button>
+        >{props.text}&nbsp;<input className="focus-check" type="checkbox" readOnly checked={isChecked}/></button>
 }
 
 export const FocusCheckbox = React.memo(FocusCheckboxInner);

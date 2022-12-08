@@ -8,12 +8,12 @@ export async function setBoolean(setting: BooleanSetting, enabled: boolean): Pro
             let backend = Backend.instance();
             let sdroot = await backend.getSdRoot();
             let configDir = sdroot + "ultimate/hdr-config";
-            let exists = await backend.fileExists(configDir + "/skip_launcher");
+            let exists = await backend.fileExists(configDir + "/" + setting);
             if (exists) {
-                await backend.deleteFile(configDir + "/skip_launcher");
+                await backend.deleteFile(configDir + "/" + setting);
             } else {
                 await backend.mkdir(configDir);
-                await backend.writeFile(configDir + "/skip_launcher", "foo");
+                await backend.writeFile(configDir + "/" + setting, "foo");
             }
             resolve();
         } catch (e) {
@@ -29,7 +29,7 @@ export async function getBoolean(setting: BooleanSetting): Promise<boolean> {
             let backend = Backend.instance();
             let sdroot = await backend.getSdRoot();
             let configDir = sdroot + "ultimate/hdr-config";
-            let exists = await backend.fileExists(configDir + "/skip_launcher");
+            let exists = await backend.fileExists(configDir + "/" + setting);
             if (exists) {
                 resolve(true);
             } else {

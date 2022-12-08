@@ -4,6 +4,7 @@ import { FocusButton } from "../buttons/focus_button";
 import { FocusCheckbox } from "../buttons/focus_checkbox";
 import { MenuType } from "../menu";
 import { AbstractMenu } from "./abstract_menu";
+import { PopupData } from "../../operations/popup_data";
 
 /**
  * builds the options menu components
@@ -22,6 +23,7 @@ export default class OptionsMenu extends AbstractMenu<{setInfo: (info: string) =
                     onFocus={() => this.props.setInfo("Return to the Main menu")}/>
             {
             Backend.isSwitch() ? <FocusCheckbox 
+            className={"main-buttons smaller-main-button"}
                 onClick={async () => {
                     let enabled = await config.getBoolean("skip_launcher");
                     await config.setBoolean("skip_launcher", !enabled);
@@ -33,12 +35,16 @@ export default class OptionsMenu extends AbstractMenu<{setInfo: (info: string) =
                 onFocus={() => this.props.setInfo("Skip the launcher on boot unless updates are available.")}/> 
             : <div/>}
             <FocusCheckbox 
+                className={"main-buttons smaller-main-button"}
                 onClick={async () => {
                     let enabled = await config.getBoolean("ignore_music");
                     await config.setBoolean("ignore_music", !enabled);
+                    console.info("setting: " + !enabled);
                 }} 
                 checkStatus={async () => {
-                    return await !config.getBoolean("ignore_music");
+                    let checked = !(await config.getBoolean("ignore_music"));
+                    console.info("Checked: " + checked);
+                    return checked;
                 }} 
                 text={"Verify Music\u00A0"}
                 onFocus={() => this.props.setInfo("Disable this if you wish to use music mods which conflict with HDR.")}/> 

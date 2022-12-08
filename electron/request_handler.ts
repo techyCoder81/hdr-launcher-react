@@ -440,6 +440,39 @@ export class RequestHandler {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }    
+                case "read_stage_xml":
+                    try {
+                        let filePath = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
+                        let exists = fs.existsSync(filePath);
+                        if (!exists) {
+                            resolve(new Responses.OkOrError(false, "ui_stage_db.prcxml file does not exist!", request.id));
+                            break;
+                        }
+                        let xml = fs.readFileSync(filePath).toString();
+                        resolve(new Responses.OkOrError(true, xml, request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
+                        break;
+                    }  
+                case "write_stage_xml":
+                    try {
+                        if (!argcheck(1)) {break;}
+
+                        let args = request.arguments;
+                        let filePath = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
+                        let exists = fs.existsSync(filePath);
+                        if (!exists) {
+                            resolve(new Responses.OkOrError(false, "ui_stage_db.prcxml file does not exist!", request.id));
+                            break;
+                        }
+                        fs.writeFileSync(filePath, args[0]);
+                        resolve(new Responses.OkOrError(true, "stage data written successfully", request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
+                        break;
+                    }  
                 case "exit_application":
                     app.quit();
                     break;

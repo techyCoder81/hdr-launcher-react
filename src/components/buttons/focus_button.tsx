@@ -1,7 +1,8 @@
 import React from "react";
 import FocusTimer from "../../operations/focus_singleton";
 
-function FocusButtonInner(props: {className: string, onClick: () => void, text: string, autofocus?: boolean, onFocus?: () => void}) {
+export function FocusButton(props: {className: string, onClick: () => void, text: string, children?: any, autofocus?: boolean, onFocus?: () => void}) {
+    
     return <button 
             className={props.className} 
             autoFocus={props.autofocus}
@@ -24,7 +25,8 @@ function FocusButtonInner(props: {className: string, onClick: () => void, text: 
             onClick={props.onClick}
         >
             {props.text}
+            {props.children}
         </button>
 }
 
-export const FocusButton = React.memo(FocusButtonInner);
+//export const FocusButton = React.memo(FocusButtonInner);
