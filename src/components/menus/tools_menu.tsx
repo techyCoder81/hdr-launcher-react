@@ -32,7 +32,7 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                         className={"main-buttons smaller-main-button"} 
                         onClick={() => Backend.instance().openModManager()}
                         onFocus={() => this.props.setInfo("Open the Mod Manager")}/>
-                <FocusButton text='Verify&nbsp;' 
+                <FocusButton text='Verify Files&nbsp;' 
                         className={"main-buttons smaller-main-button"} 
                         onClick={() => {
                                 verify((p: Progress) => this.showProgress(p))
