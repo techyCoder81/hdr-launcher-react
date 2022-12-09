@@ -230,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "hdr-launcher-react"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "arcropolis-api",
  "md5",
