@@ -6,6 +6,7 @@ use std::io::prelude::*;
 const FILE_PATH: &str = "sd:/ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml";
 const CONFIG_PATH: &str = "sd:/ultimate/hdr-config/";
 const STAGING_FILE: &str = "sd:/ultimate/hdr-config/ui_stage_db.prcxml.temp";
+const DEFAULT_FILE: &str = "sd:/ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml";
 /*
 pub fn enable_stages(stage_names: &Vec<String>) -> Result<String, String> {
     return set_stages(stage_names, true);
@@ -133,10 +134,30 @@ pub fn overwrite_stage_file() -> Result<String, String> {
         Err(e) => return Err(format!("error overwriting: {:?}", e))
     };
 
+    return write_stage_file(&staged_xml);
+}
+
+/// overwrite the stage file with the temp file's data
+pub fn reset_stage_file() -> Result<String, String> {
+    // ensure the default file exists
+    let exists = Path::new(DEFAULT_FILE).exists();
+    if !exists {
+        return Err("default file does not already exist!".to_string());
+    }
+
+    // read the default data
+    let default_xml = match std::fs::read_to_string(DEFAULT_FILE) {
+        Ok(xml) => xml,
+        Err(e) => return Err(format!("error resetting defaults: {:?}", e))
+    };
+
+    return write_stage_file(&default_xml);
+}
+
+pub fn write_stage_file(xml: &str) -> Result<String, String> {
     // write that data to the real file
-    return match std::fs::write(FILE_PATH, staged_xml.trim().replace("\t", "  ")) {
+    return match std::fs::write(FILE_PATH, xml.trim().replace("\t", "  ")) {
         Ok(()) => Ok("file overwritten successfully".to_string()),
         Err(e) => Err(format!("error overwriting: {:?}", e))
     }
-
 }

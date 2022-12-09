@@ -22,7 +22,7 @@ export const NightlyBetaButton = (props: {setInfo: (info: string) => void, onCli
     }
 
     return <FocusButton text={'Install ' + buttonText + '\u00A0'} 
-        className={"main-buttons"} 
+        className={"main-buttons smaller-main-button"} 
         onClick={async () => {
             props.onClick(version);
             Backend.instance()

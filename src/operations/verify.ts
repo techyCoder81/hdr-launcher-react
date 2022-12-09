@@ -37,7 +37,8 @@ const hdr_folders = [
 
 const always_ignore_files = [
   "changelog.toml",
-  "hdr-launcher.nro"
+  "hdr-launcher.nro",
+  "ui_stage_db.prcxml"
 ];
 
 export default async function verify (progressCallback?: (p: Progress) => void): Promise<string> {
@@ -173,7 +174,7 @@ export default async function verify (progressCallback?: (p: Progress) => void):
       console.info("got " + folder + " files");
       
       for (const element of hdr_files) {
-        if (!expected_files.includes(element)) {
+        if (!expected_files.includes(element) && !always_ignore_files.includes(element)) {
           console.error("File should be removed: " + element);
           unexpected_files.push(element);
         }

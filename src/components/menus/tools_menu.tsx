@@ -29,11 +29,11 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                         onClick={() => this.props.switchTo(MenuType.MainMenu)}
                         onFocus={() => this.props.setInfo("Return to the Main menu")}/>
                 <FocusButton text='Arcadia&nbsp;' 
-                        className={"main-buttons"} 
+                        className={"main-buttons smaller-main-button"} 
                         onClick={() => Backend.instance().openModManager()}
                         onFocus={() => this.props.setInfo("Open the Mod Manager")}/>
                 <FocusButton text='Verify&nbsp;' 
-                        className={"main-buttons"} 
+                        className={"main-buttons smaller-main-button"} 
                         onClick={() => {
                                 verify((p: Progress) => this.showProgress(p))
                                         .then(results => {
@@ -75,7 +75,7 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                 <FocusButton text={'Stage Config\u00A0'} 
                     className={"main-buttons smaller-main-button"} 
                     onClick={() => this.props.switchTo(MenuType.StageConfig)}
-                    onFocus={() => this.props.setInfo("Return to the Main menu")}/>
+                    onFocus={() => this.props.setInfo("Open the stage configuration menu")}/>
                 {super.render()}
         </div>
     }

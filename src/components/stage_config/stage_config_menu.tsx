@@ -16,47 +16,62 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
             .catch(e => alert(e));
     }, []);
 
-    return <div className={"overlay-progress"}>
-        
-        <FocusButton className="simple-button inline" onClick={async () => {
-            if (changed) {
-                let result = confirm("Would you like to save your changes?");
-                if (result) {
-                    await StageConfig.instance()
-                        .save()
-                        .then(() => alert("changes saved successfully"))
-                        .then(() => setChanged(false))
-                        .catch(e => alert("eror during save: " + e));
+    return <div className={"overlay-progress full scroll-hidden"}>
+        <div className="border-bottom">
+            <FocusButton className="simple-button-bigger" onClick={async () => {
+                if (changed) {
+                    let result = confirm("Would you like to save your changes?");
+                    if (result) {
+                        await StageConfig.instance()
+                            .save()
+                            .then(() => alert("changes saved successfully"))
+                            .then(() => setChanged(false))
+                            .then(() => StageConfig.instance().unload())
+                            .catch(e => alert("eror during save: " + e));
+                    }
                 }
-            }
-            props.onComplete();
-        }} text={"Done"}/>
-        <FocusButton className="simple-button inline" onClick={async () => {
-            StageConfig.instance().setAll(true)
+                props.onComplete();
+            }} text={"Done"}/>
+            <FocusButton className="simple-button-bigger" onClick={async () => {
+                StageConfig.instance().setAll(true)
+                    .then(() => setChanged(true))
+                    .then(() => StageConfig.instance().getAll())
+                    .then(stages => setStageData(stages))
+                    .catch(e => alert(e))
+            }} text="Enable All"/>
+            <FocusButton className="simple-button-bigger" onClick={async () => {
+                StageConfig.instance().setAll(false)
                 .then(() => setChanged(true))
                 .then(() => StageConfig.instance().getAll())
                 .then(stages => setStageData(stages))
                 .catch(e => alert(e))
-        }} text="Enable All"/>
-        <FocusButton className="simple-button inline" onClick={async () => {
-            StageConfig.instance().setAll(false)
-            .then(() => setChanged(true))
-            .then(() => StageConfig.instance().getAll())
-            .then(stages => setStageData(stages))
-            .catch(e => alert(e))
-        }} text="Disable All"/>
-        {changed ? 
-        <FocusButton className="simple-button inline" onClick={async () => {
-            let result = confirm("Would you like to save your changes?");
-            if (result) {
-                await StageConfig.instance()
-                    .save()
-                    .then(() => setChanged(false))
-                    .then(() => alert("changes saved successfully"))
-                    .catch(e => alert("eror during save: " + e));
-            }
-        }} text={"Save"}/> : <div/>}
-        <div className="progress-block">
+            }} text="Disable All"/>
+            <FocusButton className="simple-button-bigger" onClick={async () => {
+                let result = confirm("Are you sure you wish to reset to defaults?");
+                if (result) {
+                    await Backend.instance()
+                        .resetStageXml()
+                        .then(() => StageConfig.instance().unload())
+                        .then(() => setChanged(true))
+                        .then(() => StageConfig.instance().getAll())
+                        .then(stages => setStageData(stages))
+                        .then(() => alert("Stages have been reset to defaults!"))
+                        .catch(e => alert("eror during save: " + e));
+                }
+            }} text={"Reset Defaults"}/>
+            {changed ? 
+            <FocusButton className="simple-button-bigger" onClick={async () => {
+                let result = confirm("Would you like to save your changes?");
+                if (result) {
+                    await StageConfig.instance()
+                        .save()
+                        .then(() => setChanged(false))
+                        .then(() => alert("changes saved successfully"))
+                        .catch(e => alert("eror during save: " + e));
+                }
+            }} text={"Save"}/> : <div/>}
+        </div>
+        <div className="scrolling-fit">
             {
                 stageData.map(stage => <StageEntry onClick={() => {
                     return StageConfig.instance().toggle(stage.name_id)
@@ -65,7 +80,7 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                         .catch(e => alert(e));
                 }} enabled={stage.enabled} stageName={stage.name_id}/>)
             }
-            </div>
-            <ExpandSidebar/>
+        </div>
+        <ExpandSidebar/>
     </div>
 }

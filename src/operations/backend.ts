@@ -112,10 +112,11 @@ export class Backend extends DefaultMessenger {
         return this.customRequest("read_stage_xml", null);
     }
 
+    /** writes the given string data to the stage ui file */
     writeStageXml(xml: string): Promise<string> {
-        if (Backend.isNode()) {
+        //if (Backend.isNode()) {
             return this.customRequest("write_stage_xml", [xml])
-        }
+        //}
         return new Promise<string>(async (resolve, reject) => {
             try {
                 // create a temp file
@@ -128,7 +129,7 @@ export class Backend extends DefaultMessenger {
                     //console.info("appending: " + line_trimmed);
                     let chunk = chunks[i];
                     if (i != 0) {
-                        chunk = "<string" +  chunk;
+                        chunk = "      <string" +  chunk.trim();
                     }
                     await this.customRequest("append_temp_stage_line", [chunk]);
                 }
@@ -139,6 +140,11 @@ export class Backend extends DefaultMessenger {
                 reject(e);
             }
         });
+    }
+
+    /** resets the stage xml file to the defaults */
+    resetStageXml(): Promise<string> {
+        return this.customRequest("reset_stage_xml", null);
     }
 }
 

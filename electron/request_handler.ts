@@ -473,6 +473,35 @@ export class RequestHandler {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
                     }  
+                case "reset_stage_xml":
+                    try {
+                        let defaultFile = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml");
+                        let targetFile = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
+                        
+                        // if the default file doesnt exist, error out
+                        let exists = fs.existsSync(defaultFile);
+                        if (!exists) {
+                            resolve(new Responses.OkOrError(false, "default_ui_stage_db.prcxml file does not exist!", request.id));
+                            break;
+                        }
+
+                        // read the default file
+                        let xml = fs.readFileSync(defaultFile).toString();
+
+                        // remove the existing target file if necessary
+                        if (fs.existsSync(targetFile)) {
+                            fs.rmSync(targetFile);
+                        }
+
+                        // write the default data to the target file
+                        fs.writeFileSync(targetFile, xml);
+
+                        resolve(new Responses.OkOrError(true, xml, request.id));
+                        break;
+                    } catch (e) {
+                        resolve(new Responses.OkOrError(false, String(e), request.id));
+                        break;
+                    }  
                 case "exit_application":
                     app.quit();
                     break;

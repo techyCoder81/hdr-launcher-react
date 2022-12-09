@@ -71,7 +71,7 @@ pub fn check_for_self_updates() {
     };
     if latest_version > current_version {
         println!("We should update!");
-        let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it?");
+        let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it? (This will take a moment)");
         if !ok {
             return;
         }
@@ -176,6 +176,13 @@ pub fn main() {
             })
             .register("read_stage_xml", None, |ctx| {
                 return stage_config::read_file();
+            })
+            .register("write_stage_xml", Some(1), |ctx| {
+                let data = &ctx.arguments.as_ref().unwrap()[0];
+                return stage_config::write_stage_file(data);
+            })
+            .register("reset_stage_xml", None, |ctx| {
+                return stage_config::reset_stage_file();
             })
             .register("read_temp_stage_xml", None, |ctx| {
                 return stage_config::read_temp_file();

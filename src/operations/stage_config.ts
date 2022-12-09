@@ -19,8 +19,17 @@ export class StageConfig {
     async load(): Promise<void> {
         return new Promise<void>(async (resolve,reject) => {
             try {
+                let backend = Backend.instance();
+                await backend.getSdRoot()
+                    .then(root => backend.fileExists(root + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml"))
+                    .then(async exists => {
+                        if (!exists) {
+                            await backend.resetStageXml();
+                        }
+                    })
+                    .catch(e => {throw e;});
                 if (this.dom === null) {
-                    await Backend.instance().readStageXml()
+                    await backend.readStageXml()
                         .then(xml => {
                             this.dom = this.parser.parseFromString(xml.trim(), "text/xml");
                             resolve();
@@ -35,11 +44,15 @@ export class StageConfig {
         });
     }
 
+    unload() {
+        this.dom = null;
+    }
+
     async save(): Promise<void> {
         return new Promise<void>(async (resolve,reject) => {
             try {
                 if (this.dom === null) {
-                    reject("the XML data has not yet been loaded!");
+                    reject("the XML data is not loaded!");
                     return;
                 }
         
@@ -104,12 +117,12 @@ export class StageConfig {
                     let item = list.children[i];
                     let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
                     if (name_id === name) {
-                        let can_select = item.querySelector('[hash="can_select"]')?.innerHTML;
-                        if (can_select === undefined) {
-                            reject("could not find can_select field!");
+                        let disp_order = item.querySelector('[hash="disp_order"]')?.innerHTML;
+                        if (disp_order === undefined) {
+                            reject("could not find disp_order field!");
                             return;
                         }
-                        resolve(can_select.includes("True"));
+                        resolve(!disp_order.includes("-1"));
                         return;
                     }
                 }
@@ -138,12 +151,12 @@ export class StageConfig {
                         return;
                     }
 
-                    let can_select = item.querySelector('[hash="can_select"]')?.innerHTML;
-                    if (can_select === undefined) {
-                        reject("could not find can_select for entry " + name_id + "!");
+                    let disp_order = item.querySelector('[hash="disp_order"]')?.innerHTML;
+                    if (disp_order === undefined) {
+                        reject("could not find disp_order for entry " + name_id + "!");
                         return;
                     }
-                    stages.push(new StageData(name_id, can_select.includes("True")));
+                    stages.push(new StageData(name_id, !disp_order.includes("-1")));
                 }
                 resolve(stages);
             } catch (e) {
@@ -166,12 +179,13 @@ export class StageConfig {
                     let item = list.children[i];
                     let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
                     if (name_id === name) {
-                        let element = item.querySelector('[hash="can_select"]');
+                        let element = item.querySelector('[hash="disp_order"]');
                         if (element === undefined || element === null) {
-                            reject("could not find can_select field for stage: " + name);
+                            reject("could not find disp_order field for stage: " + name);
                             return;
                         }
-                        element.innerHTML = (enabled ? "True" : "False");
+                        // blindly set dis_order to 1 lol
+                        element.innerHTML = (enabled ? "-1" : "1");
                         //await this.save();
                         resolve();
                         return;
@@ -198,14 +212,15 @@ export class StageConfig {
                     let item = list.children[i];
                     let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
                     if (name_id === name) {
-                        let element = item.querySelector('[hash="can_select"]');
+                        let element = item.querySelector('[hash="disp_order"]');
                         if (element === undefined || element === null) {
-                            reject("could not find can_select field for stage: " + name);
+                            reject("could not find disp_order field for stage: " + name);
                             return;
                         }
-                        let enabled = element.innerHTML.includes("True");
+                        let enabled = !element.innerHTML.includes("-1");
                         // invert the current setting
-                        element.innerHTML = (enabled ? "False" : "True");
+                        // blindly set dis_order to 1 lol
+                        element.innerHTML = (enabled ? "-1" : "1");
                         //await this.save();
                         resolve();
                         return;
@@ -231,12 +246,14 @@ export class StageConfig {
                 for (var i = 0; i < list.children.length; ++i) {
                     let item = list.children[i];
                     let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
-                        let element = item.querySelector('[hash="can_select"]');
+                        let element = item.querySelector('[hash="disp_order"]');
                         if (element === undefined || element === null) {
-                            reject("could not find can_select field for stage: " + name_id);
+                            reject("could not find disp_order field for stage: " + name_id);
                             return;
                         }
-                        element.innerHTML = (enabled ? "True" : "False");
+                        
+                        // blindly set disp_order to 1 lol
+                        element.innerHTML = (enabled ? "1" : "-1");
                 }
                 //await this.save();
                 resolve();

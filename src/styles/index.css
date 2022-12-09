@@ -12,6 +12,7 @@
   --main-button-text-focus-color: black;
   --main-button-hover-width: 475px;
   --main-button-height: 85px;
+  --smaller-main-button-height: 65px;
   --main-button-hover-align: right;
   --main-progress-background-color: rgb(49, 49, 49);
   --main-progress-foreground-color: rgb(41, 109, 47);
@@ -109,7 +110,7 @@ body {
 }
 
 .smaller-main-button {
-  height: var(--main-button-height) * 0.85;
+  height: var(--smaller-main-button-height);
   font-size: 2rem;
 }
 
@@ -237,6 +238,27 @@ p {
   border-left: 1px solid white;
 }
 
+.simple-button-bigger {
+  position: relative;
+  display: flexbox;
+  margin: 10px;
+  border: 3px solid var(--main-button-border-color);
+  text-align: center;
+  background-color: var(--main-button-bg-color);
+  color: rgb(255, 255, 255);
+  padding-left: 10;
+  padding-right: 10;
+  font-size: x-large;
+  box-sizing: border-box;
+  outline:none;
+}
+
+.simple-button-bigger:focus,
+.simple-button-bigger:hover {
+  background-color: var(--main-button-bg-hover-color);
+  border-color: var(--main-button-border-hover-color);
+}
+
 .simple-button {
   position: relative;
   display: flexbox;
@@ -261,7 +283,20 @@ p {
 .inline {
   display: inline;
   margin-right: 5px;
-} 
+}
+
+.scroll-hidden {
+  overflow: hidden;
+}
+
+.scrolling-fit {
+  overflow-y: scroll;
+  position: relative;
+  height: 100%;
+}
+.scrolling-fit::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
 
 .border-bottom {
   border-bottom: 1px solid var(--buttons-border-color);
