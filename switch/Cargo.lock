@@ -420,8 +420,8 @@ dependencies = [
 
 [[package]]
 name = "nx-request-handler"
-version = "0.1.5"
-source = "git+https://github.com/techyCoder81/nx-request-handler#b7bf580ef0ef3909c398c7cc8545383012520ac6"
+version = "0.1.6"
+source = "git+https://github.com/techyCoder81/nx-request-handler#27e528c67f975fa0a90367859933481b04573384"
 dependencies = [
  "md5",
  "serde",

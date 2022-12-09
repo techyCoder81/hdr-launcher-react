@@ -246,8 +246,8 @@ p {
   text-align: center;
   background-color: var(--main-button-bg-color);
   color: rgb(255, 255, 255);
-  padding-left: 10;
-  padding-right: 10;
+  padding-left: 6px;
+  padding-right: 6px;
   font-size: x-large;
   box-sizing: border-box;
   outline:none;

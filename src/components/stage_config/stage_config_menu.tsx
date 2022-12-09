@@ -3,14 +3,20 @@ import { Backend } from "../../operations/backend";
 import { StageConfig } from "../../operations/stage_config";
 import StageData from "../../operations/stage_data";
 import { FocusButton } from "../buttons/focus_button";
+import { FocusCheckbox } from "../buttons/focus_checkbox";
 import { ExpandSidebar } from "../expand_sidebar";
 import StageEntry from "./stage_entry";
+import * as LauncherConfig from '../../operations/launcher_config';
 
 export default function StageConfigMenu(props: {onComplete: () => void}) {
     const [stageData, setStageData] = useState([] as StageData[]);
-    const [changed, setChanged] = useState(false);
+    const [isChanged, setChanged] = useState(false);
+    const [isShowTourneyMode, showTourneyMode] = useState(false);
 
     useEffect(() => {
+        LauncherConfig.isTournamentMode()
+            .then(enabled => showTourneyMode(enabled))
+            .catch(e => alert("error loading tourney mode: " + e));
         StageConfig.instance().getAll()
             .then(stages => setStageData(stages))
             .catch(e => alert(e));
@@ -18,8 +24,8 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
 
     return <div className={"overlay-progress full scroll-hidden"}>
         <div className="border-bottom">
-            <FocusButton className="simple-button-bigger" onClick={async () => {
-                if (changed) {
+            <FocusButton autofocus={true} className="simple-button-bigger" onClick={async () => {
+                if (isChanged) {
                     let result = confirm("Would you like to save your changes?");
                     if (result) {
                         await StageConfig.instance()
@@ -31,46 +37,83 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                     }
                 }
                 props.onComplete();
-            }} text={"Done"}/>
-            <FocusButton className="simple-button-bigger" onClick={async () => {
-                StageConfig.instance().setAll(true)
+            }} text={"Exit"}/>
+            <FocusCheckbox 
+                onClick={async () => {
+                    try {
+                        let enabled = await LauncherConfig.isTournamentMode();
+
+                        // if the previous setting was enabled, and we are disabling,
+                        // offer to save first.
+                        if (enabled && isChanged) {
+                            let ok = confirm("Would you like to save your changes?");
+                            if (ok) {
+                                await StageConfig.instance()
+                                    .save()
+                                    .then(() => alert("changes saved successfully"))
+                                    .then(() => setChanged(false))
+                                    .then(() => StageConfig.instance().unload())
+                                    .catch(e => alert("eror during save: " + e));
+                            }
+                        }
+
+                        // turn off tourney mode (and remove the file and backup your settings)
+                        await LauncherConfig.setTournamentMode(!enabled);
+                        showTourneyMode(!enabled);
+
+                    } catch (e) {
+                        alert(e);
+                    }
+                }}
+                checkStatus={async () => {
+                    let enabled = await LauncherConfig.isTournamentMode();
+                    showTourneyMode(enabled);
+                    return enabled;
+                }}
+                className="simple-button-bigger"
+                text="Tournament Mode "
+            />
+            {isShowTourneyMode ? <div className="inline">
+                <FocusButton className="simple-button-bigger" onClick={async () => {
+                    StageConfig.instance().setAll(true)
+                        .then(() => setChanged(true))
+                        .then(() => StageConfig.instance().getAll())
+                        .then(stages => setStageData(stages))
+                        .catch(e => alert(e))
+                }} text="Enable All"/>
+                <FocusButton className="simple-button-bigger" onClick={async () => {
+                    StageConfig.instance().setAll(false)
                     .then(() => setChanged(true))
                     .then(() => StageConfig.instance().getAll())
                     .then(stages => setStageData(stages))
                     .catch(e => alert(e))
-            }} text="Enable All"/>
-            <FocusButton className="simple-button-bigger" onClick={async () => {
-                StageConfig.instance().setAll(false)
-                .then(() => setChanged(true))
-                .then(() => StageConfig.instance().getAll())
-                .then(stages => setStageData(stages))
-                .catch(e => alert(e))
-            }} text="Disable All"/>
-            <FocusButton className="simple-button-bigger" onClick={async () => {
-                let result = confirm("Are you sure you wish to reset to defaults?");
-                if (result) {
-                    await Backend.instance()
-                        .resetStageXml()
-                        .then(() => StageConfig.instance().unload())
-                        .then(() => setChanged(true))
-                        .then(() => StageConfig.instance().getAll())
-                        .then(stages => setStageData(stages))
-                        .then(() => alert("Stages have been reset to defaults!"))
-                        .catch(e => alert("eror during save: " + e));
-                }
-            }} text={"Reset Defaults"}/>
-            {changed ? 
-            <FocusButton className="simple-button-bigger" onClick={async () => {
-                let result = confirm("Would you like to save your changes?");
-                if (result) {
-                    await StageConfig.instance()
-                        .save()
-                        .then(() => setChanged(false))
-                        .then(() => alert("changes saved successfully"))
-                        .catch(e => alert("eror during save: " + e));
-                }
-            }} text={"Save"}/> : <div/>}
+                }} text="Disable All"/>
+                <FocusButton className="simple-button-bigger" onClick={async () => {
+                    let result = confirm("Are you sure you wish to reset to defaults?");
+                    if (result) {
+                        await StageConfig.instance().resetDefaults()
+                            .then(() => StageConfig.instance().unload())
+                            .then(() => setChanged(true))
+                            .then(() => StageConfig.instance().getAll())
+                            .then(stages => setStageData(stages))
+                            .then(() => alert("Stages have been reset to defaults!"))
+                            .catch(e => alert("eror during save: " + e));
+                    }
+                }} text={"Reset Defaults"}/>
+                {isChanged ? 
+                <FocusButton className="simple-button-bigger" onClick={async () => {
+                    let result = confirm("Would you like to save your changes?");
+                    if (result) {
+                        await StageConfig.instance()
+                            .save()
+                            .then(() => setChanged(false))
+                            .then(() => alert("changes saved successfully"))
+                            .catch(e => alert("eror during save: " + e));
+                    }
+                }} text={"Save"}/> : <div/>}
+            </div> : <div/> }
         </div>
+        {isShowTourneyMode ? 
         <div className="scrolling-fit">
             {
                 stageData.map(stage => <StageEntry onClick={() => {
@@ -80,7 +123,7 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                         .catch(e => alert(e));
                 }} enabled={stage.enabled} stageName={stage.name_id}/>)
             }
-        </div>
+        </div> : <div/> }
         <ExpandSidebar/>
     </div>
 }

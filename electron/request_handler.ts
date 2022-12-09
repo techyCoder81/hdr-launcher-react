@@ -407,7 +407,7 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (exists) {
-                            console.info("deleting existing log file...");
+                            console.info("deleting existing file...");
                             fs.unlinkSync(file);
                         }
 
@@ -439,69 +439,7 @@ export class RequestHandler {
                     } catch (e) {
                         resolve(new Responses.OkOrError(false, String(e), request.id));
                         break;
-                    }    
-                case "read_stage_xml":
-                    try {
-                        let filePath = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
-                        let exists = fs.existsSync(filePath);
-                        if (!exists) {
-                            resolve(new Responses.OkOrError(false, "ui_stage_db.prcxml file does not exist!", request.id));
-                            break;
-                        }
-                        let xml = fs.readFileSync(filePath).toString();
-                        resolve(new Responses.OkOrError(true, xml, request.id));
-                        break;
-                    } catch (e) {
-                        resolve(new Responses.OkOrError(false, String(e), request.id));
-                        break;
-                    }  
-                case "write_stage_xml":
-                    try {
-                        if (!argcheck(1)) {break;}
-
-                        let args = request.arguments;
-                        let filePath = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
-                        let exists = fs.existsSync(filePath);
-                        if (!exists) {
-                            resolve(new Responses.OkOrError(false, "ui_stage_db.prcxml file does not exist!", request.id));
-                            break;
-                        }
-                        fs.writeFileSync(filePath, args[0]);
-                        resolve(new Responses.OkOrError(true, "stage data written successfully", request.id));
-                        break;
-                    } catch (e) {
-                        resolve(new Responses.OkOrError(false, String(e), request.id));
-                        break;
-                    }  
-                case "reset_stage_xml":
-                    try {
-                        let defaultFile = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml");
-                        let targetFile = path.join(Config.getSdcardPath() + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml");
-                        
-                        // if the default file doesnt exist, error out
-                        let exists = fs.existsSync(defaultFile);
-                        if (!exists) {
-                            resolve(new Responses.OkOrError(false, "default_ui_stage_db.prcxml file does not exist!", request.id));
-                            break;
-                        }
-
-                        // read the default file
-                        let xml = fs.readFileSync(defaultFile).toString();
-
-                        // remove the existing target file if necessary
-                        if (fs.existsSync(targetFile)) {
-                            fs.rmSync(targetFile);
-                        }
-
-                        // write the default data to the target file
-                        fs.writeFileSync(targetFile, xml);
-
-                        resolve(new Responses.OkOrError(true, xml, request.id));
-                        break;
-                    } catch (e) {
-                        resolve(new Responses.OkOrError(false, String(e), request.id));
-                        break;
-                    }  
+                    }     
                 case "exit_application":
                     app.quit();
                     break;

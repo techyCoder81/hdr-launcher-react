@@ -9,7 +9,7 @@ import { Logs } from '../operations/log_singleton';
 import { SourceMapDevToolPlugin } from 'webpack';
 import '../operations/background_music';
 import BackgroundMusic from '../operations/background_music';
-import * as launcher_config from '../operations/launcher_config';
+import * as LauncherConfig from '../operations/launcher_config';
 import { skyline } from 'nx-request-api';
 
 export default class App extends React.Component {

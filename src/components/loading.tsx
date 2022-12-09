@@ -15,7 +15,7 @@ export default function Loading(props: {onLoad: () => void}) {
                 .then(skip => {will_skip = skip;setShowButton(skip);})
                 .then(() => update.isAvailable())
                 .then(available => {
-                    if (available) {
+                    if (available && will_skip) {
                         alert("An HDR update is available!");
                         will_skip = false;
                     }

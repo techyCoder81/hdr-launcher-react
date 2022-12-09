@@ -174,29 +174,6 @@ pub fn main() {
                     }
                 }
             })
-            .register("read_stage_xml", None, |ctx| {
-                return stage_config::read_file();
-            })
-            .register("write_stage_xml", Some(1), |ctx| {
-                let data = &ctx.arguments.as_ref().unwrap()[0];
-                return stage_config::write_stage_file(data);
-            })
-            .register("reset_stage_xml", None, |ctx| {
-                return stage_config::reset_stage_file();
-            })
-            .register("read_temp_stage_xml", None, |ctx| {
-                return stage_config::read_temp_file();
-            })
-            .register("new_temp_stage_data", None, |ctx|{
-                return stage_config::new_temp_file();
-            })
-            .register("append_temp_stage_line", Some(1), |ctx|{
-                let data = &ctx.arguments.as_ref().unwrap()[0];
-                return stage_config::append_temp_line(data);
-            })
-            .register("overwrite_stage_file", None, |ctx|{
-                return stage_config::overwrite_stage_file();
-            })
             .start();
         
     });

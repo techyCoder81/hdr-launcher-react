@@ -1,6 +1,11 @@
 import { Backend } from "./backend";
 import StageData from "./stage_data";
 
+const ACTIVE_CONFIG_FILE = "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml";
+const DEFAULT_CONFIG_FILE = "ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml";
+const BACKUP_STAGE_CONFIG = "ultimate/hdr-config/backup_ui_stage_db.prcxml";
+const CONFIG_PATH = "ultimate/hdr-config/";
+
 export class StageConfig {
     dom: null | Document = null;
     parser = new DOMParser();
@@ -20,16 +25,16 @@ export class StageConfig {
         return new Promise<void>(async (resolve,reject) => {
             try {
                 let backend = Backend.instance();
-                await backend.getSdRoot()
-                    .then(root => backend.fileExists(root + "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml"))
+                let root = await backend.getSdRoot();
+                backend.fileExists(root + ACTIVE_CONFIG_FILE)
                     .then(async exists => {
                         if (!exists) {
-                            await backend.resetStageXml();
+                            await this.resetDefaults();
                         }
                     })
                     .catch(e => {throw e;});
                 if (this.dom === null) {
-                    await backend.readStageXml()
+                    await backend.readFile(root + ACTIVE_CONFIG_FILE)
                         .then(xml => {
                             this.dom = this.parser.parseFromString(xml.trim(), "text/xml");
                             resolve();
@@ -46,6 +51,25 @@ export class StageConfig {
 
     unload() {
         this.dom = null;
+    }
+
+    async resetDefaults(): Promise<void> {
+        return new Promise<void>(async (resolve,reject) => {
+            try {
+                this.dom = null;
+                let backend = Backend.instance();
+                let root = await backend.getSdRoot();
+                if (await backend.fileExists(root + ACTIVE_CONFIG_FILE)) {
+                    await backend.deleteFile(root + ACTIVE_CONFIG_FILE);
+                }
+                if (await backend.fileExists(root + BACKUP_STAGE_CONFIG)) {
+                    await backend.deleteFile(root + BACKUP_STAGE_CONFIG);
+                }
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     async save(): Promise<void> {
@@ -65,7 +89,8 @@ export class StageConfig {
                     if (node.match( /^<?\w[^>]*[^\/]$/ )) indent += tab;              // increase indent
                 });
                 let formattedXml = formatted.substring(1, formatted.length-3);
-                await Backend.instance().writeStageXml(formattedXml);
+                let root = await Backend.instance().getSdRoot();
+                await Backend.instance().writeFile(root + ACTIVE_CONFIG_FILE, formattedXml);
                 this.dom = null;
                 resolve();
             } catch (e) {
