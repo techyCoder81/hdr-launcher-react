@@ -23,7 +23,7 @@ arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
 md5 = "0.7.0"
 walkdir = "2"
 zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
-nx-request-handler = { path = "../../nx-request-handler" }
+nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
 
