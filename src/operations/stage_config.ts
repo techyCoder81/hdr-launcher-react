@@ -65,6 +65,10 @@ export class StageConfig {
                 if (await backend.fileExists(root + BACKUP_STAGE_CONFIG)) {
                     await backend.deleteFile(root + BACKUP_STAGE_CONFIG);
                 }
+                if (await backend.fileExists(root + DEFAULT_CONFIG_FILE)) {
+                    let xml = await backend.readFile(root + DEFAULT_CONFIG_FILE);
+                    backend.writeFile(root + ACTIVE_CONFIG_FILE, xml);
+                }
                 resolve();
             } catch (e) {
                 reject(e);

@@ -58,6 +58,8 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                                     .then(() => setChanged(false))
                                     .then(() => StageConfig.instance().unload())
                                     .catch(e => alert("eror during save: " + e));
+                            } else {
+                                setChanged(false);
                             }
                         }
 
