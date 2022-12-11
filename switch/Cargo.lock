@@ -230,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "hdr-launcher-react"
-version = "0.1.7"
+version = "0.2.0"
 dependencies = [
  "arcropolis-api",
  "md5",
@@ -380,7 +380,7 @@ dependencies = [
 [[package]]
 name = "native-tls"
 version = "0.2.11"
-source = "git+https://github.com/GradualSyrup/rust-native-tls?branch=switch#82f2da9c08d265e41f94198e5933a6ca5831374b"
+source = "git+https://github.com/skyline-rs/rust-native-tls?branch=switch#f202fca15bb35d94447f2acc416113c6ce56c698"
 dependencies = [
  "lazy_static",
  "libc",
@@ -421,7 +421,6 @@ dependencies = [
 [[package]]
 name = "nx-request-handler"
 version = "0.1.6"
-source = "git+https://github.com/techyCoder81/nx-request-handler#27e528c67f975fa0a90367859933481b04573384"
 dependencies = [
  "md5",
  "serde",

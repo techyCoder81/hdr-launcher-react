@@ -99,7 +99,7 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
-                            resolve(new Responses.OkOrError(false, "specified file does not exist! HDR may not be installed.", request.id));
+                            resolve(new Responses.OkOrError(false, "specified (" + file + ") file does not exist! HDR may not be installed.", request.id));
                             break;
                         }
 
@@ -212,7 +212,7 @@ export class RequestHandler {
                         let file: string = args[0];
                         let exists = fs.existsSync(file);
                         if (!exists) {
-                            resolve(new Responses.OkOrError(false, "specified file for md5 does not exist!", request.id));
+                            resolve(new Responses.OkOrError(false, "specified file (" + file + ") for md5 does not exist!", request.id));
                             console.info("Failed - file does not exist.");
                             break;
                         }

@@ -98,14 +98,14 @@ export default async function verify (progressCallback?: (p: Progress) => void):
       // continue if we arent supposed to hash-check this file.
       let ignored = false;
       always_ignore_files.forEach(ignored_file => {
-        if (path.includes(ignored_file)) {
+        if (path.endsWith(ignored_file)) {
           ignored = true;
         }
       });
       // check if this is an ignored music file
       if (ignore_music) {
         music_files.forEach(ignored_file => {
-          if (path.includes(ignored_file)) {
+          if (path.endsWith(ignored_file)) {
             ignored = true;
           }
         });

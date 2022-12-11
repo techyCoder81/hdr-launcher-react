@@ -5,6 +5,7 @@ import { FocusCheckbox } from "../buttons/focus_checkbox";
 import { MenuType } from "../menu";
 import { AbstractMenu } from "./abstract_menu";
 import { PopupData } from "../../operations/popup_data";
+import * as LauncherConfig from '../../operations/launcher_config';
 
 /**
  * builds the options menu components

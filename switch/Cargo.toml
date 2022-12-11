@@ -1,6 +1,6 @@
 [package]
 name = "hdr-launcher-react"
-version = "0.1.7"
+version = "0.2.0"
 authors = ["techyCoder81"]
 edition = "2021"
 
@@ -23,7 +23,7 @@ arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
 md5 = "0.7.0"
 walkdir = "2"
 zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
-nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
+nx-request-handler = { path = "../../nx-request-handler" }
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
 
@@ -33,7 +33,7 @@ prettify-js = "0.1.0"
 [patch.crates-io]
 skyline-web = { git = "https://github.com/techyCoder81/skyline-web" }
 nnsdk = { git = "https://github.com/Raytwo/nnsdk-rs", branch="account_fs" }
-native-tls = { git = "https://github.com/GradualSyrup/rust-native-tls", branch="switch" }
+native-tls = { git = "https://github.com/skyline-rs/rust-native-tls", branch="switch" }
 
 [profile.dev]
 panic = "abort"

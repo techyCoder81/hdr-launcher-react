@@ -15,14 +15,18 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
 
     useEffect(() => {
         LauncherConfig.isTournamentMode()
-            .then(enabled => showTourneyMode(enabled))
-            .catch(e => alert("error loading tourney mode: " + e));
-        StageConfig.instance().getAll()
-            .then(stages => setStageData(stages))
-            .catch(e => alert(e));
-    }, []);
+            .then(async enabled => {
+                showTourneyMode(enabled); 
+                if (enabled) {
+                    await StageConfig.instance().getAll()
+                        .then(stages => setStageData(stages))
+                        .catch(e => alert("error loading tourney stage data!"));
+                }
+            })
+            .catch(e => alert("error checking if tourney mode is on: " + e));
+    }, [isShowTourneyMode]);
 
-    return <div className={"overlay-progress full scroll-hidden"}>
+    return <div className={"overlay-progress scroll-hidden"}>
         <div className="border-bottom">
             <FocusButton autofocus={true} className="simple-button-bigger" onClick={async () => {
                 if (isChanged) {
@@ -97,7 +101,7 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                             .then(() => StageConfig.instance().getAll())
                             .then(stages => setStageData(stages))
                             .then(() => alert("Stages have been reset to defaults!"))
-                            .catch(e => alert("eror during save: " + e));
+                            .catch(e => alert("error during save: " + e));
                     }
                 }} text={"Reset Defaults"}/>
                 {isChanged ? 
@@ -114,7 +118,7 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
             </div> : <div/> }
         </div>
         {isShowTourneyMode ? 
-        <div className="scrolling-fit">
+        <div className="scrolling-fit border-bottom">
             {
                 stageData.map(stage => <StageEntry onClick={() => {
                     return StageConfig.instance().toggle(stage.name_id)

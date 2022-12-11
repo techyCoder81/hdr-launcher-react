@@ -6,7 +6,7 @@ use std::io::prelude::*;
 const FILE_PATH: &str = "sd:/ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml";
 const CONFIG_PATH: &str = "sd:/ultimate/hdr-config/";
 const STAGING_FILE: &str = "sd:/ultimate/hdr-config/ui_stage_db.prcxml.temp";
-const DEFAULT_FILE: &str = "sd:/ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml";
+const DEFAULT_FILE: &str = "sd:/ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.default";
 /*
 pub fn enable_stages(stage_names: &Vec<String>) -> Result<String, String> {
     return set_stages(stage_names, true);

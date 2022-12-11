@@ -292,7 +292,8 @@ p {
 .scrolling-fit {
   overflow-y: scroll;
   position: relative;
-  height: 100%;
+  height: 80%;
+  scroll-behavior: smooth;
 }
 .scrolling-fit::-webkit-scrollbar { 
   display: none;  /* Safari and Chrome */

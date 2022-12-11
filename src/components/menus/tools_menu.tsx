@@ -28,7 +28,7 @@ export default class ToolsMenu extends AbstractMenu<{setInfo: (info: string) => 
                         className={"main-buttons"} 
                         onClick={() => this.props.switchTo(MenuType.MainMenu)}
                         onFocus={() => this.props.setInfo("Return to the Main menu")}/>
-                <FocusButton text='Arcadia&nbsp;' 
+                <FocusButton text='Open Arcadia&nbsp;' 
                         className={"main-buttons smaller-main-button"} 
                         onClick={() => Backend.instance().openModManager()}
                         onFocus={() => this.props.setInfo("Open the Mod Manager")}/>

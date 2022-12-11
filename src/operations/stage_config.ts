@@ -2,7 +2,7 @@ import { Backend } from "./backend";
 import StageData from "./stage_data";
 
 const ACTIVE_CONFIG_FILE = "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml";
-const DEFAULT_CONFIG_FILE = "ultimate/mods/hdr-stages/ui/param/database/default_ui_stage_db.prcxml";
+const DEFAULT_CONFIG_FILE = "ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.default";
 const BACKUP_STAGE_CONFIG = "ultimate/hdr-config/backup_ui_stage_db.prcxml";
 const CONFIG_PATH = "ultimate/hdr-config/";
 
