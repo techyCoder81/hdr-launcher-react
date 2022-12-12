@@ -17,7 +17,6 @@ pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
 }
 
-#[cfg(feature = "updater")]
 pub fn check_for_self_updates() {
     println!("checking for updates");
     let response = match minreq::get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest")
@@ -85,6 +84,11 @@ pub fn check_for_self_updates() {
                 return;
             },
         };
+        if !update.status_code == 200 {
+            let info = format!("ERROR: Update Failed! Status Code: {}\nExplanation:\n{}", update.status_code, update.reason_phrase);
+            skyline_web::DialogOk::ok(info);
+            return;
+        }
         println!("finished get");
         match std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro", update.into_bytes()){
             Ok(_) => println!("new update installed!"),
