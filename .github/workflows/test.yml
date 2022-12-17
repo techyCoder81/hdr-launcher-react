@@ -76,6 +76,7 @@ jobs:
       name: frontend
 
     - run: ls -lart
+    - run: "ls -lart release/*"
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \

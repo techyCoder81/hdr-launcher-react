@@ -9,7 +9,7 @@ const JS_FILE_PATH: &str = "./web-build/renderer/renderer.js";
 
 fn main() -> (){
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../web/build/asset-manifest.json");
+    println!("cargo:rerun-if-changed=../release/app/dist/renderer/assets-manifest.json");
     
     #[cfg(not(feature = "no-npm"))]
     // do the npm run build
@@ -31,7 +31,11 @@ fn main() -> (){
     std::fs::create_dir_all("./web-build").unwrap();
 
     let options = CopyOptions::new();
-    fs_extra::dir::copy("../release/app/dist/renderer", "./web-build", &options).unwrap();
+    let paths = std::fs::read_dir("../").unwrap();
+    for path in paths {
+        println!("Path: {}", path.unwrap().path().display());
+    }
+    fs_extra::dir::copy("../release/app/dist/renderer/", "./web-build/", &options).unwrap();
 
     // read and transform the js file
     let mut src_js = std::fs::File::open(JS_FILE_PATH).unwrap();
