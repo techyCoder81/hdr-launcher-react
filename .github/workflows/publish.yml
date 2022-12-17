@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout git repo
@@ -44,7 +44,7 @@ jobs:
           # This is used for uploading release assets to github
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm exec electron-builder -- --publish always --mac --linux --win
+          npm exec electron-builder --publish
 
   build_frontend:
     env:
