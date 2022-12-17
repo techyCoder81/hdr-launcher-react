@@ -1,6 +1,7 @@
 import { useRef } from "react";
+import { stageInfo } from "renderer/operations/stage_info";
 import { Backend } from "../../operations/backend";
-import { StageConfig, stageInfo } from "../../operations/stage_config";
+import { StageConfig } from "../../operations/stage_config";
 import { FocusButton } from "../buttons/focus_button";
 import { FocusCheckbox } from "../buttons/focus_checkbox";
 
@@ -15,7 +16,7 @@ export default function StageEntry(props: {stageName: string, onClick: () => Pro
         children={<input className="focus-check" type="checkbox" readOnly checked={props.enabled}/>}
         onClick={() => {return props.onClick();}}
         className={"main-buttons smaller-main-button"}
-        text={(stageInfo[props.stageName] ? stageInfo[props.stageName] : props.stageName) + "\u00A0"}
+        text={(stageInfo[props.stageName] ? stageInfo[props.stageName].display_name : props.stageName) + "\u00A0"}
         onFocus={async () => {
             if (props.onFocus !== undefined) {
                 await props.onFocus().catch(e => console.log("while handling onfocus for stage entry: " + e));

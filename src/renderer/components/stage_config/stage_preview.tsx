@@ -1,5 +1,5 @@
 import logo from '../../../../assets/logo_full.png';
-import { stageInfo } from '../../operations/stage_config';
+import { stageInfo } from '../../operations/stage_info';
 
 function getPreview(name: string) {
     try {
@@ -31,7 +31,7 @@ export const StagePreview = (props: {stageName: string | null}) => {
                 paddingLeft: "25px",
                 top: 15,
                 left: -20
-            }}>{(stageInfo[props.stageName] ? stageInfo[props.stageName] : props.stageName) + '\u00A0'}</h1>
+            }}>{(stageInfo[props.stageName] ? stageInfo[props.stageName].display_name : props.stageName) + '\u00A0'}</h1>
             <img src={getPreview(props.stageName)} alt="Preview" />
     </div>
 }

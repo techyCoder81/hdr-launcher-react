@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Backend } from "../../operations/backend";
 import { StageConfig } from "../../operations/stage_config";
-import StageData from "../../operations/stage_data";
+import StageParams from "../../operations/stage_info";
 import { FocusButton } from "../buttons/focus_button";
 import { FocusCheckbox } from "../buttons/focus_checkbox";
 import { ExpandSidebar } from "../expand_sidebar";
@@ -10,7 +10,7 @@ import * as LauncherConfig from '../../operations/launcher_config';
 import { StagePreview } from "./stage_preview";
 
 export default function StageConfigMenu(props: {onComplete: () => void}) {
-    const [stageData, setStageData] = useState([] as StageData[]);
+    const [stageData, setStageData] = useState([] as StageParams[]);
     const [isChanged, setChanged] = useState(false);
     const [isShowTourneyMode, showTourneyMode] = useState(false);
     const [focusedName, setFocusedName] = useState(null as string | null);
@@ -137,7 +137,6 @@ export default function StageConfigMenu(props: {onComplete: () => void}) {
                         enabled={stage.enabled} stageName={stage.name_id}
                         onFocus={async () => {
                             setFocusedName(stage.name_id);
-                            console.info("setting focus: " + stage.name_id)
                         }}
                     />)
                 }
