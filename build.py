@@ -19,15 +19,15 @@ for arg in sys.argv:
         electron = True
     if "listen" in arg:
         listen = True
-    if "package" in arg:
+    if "npm" in arg:
         package = True
     if "updater" in arg:
         updater = " --features updater"
 
 if package:
-    success = os.system("yarn package")
+    success = os.system("npm build")
     if success != 0:
-        exit("YARN BUILD FAILED!")
+        exit("NPM BUILD FAILED!")
 
 os.chdir("switch")
 
@@ -47,4 +47,4 @@ if listen:
 os.chdir(root_dir)
 
 if electron:
-    os.system("yarn start")
+    os.system("npm start")

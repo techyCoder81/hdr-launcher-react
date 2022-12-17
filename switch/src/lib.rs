@@ -1,4 +1,5 @@
 use skyline_web::{Webpage, WebSession};
+use std::io::Read;
 use std::thread::{self};
 use serde::{Deserialize, Serialize};
 use arcropolis_api::{self, ApiVersion, get_api_version};
@@ -8,10 +9,16 @@ use std::path::Path;
 use nx_request_handler::*;
 use std::fs;
 use semver::{BuildMetadata, Prerelease, Version, VersionReq};
+use std::collections::HashMap;
+use std::fs::File;
+use skyline::info::get_program_id;
+use include_dir::*;
 
 mod stage_config;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+static WEB_DIR: Dir = include_dir!("./web-build/renderer");
 
 pub fn is_emulator() -> bool {
     return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
@@ -99,11 +106,6 @@ pub fn check_for_self_updates() {
 }
 
 
-static HTML_TEXT: &str = include_str!("../web-build/index.html");
-static JS_TEXT: &str = include_str!("../web-build/index.js");
-static LOGO_PNG: &[u8] = include_bytes!("../web-build/logo_full.png");
-static THEME_WAV: &[u8] = include_bytes!("../web-build/theme.wav");
-
 #[skyline::main(name = "hdr-launcher-react")]
 pub fn main() {
     if is_emulator() {
@@ -125,16 +127,93 @@ pub fn main() {
             set_volume_balance(0.5, 1.0);
         }
 
-        let session = Webpage::new()
-            .htdocs_dir("hdr-launcher")
-            .file("index.html", &HTML_TEXT)
-            .file("index.js", &JS_TEXT)
-            .file("logo_full.png", &LOGO_PNG)
-            .file("theme.wav", &THEME_WAV)
+        let mut page = Webpage::new();
+
+        println!("files:");
+        WEB_DIR.files().for_each(|file| println!("file: {}", file.path().display()));
+
+        println!("dirs:");
+        WEB_DIR.dirs().for_each(|file| println!("file: {}", file.path().display()));
+
+        // parse the react-built manifest
+        let manifest_file = match WEB_DIR.get_file("assets-manifest.json") {
+            Some(value) => value,
+            None => {
+                println!("manifest not found!");
+                return;
+            }
+        };
+        let manifest_str = match manifest_file.contents_utf8() {
+            Some(value) => value,
+            None => {
+                println!("manifest content reading failed!");
+                return;
+            }
+        };
+        let manifest = match serde_json::from_str::<serde_json::Value>(manifest_str) {
+            Ok(value) => value,
+            Err(e) => {
+                println!("parsing as json failed! Error: {}", e);
+                return;
+            }
+        };
+
+        let assets = manifest.as_object().unwrap();
+        
+        let mut files: HashMap<String, &include_dir::File> = HashMap::new();
+
+        // for each asset, add it to the webpage
+        assets.iter().for_each(|entry| {
+            let file_path = format!("{}", entry.1.to_string().trim_matches('\"').trim_start_matches('/'));
+            let file = match WEB_DIR.get_file(&file_path) {
+                Some(f) => f,
+                None => {
+                    println!("Could not find file: {}", file_path);
+                    return;
+                }
+            };
+            files.insert(file_path, file);
+        });
+
+        let program_id = get_program_id();
+        let htdocs_dir = "hdr-launcher";
+        let folder_path = Path::new("sd:/atmosphere/contents")
+                .join(&format!("{:016X}", program_id))
+                .join(&format!("manual_html/html-document/{}.htdocs/", htdocs_dir));
+    
+        // remove previous files if necessary
+        if std::fs::metadata(&folder_path).is_ok() {
+            std::fs::remove_dir_all(&folder_path);
+        }
+
+        for key in files.keys() {
+            let contents = match files.get(key)  {
+                Some(value) => value.contents(),
+                None => {
+                    println!("key not found: {}", key);
+                    return;
+                }
+            };
+            page.file(key, contents);
+            let fullpath = Path::join(&folder_path, key);
+            println!("adding file: {}", fullpath.display());
+            match fs::create_dir_all(fullpath.parent().unwrap()) {
+                Ok(_) => {},
+                Err(e) => {println!("Error while making file path: {:?}", e); return;}
+            }
+        }
+
+        let session = match page.htdocs_dir(htdocs_dir)
             .web_audio(true)
             .background(skyline_web::Background::Default)
             .boot_display(skyline_web::BootDisplay::Black)
-            .open_session(skyline_web::Visibility::InitiallyHidden).unwrap();
+            .open_session(skyline_web::Visibility::InitiallyHidden) {
+                Ok(s) => s,
+                Err(e) => {
+                    skyline_web::DialogOk::ok(format!("Error: failed to open hdr-launcher websession!\n{:?}", e));
+                    return;
+                }
+            };
         session.show();
 
         println!("session is open");
