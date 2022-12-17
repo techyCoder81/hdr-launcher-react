@@ -1,4 +1,3 @@
-import { resolve } from '../../webpack/main.webpack';
 import { Backend } from './backend';
 import { Progress } from 'nx-request-api';
 import { getInstallType, getRepoName } from './install';

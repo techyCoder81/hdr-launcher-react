@@ -4,6 +4,7 @@ import {
   DefaultMessenger,
   Messages,
 } from 'nx-request-api';
+import '../preload';
 
 type BackendType = 'Node' | 'Switch';
 

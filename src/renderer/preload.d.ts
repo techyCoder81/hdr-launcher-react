@@ -1,18 +1,9 @@
-import { Channels } from 'main/preload';
+import { api } from '../main/preload'
 
 declare global {
+  // eslint-disable-next-line
   interface Window {
-    electron: {
-      ipcRenderer: {
-        sendMessage(channel: Channels, args: unknown[]): void;
-        on(
-          channel: Channels,
-          func: (...args: unknown[]) => void
-        ): (() => void) | undefined;
-        once(channel: Channels, func: (...args: unknown[]) => void): void;
-      };
-    };
+    Main: typeof api
   }
 }
 
-export {};
