@@ -148,25 +148,11 @@ jobs:
     - name: upload plugin
       id: upload1
       continue-on-error: true
-      uses: softprops/action-gh-release@v1
+      uses: ncipollo/release-action@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         name: "${{ github.event.inputs.release_name }}"
-        files: |
-          hdr-launcher.nro
-          checksum.txt
-        generate_release_notes: true
+        artifacts: hdr-launcher.nro,checksum.txt
+        generateReleaseNotes: true
         draft: true
-
-    # upload plugin
-    - name: upload plugin
-      id: upload2
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/') && steps.upload1.outcome == 'failure'
-      with:
-        name: "${{ github.event.inputs.release_name }}"
-        files: |
-          hdr-launcher.nro
-          checksum.txt
-        generate_release_notes: true
-        draft: true
+        allowUpdates: true
