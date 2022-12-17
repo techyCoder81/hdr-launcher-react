@@ -48,7 +48,7 @@ jobs:
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \
-        && sudo cargo skyline build --release --features "updater"\
+        && cargo skyline build --release --features "updater"\
         && cd ..
       env:
         HOME: /root
