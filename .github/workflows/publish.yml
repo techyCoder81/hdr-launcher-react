@@ -161,9 +161,8 @@ jobs:
     # upload plugin
     - name: upload plugin
       id: upload2
-      if: steps.upload1.outcome == 'failure'
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/') && steps.upload1.outcome == 'failure'
       with:
         name: "${{ github.event.inputs.release_name }}"
         files: |
