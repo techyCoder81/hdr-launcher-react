@@ -128,3 +128,4 @@ jobs:
           hdr-launcher.nro
           checksum.txt
         generate_release_notes: true
+        draft: true
