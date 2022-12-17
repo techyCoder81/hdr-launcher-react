@@ -76,7 +76,7 @@ jobs:
       name: frontend
 
     - run: ls -lart
-    - run: "rm -rf release && cp frontend/* ."
+    - run: "rm -rf release && cp -r frontend/* ."
     - run: "ls -lart release/*"
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
