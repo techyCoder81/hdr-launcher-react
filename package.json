@@ -1,15 +1,13 @@
 {
   "name": "hdr-launcher",
   "author": "techyCoder81",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "The HDR Launcher",
   "repository": "techyCoder81/hdr-launcher-react",
   "license": "MIT",
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "techyCoder81"
     }
   ],
   "main": "./src/main/main.ts",
