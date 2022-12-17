@@ -43,13 +43,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16
-        cache: npm
 
     - run: ls -lart
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \
-        && cargo skyline build --release --features "updater"\
+        && sudo cargo skyline build --release --features "updater"\
         && cd ..
       env:
         HOME: /root
