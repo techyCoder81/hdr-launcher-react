@@ -29,10 +29,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run package
-          npm run lint
           npm exec tsc
           npm test
-
+# npm run lint
   build_the_plugin:
     runs-on: ubuntu-latest
     container: 
@@ -46,9 +45,6 @@ jobs:
         node-version: 16
         cache: npm
 
-    - name: npm install
-      run: |
-        npm install
     - run: ls -lart
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
