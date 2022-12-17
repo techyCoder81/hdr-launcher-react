@@ -46,50 +46,20 @@ jobs:
         run: |
           npm exec electron-builder -- --publish always --win --mac --linux
 
-  build_frontend:
-    env:
-      PLUGIN_NAME: hdr-launcher
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout version
-      uses: actions/checkout@v2
-
-    - name: setup python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-
-    - run: npm install
-
-    - run: npm run build
-
-    - run: mkdir frontend
-    - run: cp -r release frontend
-
-    # upload built web files
-    - name: Upload frontend artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: frontend
-        path: frontend
-
   build_the_plugin:
-    needs: build_frontend
     runs-on: ubuntu-latest
     container: 
       image: jugeeya/cargo-skyline:3.0.0-dkp-beta
     steps:
     - name: checkout version
       uses: actions/checkout@v2
-    - uses: actions/download-artifact@v3
+    - name: Install Node.js and NPM
+      uses: actions/setup-node@v3
       with:
-        name: frontend
+        node-version: 16
+        cache: npm
+
     - run: ls -lart
-    - run: ls -lart .webpack
     - run: |
         export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
         && cd switch \
@@ -97,7 +67,7 @@ jobs:
         && cd ..
       env:
         HOME: /root
-
+        
     - run: mv switch/target/aarch64-skyline-switch/release/lib*.nro hdr-launcher.nro
 
     - run: |
