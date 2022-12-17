@@ -6,7 +6,6 @@ const container = document.getElementById('root')!;
 const root = createRoot(container);
 root.render(<App />);
 
-
 // override B/X buttons closing the webpage on switch
-skyline.setButtonAction("B", () => {})
-skyline.setButtonAction("X", () => {})
+skyline.setButtonAction('B', () => {});
+skyline.setButtonAction('X', () => {});

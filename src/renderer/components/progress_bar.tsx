@@ -1,37 +1,37 @@
-import ProgressBar from "@ramonak/react-progress-bar";
-import React from "react";
-import ReactModal from "react-modal";
-import { Backend } from "../operations/backend";
-import { Progress } from "nx-request-api";
-import "../styles/progress.css"
-import { ExpandSidebar } from "./expand_sidebar";
-import SlidingBackground from "./sliding_background";
+import ProgressBar from '@ramonak/react-progress-bar';
+import React from 'react';
+import ReactModal from 'react-modal';
+import { Backend } from '../operations/backend';
+import { Progress } from 'nx-request-api';
+import '../styles/progress.css';
+import { ExpandSidebar } from './expand_sidebar';
+import SlidingBackground from './sliding_background';
 
 ReactModal.setAppElement('#root');
 
 const customStyles = {
-    content : {},
-    overlay: {zIndex: 1000}
+  content: {},
+  overlay: { zIndex: 1000 },
 };
 
-/** 
+/**
  * progress bar implementation
  */
-function ProgressDisplayInner(props: {progress: Progress, animate: boolean}) {
-    if (props.progress === undefined || props.progress == null) {
-      return <div></div>
-    }
+function ProgressDisplayInner(props: { progress: Progress; animate: boolean }) {
+  if (props.progress === undefined || props.progress == null) {
+    return <div></div>;
+  }
 
-    return <div className="overlay-progress">
-        <div className="progress-block vertical-center">
-        {props.animate ? (<SlidingBackground/>) : <div></div>
-        }
+  return (
+    <div className="overlay-progress">
+      <div className="progress-block vertical-center">
+        {props.animate ? <SlidingBackground /> : <div></div>}
         <h1>{props.progress.title}</h1>
         {/*<p>{props.progress.info}</p> */}
-        <ProgressBar 
-          className="progress-wrapper" 
+        <ProgressBar
+          className="progress-wrapper"
           completed={
-            props.progress.progress == null ? 0 : (props.progress.progress * 100)
+            props.progress.progress == null ? 0 : props.progress.progress * 100
           }
           transitionDuration="100ms"
           isLabelVisible={false}
@@ -39,8 +39,9 @@ function ProgressDisplayInner(props: {progress: Progress, animate: boolean}) {
           borderRadius="0px"
         />
       </div>
-      <ExpandSidebar/>
+      <ExpandSidebar />
     </div>
-} 
- 
+  );
+}
+
 export const ProgressDisplay = React.memo(ProgressDisplayInner);

@@ -1,10 +1,10 @@
-import theme from "../../../assets/theme.wav";
+import theme from '../../../assets/theme.wav';
 
 export default class BackgroundMusic {
   private static instance: BackgroundMusic;
   music: HTMLAudioElement;
   fadeInterval: NodeJS.Timer | null = null;
-  
+
   public static singleton(): BackgroundMusic {
     if (BackgroundMusic.instance === undefined) {
       BackgroundMusic.instance = new BackgroundMusic();
@@ -16,7 +16,7 @@ export default class BackgroundMusic {
     this.music = new Audio(theme);
     this.music.load();
     this.music.volume = 0.1;
-    
+
     this.music.play();
     this.music.addEventListener('ended', () => {
       this.music.currentTime = 0;
@@ -25,7 +25,7 @@ export default class BackgroundMusic {
   }
 
   public isFading() {
-    return this.fadeInterval
+    return this.fadeInterval;
   }
 
   public play(): Promise<void> {
@@ -49,26 +49,26 @@ export default class BackgroundMusic {
     if (this.fadeInterval !== null) {
       clearInterval(this.fadeInterval);
     }
-    let music = this.music
+    let music = this.music;
     let vol = this.music.volume;
-    
+
     return new Promise<number>((resolve) => {
-      BackgroundMusic.singleton().fadeInterval = setInterval(
-        function() {
-          if (vol !== target_volume) {
-            vol = Math.min(Math.max(vol + (0.05 * Math.sign(target_volume - vol)), 0), 0.95);
-            music.volume = vol;
+      BackgroundMusic.singleton().fadeInterval = setInterval(function () {
+        if (vol !== target_volume) {
+          vol = Math.min(
+            Math.max(vol + 0.05 * Math.sign(target_volume - vol), 0),
+            0.95
+          );
+          music.volume = vol;
+        } else {
+          let interval = BackgroundMusic.singleton().fadeInterval;
+          if (interval !== null) {
+            clearInterval(interval);
+            BackgroundMusic.singleton().fadeInterval = null;
+            resolve(vol);
           }
-          else {
-            
-            let interval = BackgroundMusic.singleton().fadeInterval;
-            if (interval !== null) {
-              clearInterval(interval);
-              BackgroundMusic.singleton().fadeInterval = null;
-              resolve(vol);
-            }
-          }
-        }, 150);
+        }
+      }, 150);
     });
   }
 }

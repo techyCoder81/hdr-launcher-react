@@ -19,7 +19,7 @@ import Config from './config';
 import * as fs from 'fs';
 import * as os from 'os';
 import { RequestHandler } from './request_handler';
-import { Responses } from "nx-request-api";
+import { Responses } from 'nx-request-api';
 
 class AppUpdater {
   constructor() {
@@ -145,7 +145,7 @@ app
           fs.mkdirSync(Config.getSdcardPath());
         }
       });
-    
+
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
@@ -154,23 +154,22 @@ app
   })
   .catch(console.log);
 
-
-  
-
 async function findEmulator() {
   if (mainWindow == null) {
-    console.error("Browserwindow was not defined!");
-    dialog.showErrorBox("Invalid window context!", 
-      "Browser window was not defined! The application will now close");
+    console.error('Browserwindow was not defined!');
+    dialog.showErrorBox(
+      'Invalid window context!',
+      'Browser window was not defined! The application will now close'
+    );
     app.exit(0);
     return;
   }
-  while (Config.getRyuPath() == null || Config.getRyuPath() == "") {
+  while (Config.getRyuPath() == null || Config.getRyuPath() == '') {
     // show instructions to the user
     let response = dialog.showMessageBoxSync(mainWindow, {
-      title: "Instructions", 
-      message: "Please select your Ryujinx executable.",
-      buttons: ["ok" , "cancel"]
+      title: 'Instructions',
+      message: 'Please select your Ryujinx executable.',
+      buttons: ['ok', 'cancel'],
     });
 
     if (response != 0) {
@@ -181,20 +180,20 @@ async function findEmulator() {
     let selectedPath;
     if (os.platform() == 'win32') {
       // let the user point us to ryujinx on windows
-      selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-        title: "Please select your Ryujinx executable",
+      selectedPath = dialog.showOpenDialogSync(mainWindow, {
+        title: 'Please select your Ryujinx executable',
         properties: ['openFile'],
-        filters: [ { name: 'Ryujinx Executables', extensions: ['exe'] } ]
+        filters: [{ name: 'Ryujinx Executables', extensions: ['exe'] }],
       });
     } else {
       // let the user point us to ryujinx on linux
-      selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-        title: "Please select your Ryujinx executable",
+      selectedPath = dialog.showOpenDialogSync(mainWindow, {
+        title: 'Please select your Ryujinx executable',
         properties: ['openFile'],
       });
     }
     if (!selectedPath || selectedPath.length < 1) {
-      console.warn("User cancelled finding ryujinx!");
+      console.warn('User cancelled finding ryujinx!');
       app.exit(0);
       continue;
     }
@@ -202,40 +201,43 @@ async function findEmulator() {
 
     // ensure that the path exists
     if (fs.existsSync(ryuPath)) {
-      console.log('given path exists')
+      console.log('given path exists');
     } else {
-      dialog.showErrorBox("Invalid path!", 
-        "The given path does not exist!");
+      dialog.showErrorBox('Invalid path!', 'The given path does not exist!');
       continue;
     }
 
     let fileName = path.basename(ryuPath);
-    console.log("filename: " + fileName);
-    if (fileName === "Ryujinx" || fileName === "Ryujinx.exe") {
-      console.log("setting ryu path: " + ryuPath);
+    console.log('filename: ' + fileName);
+    if (fileName === 'Ryujinx' || fileName === 'Ryujinx.exe') {
+      console.log('setting ryu path: ' + ryuPath);
       Config.setRyuPath(ryuPath);
     } else {
-      dialog.showErrorBox("Invalid path!", 
-        "The given file is not a Ryujinx executable!");
+      dialog.showErrorBox(
+        'Invalid path!',
+        'The given file is not a Ryujinx executable!'
+      );
     }
   }
 }
 
 async function findRom() {
   if (mainWindow == null) {
-    console.error("Browserwindow was not defined!");
-    dialog.showErrorBox("Invalid window context!", 
-      "Browser window was not defined! The application will now close");
+    console.error('Browserwindow was not defined!');
+    dialog.showErrorBox(
+      'Invalid window context!',
+      'Browser window was not defined! The application will now close'
+    );
     app.exit(0);
     return;
   }
 
-  while (Config.getRomPath() == null || Config.getRomPath() == "") {
+  while (Config.getRomPath() == null || Config.getRomPath() == '') {
     // show instructions to the user
     let response = dialog.showMessageBoxSync(mainWindow, {
-      title: "Instructions", 
-      message: "Please select your valid Smash Ultimate 13.0.1 dump.",
-      buttons: ["ok" , "cancel"]
+      title: 'Instructions',
+      message: 'Please select your valid Smash Ultimate 13.0.1 dump.',
+      buttons: ['ok', 'cancel'],
     });
 
     if (response != 0) {
@@ -244,13 +246,13 @@ async function findRom() {
     }
 
     // let the user point us to the rom
-    let selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-      title: "Please select your valid Smash Ultimate dump.", 
+    let selectedPath = dialog.showOpenDialogSync(mainWindow, {
+      title: 'Please select your valid Smash Ultimate dump.',
       properties: ['openFile'],
-      filters: [ { name: 'Switch Roms', extensions: ['nsp', 'xci'] } ]
+      filters: [{ name: 'Switch Roms', extensions: ['nsp', 'xci'] }],
     });
     if (!selectedPath || selectedPath.length < 1) {
-      console.warn("User cancelled finding ultimate dump!");
+      console.warn('User cancelled finding ultimate dump!');
       app.exit(0);
       continue;
     }
@@ -258,69 +260,74 @@ async function findRom() {
 
     // ensure that the path exists
     if (fs.existsSync(romPath)) {
-      console.log('given path exists')
+      console.log('given path exists');
     } else {
-      dialog.showErrorBox("Invalid path!", 
-        "The given path does not exist!");
-        continue;
+      dialog.showErrorBox('Invalid path!', 'The given path does not exist!');
+      continue;
     }
-    console.log("setting rom path.");
+    console.log('setting rom path.');
     Config.setRomPath(romPath);
   }
 }
 
 async function findSdcard() {
-  if (Config.getSdcardPath() != null && Config.getSdcardPath() != "") {
+  if (Config.getSdcardPath() != null && Config.getSdcardPath() != '') {
     return;
   }
 
   if (mainWindow == null) {
-    console.error("Browserwindow was not defined!");
-    dialog.showErrorBox("Invalid window context!", 
-      "Browser window was not defined! The application will now close");
+    console.error('Browserwindow was not defined!');
+    dialog.showErrorBox(
+      'Invalid window context!',
+      'Browser window was not defined! The application will now close'
+    );
     app.exit(0);
     return;
   }
 
-  var configDir = "";
-  if (process.platform == "win32") {
-    configDir = process.env.APPDATA + "/Ryujinx";
+  var configDir = '';
+  if (process.platform == 'win32') {
+    configDir = process.env.APPDATA + '/Ryujinx';
   } else if (process.platform == 'darwin') {
-    let selectedPath = dialog.showOpenDialogSync(mainWindow, { 
-      title: "Please select your Ryujinx config directory",
+    let selectedPath = dialog.showOpenDialogSync(mainWindow, {
+      title: 'Please select your Ryujinx config directory',
       properties: ['openDirectory'],
     });
     if (selectedPath === undefined) {
-      dialog.showErrorBox("Error!", 
-        "Ryujinx config directory is required for the HDR launcher to function. We will now close.");
+      dialog.showErrorBox(
+        'Error!',
+        'Ryujinx config directory is required for the HDR launcher to function. We will now close.'
+      );
       app.quit();
       return;
     }
-    configDir = path.join(selectedPath[0], "/");
-  }
-  else {
-    configDir = path.join(os.homedir(), ".config/Ryujinx/");
+    configDir = path.join(selectedPath[0], '/');
+  } else {
+    configDir = path.join(os.homedir(), '.config/Ryujinx/');
   }
 
   if (fs.existsSync(configDir)) {
-    console.info("setting sdcard root to " + path.join(configDir, "sdcard"));
-    Config.setSdcardPath(path.join(configDir, "sdcard/"));
+    console.info('setting sdcard root to ' + path.join(configDir, 'sdcard'));
+    Config.setSdcardPath(path.join(configDir, 'sdcard/'));
     // create the sdcard folder if its not there
     if (!fs.existsSync(Config.getSdcardPath())) {
       fs.mkdirSync(Config.getSdcardPath());
     }
   } else {
-    console.error("Ryujinx directory not found at " + configDir + "!");
-    dialog.showErrorBox("Ryujinx not found!", "Ryujinx directory not found at " + configDir + "!");
+    console.error('Ryujinx directory not found at ' + configDir + '!');
+    dialog.showErrorBox(
+      'Ryujinx not found!',
+      'Ryujinx directory not found at ' + configDir + '!'
+    );
     app.quit();
   }
 }
 
-async function registerListeners () {
+async function registerListeners() {
   let requestHandler = new RequestHandler();
 
   // register listening to the request channel
-  ipcMain.handle("request", (event, request): Promise<Responses.OkOrError> => {
+  ipcMain.handle('request', (event, request): Promise<Responses.OkOrError> => {
     //console.log("main thread received request: " + JSON.stringify(request));
     return requestHandler.handle(request);
   });

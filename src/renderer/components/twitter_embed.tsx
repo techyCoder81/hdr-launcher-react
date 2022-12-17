@@ -1,27 +1,29 @@
-import React from "react";
-import { TwitterTimelineEmbed } from "react-twitter-embed";
+import React from 'react';
+import { TwitterTimelineEmbed } from 'react-twitter-embed';
 
 /**
  * changelog implementation
  */
- function TwitterEmbedInner() {
-    return <div className="sidebar-inner"><TwitterTimelineEmbed
+function TwitterEmbedInner() {
+  return (
+    <div className="sidebar-inner">
+      <TwitterTimelineEmbed
         sourceType="profile"
         screenName="HewDrawRemix"
-        theme='dark'
+        theme="dark"
         noScrollbar
         transparent
         tweetLimit={10}
-        borderColor='296d2f'
-        options={{height: 500, innerWidth: 500}}
+        borderColor="296d2f"
+        options={{ height: 500, innerWidth: 500 }}
         placeholder={getPlaceholder()}
-    /></div>
+      />
+    </div>
+  );
 }
 
 export const TwitterEmbed = React.memo(TwitterEmbedInner);
 
 function getPlaceholder() {
-    return <div>&nbsp;Loading twitter feed...</div>
+  return <div>&nbsp;Loading twitter feed...</div>;
 }
-
-
