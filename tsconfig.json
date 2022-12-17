@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "target": "es5",
     "module": "commonjs",
-    "lib": [
-      "dom",
-      "es2015",
-      "es2016",
-      "es2017"
-    ],
-    "allowJs": true,
+    "lib": ["dom", "es2015"],
     "jsx": "react-jsx",
+    "strict": true,
     "sourceMap": true,
-    "outDir": "./dist",
-    "strict": true ,
+    "baseUrl": "./src",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-  }
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": ".erb/dll"
+  },
+  "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }
