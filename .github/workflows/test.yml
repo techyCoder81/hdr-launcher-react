@@ -1,0 +1,56 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js and NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: npm install
+        run: |
+          npm install
+
+      - name: npm test
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run package
+          npm exec tsc
+          npm test
+# npm run lint
+  build_the_plugin:
+    runs-on: ubuntu-latest
+    container: 
+      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
+    steps:
+    - name: checkout version
+      uses: actions/checkout@v2
+    - name: Install Node.js and NPM
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: npm
+
+    - run: ls -lart
+    - run: |
+        export PATH="$PATH:/root/.cargo/bin:/opt/devkitpro/devkitA64/bin" \
+        && cd switch \
+        && cargo skyline build --release --features "updater"\
+        && cd ..
+      env:
+        HOME: /root
+

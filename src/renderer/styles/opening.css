@@ -1,0 +1,117 @@
+:root {
+  --loading-time: 3s;
+}
+
+.overlay-opening {
+  z-index: 998;
+  background-color: black;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  animation: fade-out var(--loading-time) ease;
+  animation-fill-mode: forwards;
+  -webkit-animation: fade-out var(--loading-time) ease;
+  -webkit-animation-fill-mode: forwards;
+}
+.loading-button {
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(112, 226, 112);
+  position: absolute;
+  bottom: 30px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.loading {
+  top: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-left {
+  position: relative;
+  display: flex;
+  animation: slide-from-left var(--loading-time) ease-in-out;
+  animation-fill-mode: forwards;
+  -webkit-animation: slide-from-left var(--loading-time) ease-in-out;
+  -webkit-animation-fill-mode: forwards;
+  top: 10px;
+}
+
+.loading-right {
+  position: relative;
+  display: flex;
+  animation: slide-from-right var(--loading-time) ease-in-out;
+  -webkit-animation: slide-from-right var(--loading-time) ease-in-out;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  top: -10px;
+}
+
+.hewdraw {
+  font-size: 4rem;
+  font-weight: bold;
+  font-style: italic;
+  color: silver;
+}
+
+.remix {
+  font-size: 5rem;
+  font-weight: bold;
+  font-style: italic;
+  color: green;
+}
+
+@keyframes slide-from-left {
+  0% {
+    transform: translateX(-20%);
+    -webkit-transform: translateX(-20%);
+    opacity: 0;
+  }
+  30%,
+  70% {
+    transform: translateX(36%);
+    -webkit-transform: translateX(36%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-right {
+  0% {
+    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+    opacity: 0;
+  }
+  30%,
+  70% {
+    transform: translateX(45%);
+    -webkit-transform: translateX(45%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-20%);
+    -webkit-transform: translateX(-20%);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  0%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

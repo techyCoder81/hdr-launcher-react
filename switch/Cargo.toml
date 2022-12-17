@@ -26,9 +26,12 @@ zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
 nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
+include_dir = "0.7.3"
 
 [build-dependencies]
 prettify-js = "0.1.0"
+npm_rs = "0.2.1"
+fs_extra = "1.2.0"
 
 [patch.crates-io]
 skyline-web = { git = "https://github.com/techyCoder81/skyline-web" }

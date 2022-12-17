@@ -1,4 +1,57 @@
-use std::fs;
+#![feature(exit_status_error)]
+use std::process::{ExitStatusError};
+use std::path::Path;
+use npm_rs::*;
+use fs_extra::dir::CopyOptions;
+use std::io::{Write, Read};
+
+const JS_FILE_PATH: &str = "./web-build/renderer/renderer.js";
+
+fn main() -> (){
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=../web/build/asset-manifest.json");
+    
+    // do the npm run build
+    NpmEnv::default()
+        .set_path("../")
+        .init_env()
+        .install(None)
+        .run("build")
+        .exec().unwrap()
+        .exit_ok().unwrap();
+
+    // clear the web build dir if necessary
+    if Path::exists(Path::new("./web-build")) {
+        std::fs::remove_dir_all("./web-build").unwrap();
+    }
+    std::fs::create_dir_all("./web-build").unwrap();
+
+    let options = CopyOptions::new();
+    fs_extra::dir::copy("../release/app/dist/renderer", "./web-build", &options).unwrap();
+
+    // read and transform the js file
+    let mut src_js = std::fs::File::open(JS_FILE_PATH).unwrap();
+    let mut data_js = String::new();
+    src_js.read_to_string(&mut data_js); 
+    let new_data_js = format!("{}", data_js
+        .replace("const ", "var ")
+        .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
+        .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)"))
+        .replace("() =>(module['default'])", "(()=>(module['default']))")
+        .replace("() =>(module)", "(() =>(module))")
+        //.replace("this.isNode() ? \"Ryujinx\" : \"Switch\"", "(this.isNode() ? \"Ryujinx\" : \"Switch\")")
+        .replace("\"assets/", "\"");
+
+    std::fs::remove_file(JS_FILE_PATH).unwrap();
+    let mut dest_js = std::fs::File::create(JS_FILE_PATH).unwrap();
+
+    // prettyprint and then write the file
+    let (pretty, _) = prettify_js::prettyprint(&new_data_js);
+    dest_js.write(pretty.as_bytes()).unwrap(); 
+}
+
+
+/*use std::fs;
 use std::env;
 use std::path::Path;
 use std::fs::File;
@@ -62,4 +115,4 @@ fn main() -> std::io::Result<()> {
     fs::copy(MUSIC_FILE_PATH, "web-build/theme.wav")?;
 
     Ok(()) 
-} 
+} */
