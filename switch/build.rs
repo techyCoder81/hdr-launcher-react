@@ -11,6 +11,7 @@ fn main() -> (){
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=../web/build/asset-manifest.json");
     
+    #[cfg(not(feature = "no-npm"))]
     // do the npm run build
     NpmEnv::default()
         .set_path("../")
@@ -19,6 +20,9 @@ fn main() -> (){
         .run("build")
         .exec().unwrap()
         .exit_ok().unwrap();
+
+    #[cfg(feature = "no-npm")]
+    println!("Not using automatic npm install and build.");
 
     // clear the web build dir if necessary
     if Path::exists(Path::new("./web-build")) {

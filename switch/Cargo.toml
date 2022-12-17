@@ -12,6 +12,7 @@ crate-type = ["cdylib"]
 
 [features]
 updater = []
+no-npm = []
 
 [dependencies]
 skyline-config = { git = "https://github.com/skyline-rs/skyline-config" }
