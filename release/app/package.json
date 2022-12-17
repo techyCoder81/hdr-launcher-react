@@ -1,13 +1,15 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "4.6.0",
-  "description": "A foundation for scalable desktop apps",
+  "name": "hdr-launcher",
+  "author": "techyCoder81",
+  "version": "0.2.2",
+  "description": "The HDR Launcher",
+  "repository": "techyCoder81/hdr-launcher-react",
   "license": "MIT",
-  "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
-  },
+  "contributors": [
+    {
+      "name": "techyCoder81"
+    }
+  ],
   "main": "./dist/main/main.js",
   "scripts": {
     "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",

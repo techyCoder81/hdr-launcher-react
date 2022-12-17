@@ -653,7 +653,7 @@ export class RequestHandler {
           }
         case 'get_launcher_version':
           try {
-            var pjson = require('../../package.json');
+            var pjson = require('../../release/app/package.json');
             resolve(new Responses.OkOrError(true, pjson.version, request.id));
             break;
           } catch (e) {
