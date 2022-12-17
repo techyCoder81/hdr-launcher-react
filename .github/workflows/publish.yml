@@ -118,28 +118,13 @@ jobs:
     - run: |
         md5sum hdr-launcher.nro > checksum.txt
 
-    # upload asset
-    - name: Upload plugin to release
-      uses: svenstaro/upload-release-action@v2
+    # upload plugin
+    - name: upload plugin
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        file: 'hdr-launcher.nro'
-        prerelease: false
-        file_glob: true
-        asset_name: plugin
-        release_name: "${{ github.event.inputs.release_name }}"
-        tag: ${{github.ref_name}}
-        overwrite: true
-        body: Automatic build of hdr-launcher-react
-
-    # upload asset
-    - name: Upload checksum to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: 'checksum.txt'
-        prerelease: false
-        file_glob: true
-        asset_name: checksum
-        release_name: "${{ github.event.inputs.release_name }}"
-        tag: ${{github.ref_name}}
-        overwrite: true
-        body: Automatic build of hdr-launcher-react
+        name: "${{ github.event.inputs.release_name }}"
+        files: |
+          hdr-launcher.nro
+          checksum.txt
+        generate_release_notes: true
