@@ -1,7 +1,5 @@
 import * as React from 'react';
-import * as Messages from '../messages';
-import { Backend } from '../operations/backend';
-import { Level, Logs, LogEntry } from '../operations/log_singleton';
+import { Level, Logs } from '../operations/log_singleton';
 import { LogListener } from '../operations/log_listener';
 import { LogList } from './log_list';
 

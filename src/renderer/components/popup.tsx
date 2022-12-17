@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-import { useRemark } from 'react-remark';
 import { PopupData } from '../operations/popup_data';
 
 export const Popup = (props: { data: PopupData }) => {

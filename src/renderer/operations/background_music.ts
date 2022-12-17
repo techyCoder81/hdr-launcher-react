@@ -1,4 +1,3 @@
-import theme from '../../../assets/theme.wav';
 
 export default class BackgroundMusic {
   private static instance: BackgroundMusic;
@@ -13,7 +12,7 @@ export default class BackgroundMusic {
   }
 
   private constructor() {
-    this.music = new Audio(theme);
+    this.music = new Audio("assets/theme.wav");
     this.music.load();
     this.music.volume = 0.1;
 

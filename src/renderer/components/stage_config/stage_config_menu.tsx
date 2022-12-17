@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Backend } from '../../operations/backend';
 import { StageConfig } from '../../operations/stage_config';
-import StageParams from '../../operations/stage_info';
+import { StageParams } from '../../operations/stage_info';
 import { FocusButton } from '../buttons/focus_button';
 import { FocusCheckbox } from '../buttons/focus_checkbox';
 import { ExpandSidebar } from '../expand_sidebar';
