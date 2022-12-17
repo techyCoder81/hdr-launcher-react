@@ -144,14 +144,18 @@ jobs:
     - run: |
         md5sum hdr-launcher.nro > checksum.txt
 
-    # upload plugin
-    - name: upload plugin
-      uses: softprops/action-gh-release@v1
+    - name: repeatedly try to upload
+      uses: Wandalen/wretry.action@master
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: "${{ github.event.inputs.release_name }}"
-        files: |
-          hdr-launcher.nro
-          checksum.txt
-        generate_release_notes: true
-        draft: true
+        action: softprops/action-gh-release@v1
+        with: |
+          name: "${{ github.event.inputs.release_name }}"
+          files: |
+            hdr-launcher.nro
+            checksum.txt
+          generate_release_notes: true
+          draft: true
+        attempt_limit: 3
+        attempt_delay: 2000
+      
