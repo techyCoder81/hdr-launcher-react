@@ -685,9 +685,9 @@ export class RequestHandler {
           let command = path.normalize(
             Config.getRyuPath() + ' "' + Config.getRomPath() + '"'
           );
-          /*if (process.platform == 'win32') {
-            command = 'start cmd /k "' + command + '"';
-          }*/
+          if (process.platform == 'win32') {
+            command = 'cmd /C "' + Config.getRyuPath() + '" a "' + Config.getRomPath() + '"';
+          }
           console.log('Starting the game, with command: ' + command);
           Process.exec(command, (result) => {
             mainWindow?.show();
