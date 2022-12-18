@@ -209,7 +209,7 @@ async function findEmulator() {
 
     let fileName = path.basename(ryuPath);
     console.log('filename: ' + fileName);
-    if (fileName === 'Ryujinx' || fileName === 'Ryujinx.exe') {
+    if (fileName.includes("Ryujinx")) {
       console.log('setting ryu path: ' + ryuPath);
       Config.setRyuPath(ryuPath);
     } else {
