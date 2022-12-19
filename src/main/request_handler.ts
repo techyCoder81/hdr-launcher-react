@@ -686,7 +686,7 @@ export class RequestHandler {
             Config.getRyuPath() + ' "' + Config.getRomPath() + '"'
           );
           if (process.platform == 'win32') {
-            command = 'cmd /C "' + Config.getRyuPath() + '" a "' + Config.getRomPath() + '"';
+            command = 'cmd /C ""' + Config.getRyuPath() + '" a "' + Config.getRomPath() + '""';
           }
           console.log('Starting the game, with command: ' + command);
           Process.exec(command, (result) => {
