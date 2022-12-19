@@ -52,7 +52,7 @@ export default function StageEntry(props: {
 
           let prev_sibling = selfRef.current?.previousElementSibling;
           if (prev_sibling !== null && prev_sibling !== undefined) {
-            if (prev_sibling.getBoundingClientRect().top < 50) {
+            if (prev_sibling.getBoundingClientRect().top < 100) {
               prev_sibling.scrollIntoView(true);
             }
           }

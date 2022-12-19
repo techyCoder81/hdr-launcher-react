@@ -7,6 +7,7 @@ const DEFAULT_CONFIG_FILE =
   'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.default';
 const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/backup_ui_stage_db.prcxml';
 const CONFIG_PATH = 'ultimate/hdr-config/';
+const DUMMY = "0x054ff4f23f";
 
 // require() all of the stage previews
 Object.keys(stageInfo).forEach((key) => {
@@ -104,13 +105,18 @@ export class StageConfig {
         const outXml = this.serializer.serializeToString(this.dom);
         var formatted = '',
           indent = '';
-        var tab = '\t';
+        var tab = '  ';
         outXml.split(/>\s*</).forEach(function (node) {
           if (node.match(/^\/\w/)) indent = indent.substring(tab.length); // decrease indent by one 'tab'
-          formatted += indent + '<' + node + '>\r\n';
+          formatted += indent + '<' + node + '>\n';
           if (node.match(/^<?\w[^>]*[^\/]$/)) indent += tab; // increase indent
         });
-        let formattedXml = formatted.substring(1, formatted.length - 3);
+        // very important, we have to format some stuff very well for the .prcxml to get loaded correctly.
+        let formattedXml = formatted.substring(1, formatted.length - 2)
+          .replace('\r', '')
+          .replace('\t', '  ')
+          .trim();
+
         let root = await Backend.instance().getSdRoot();
         await Backend.instance().writeFile(
           root + ACTIVE_CONFIG_FILE,
@@ -140,6 +146,12 @@ export class StageConfig {
             reject('expected item in list was null!');
             return;
           }
+
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
+
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           if (name_id !== undefined) {
             names.push(name_id);
@@ -165,6 +177,10 @@ export class StageConfig {
         }
         for (var i = 0; i < list.children.length; ++i) {
           let item = list.children[i];
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           if (name_id === name) {
             let disp_order = item.querySelector(
@@ -197,6 +213,10 @@ export class StageConfig {
         let stages = [];
         for (var i = 0; i < list.children.length; ++i) {
           let item = list.children[i];
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           if (name_id === undefined) {
             reject('could not find name_id for entry ' + i + '!');
@@ -229,6 +249,10 @@ export class StageConfig {
         }
         for (var i = 0; i < list.children.length; ++i) {
           let item = list.children[i];
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           if (name_id === name) {
             let element = item.querySelector('[hash="disp_order"]');
@@ -262,6 +286,10 @@ export class StageConfig {
         }
         for (var i = 0; i < list.children.length; ++i) {
           let item = list.children[i];
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           if (name_id === name) {
             let element = item.querySelector('[hash="disp_order"]');
@@ -297,6 +325,10 @@ export class StageConfig {
         }
         for (var i = 0; i < list.children.length; ++i) {
           let item = list.children[i];
+          if (item.innerHTML.includes(DUMMY)) {
+            console.debug('item ' + i + ' is a dummy. Ignoring.');
+            continue;
+          }
           let name_id = item.querySelector('[hash="name_id"]')?.innerHTML;
           let element = item.querySelector('[hash="disp_order"]');
           if (element === undefined || element === null) {

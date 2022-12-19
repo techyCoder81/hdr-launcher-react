@@ -9,6 +9,7 @@ import { Progress } from 'nx-request-api';
 import { FocusButton } from '../buttons/focus_button';
 import { MenuType } from '../menu';
 import { AbstractMenu } from './abstract_menu';
+import { PopupData } from 'renderer/operations/popup_data';
 
 /**
  * builds the menu that appears when HDR is not installed
@@ -42,8 +43,13 @@ export default class NotInstalledMenu extends AbstractMenu<{
             className={'main-buttons'}
             onClick={async () => {
               await installLatest((p: Progress) => this.showProgress(p))
-                .then(() => verify((p: Progress) => this.showProgress(p)))
-                .then(async () => {
+              verify((p: Progress) => this.showProgress(p))
+                .then(async (results) => {
+                  console.info('finished verifying installation successfully');
+                  this.showMenu();
+                  /*this.showPopupData(
+                    new PopupData(['Ok'], results, () => this.showMenu())
+                  );*/
                   if (Backend.isSwitch()) {
                     alert(
                       "HDR's files have been installed. Please enable hdr, hdr-assets, and hdr-stages when the Arcadia menu opens."
@@ -52,12 +58,14 @@ export default class NotInstalledMenu extends AbstractMenu<{
                   } else {
                     alert("HDR's files have been installed.");
                   }
+                  this.props.switchTo(MenuType.CheckingInstalled);
                 })
-                .then(() => this.showMenu())
-                .then(() => this.props.switchTo(MenuType.CheckingInstalled))
-                .catch((e) => {
+                .catch((results) => {
+                  console.info('finished installing, issues reported.');
                   this.showMenu();
-                  console.error('Error while installing latest HDR.');
+                  this.showPopupData(
+                    new PopupData(['Ok'], results, () => this.showMenu())
+                  );
                 });
             }}
             onFocus={() =>
