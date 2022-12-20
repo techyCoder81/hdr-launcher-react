@@ -1,18 +1,8 @@
+import React from 'react';
 import logo from '../../../../assets/logo_full.png';
 import { stageInfo } from '../../operations/stage_info';
 
-function getPreview(name: string) {
-  try {
-    return require('../../../../assets/stage_previews/stage_2_' +
-      name.toLowerCase() +
-      '.jpg');
-  } catch (e) {
-    console.warn(e);
-    return logo;
-  }
-}
-
-export const StagePreview = (props: { stageName: string | null }) => {
+export function StagePreview(props: { stageName: string | null }) {
   if (props.stageName === null) {
     return (
       <div className="image preview">
@@ -42,7 +32,14 @@ export const StagePreview = (props: { stageName: string | null }) => {
           ? stageInfo[props.stageName].display_name
           : props.stageName) + '\u00A0'}
       </h1>
-      <img src={getPreview(props.stageName)} alt="Preview" />
+      <img 
+        src={'static/stage_2_' + props.stageName.toLowerCase() + '.jpg'} 
+        alt="Preview"
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // prevents looping
+          currentTarget.src=logo;
+        }}
+      />
     </div>
   );
 };

@@ -102,6 +102,11 @@ export async function setTournamentMode(will_enable: boolean): Promise<void> {
           // backup the stage config so far
           console.info('backing up stage config');
           let xml = await backend.readFile(root + ACTIVE_CONFIG_FILE);
+
+          if (!(await backend.dirExists(root + CONFIG_PATH))) {
+            await backend.mkdir(root + CONFIG_PATH);
+          }
+          
           await backend.writeFile(root + BACKUP_STAGE_CONFIG, xml);
 
           // delete the active config file

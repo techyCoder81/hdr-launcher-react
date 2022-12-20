@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import FocusTimer from '../../operations/focus_singleton';
 
-const FocusButtonInner = React.forwardRef<
+export const FocusButton = React.forwardRef<
   HTMLButtonElement,
   {
     className: string;
@@ -40,5 +40,3 @@ const FocusButtonInner = React.forwardRef<
     </button>
   );
 });
-
-export const FocusButton = React.memo(FocusButtonInner);

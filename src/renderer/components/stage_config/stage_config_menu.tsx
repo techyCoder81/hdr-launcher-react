@@ -5,7 +5,7 @@ import { StageParams } from '../../operations/stage_info';
 import { FocusButton } from '../buttons/focus_button';
 import { FocusCheckbox } from '../buttons/focus_checkbox';
 import { ExpandSidebar } from '../expand_sidebar';
-import StageEntry from './stage_entry';
+import {StageEntry} from './stage_entry';
 import * as LauncherConfig from '../../operations/launcher_config';
 import { StagePreview } from './stage_preview';
 

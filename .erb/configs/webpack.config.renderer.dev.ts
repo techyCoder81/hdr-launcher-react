@@ -93,11 +93,17 @@ const configuration: webpack.Configuration = {
       {
         test: /\.(png|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'static/[name][ext]'
+        },
       },
       // music
       {
         test: /\.(wav)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'static/[name][ext]'
+        },
       },
       // SVG
       {

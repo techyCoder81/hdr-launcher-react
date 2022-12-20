@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FocusTimer from '../../operations/focus_singleton';
 
-function FocusCheckboxInner(props: {
+export function FocusCheckbox(props: {
   onClick: () => Promise<void>;
   className: string;
   text: string;
@@ -67,5 +67,3 @@ function FocusCheckboxInner(props: {
     </button>
   );
 }
-
-export const FocusCheckbox = React.memo(FocusCheckboxInner);
