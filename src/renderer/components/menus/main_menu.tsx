@@ -58,11 +58,15 @@ export default class MainMenu extends AbstractMenu<{
                     new PopupData(['Ok'], text.join('\n'), () => {
                       this.showMenu();
                       resolve();
+                      // relaunch on switch
+                      Backend.instance().relaunchApplication();
                     })
                   );
                 })
                 .catch((e) => {
                   alert('Error while updating: ' + e);
+                  // relaunch on switch
+                  Backend.instance().relaunchApplication();
                   this.showMenu();
                   resolve(e);
                 });

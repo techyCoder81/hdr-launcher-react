@@ -64,7 +64,7 @@ export default class NotInstalledMenu extends AbstractMenu<{
                   console.info('finished installing, issues reported.');
                   this.showMenu();
                   this.showPopupData(
-                    new PopupData(['Ok'], results, () => this.showMenu())
+                    new PopupData(['Ok'], results, () => {this.showMenu(); Backend.instance().relaunchApplication();})
                   );
                 });
             }}

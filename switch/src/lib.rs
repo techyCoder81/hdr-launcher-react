@@ -77,7 +77,7 @@ pub fn check_for_self_updates() {
     };
     if latest_version > current_version {
         println!("We should update!");
-        let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it? (This will take a moment)");
+        let ok = skyline_web::Dialog::yes_no("An update is available for the HDR launcher, would you like to install it? (This may take a few minutes)");
         if !ok {
             return;
         }
@@ -224,6 +224,9 @@ pub fn main() {
                 try_open_arcropolis();
                 unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
                 //unreachable
+            })
+            .register("relaunch_application", None, |_| {
+                unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
             })
             .register("get_platform", None, |context| {
                 Ok("Switch".to_string())

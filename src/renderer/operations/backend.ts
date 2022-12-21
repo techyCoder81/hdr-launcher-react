@@ -109,6 +109,14 @@ export class Backend extends DefaultMessenger {
   getLauncherVersion(): Promise<string> {
     return this.customRequest('get_launcher_version', null);
   }
+
+  /** request to relaunch the application (does nothing on pc) */
+  relaunchApplication(): Promise<string> {
+    if (Backend.isNode()) {
+      return new Promise<string>(resolve => resolve("relaunch is NOP on PC"));
+    }
+    return this.customRequest("relaunch_application", null);
+  }
 }
 
 /**
