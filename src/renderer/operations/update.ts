@@ -107,15 +107,27 @@ export default async function update(
             0
           )
         );
-        let result = await backend.downloadFile(
-          'https://github.com/HDR-Development/' +
-            repoName +
-            '/releases/download/' +
-            version_stripped +
-            '/upgrade.zip',
-          downloads + 'upgrade.zip',
-          (p: Progress) => reportProgress(p)
-        );
+        let result;
+        // try to download the upgrade zip.
+        try {
+          result = await backend.downloadFile(
+            'https://github.com/HDR-Development/' +
+              repoName +
+              '/releases/download/' +
+              version_stripped +
+              '/upgrade.zip',
+            downloads + 'upgrade.zip',
+            (p: Progress) => reportProgress(p)
+          );
+        } catch (e) {
+          // this likely means that 
+          reject("An error occurred while downloading upgrade.zip from version " 
+            + version 
+            + "!\nError info: " + e
+            + "\nPlease report this in #help-questions in the HDR Discord, "
+            + "as this is likely a packaging issue (not a *you* issue).");
+          return;
+        }
         console.info(result);
 
         reportProgress(
