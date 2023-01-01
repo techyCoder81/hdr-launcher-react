@@ -79,7 +79,7 @@ export default function StageConfigMenu(props: { onComplete: () => void }) {
               await LauncherConfig.setTournamentMode(!enabled);
               showTourneyMode(!enabled);
             } catch (e) {
-              alert(e);
+              alert("Error while toggling tourney mode:" + e);
             }
           }}
           checkStatus={async () => {

@@ -306,6 +306,28 @@ async function findSdcard() {
     configDir = path.join(os.homedir(), '.config/Ryujinx/');
   }
 
+  if (!fs.existsSync(configDir)) {
+    // expected config dir was not found! Check for portable mode...
+    let isPortable = dialog.showMessageBoxSync(mainWindow, {
+      title: 'Portable Mode?',
+      message: 'Is this Ryujinx installation in portable mode?',
+      buttons: ['Yes', 'No'],
+    });
+    if (isPortable) {
+      console.info("asking for sdcard folder from portable installation.");
+      let selectedDir = dialog.showOpenDialogSync(mainWindow, {
+        title: 'Please select your Ryujinx config directory',
+        properties: ['openDirectory'],
+      });
+      if (selectedDir) {
+        console.info("Selected config directory: " + selectedDir);
+        configDir = selectedDir[0];
+      } else {
+        console.error("User cancelled sdcard selection!");
+      }
+    }
+  }
+
   if (fs.existsSync(configDir)) {
     console.info('setting sdcard root to ' + path.join(configDir, 'sdcard'));
     Config.setSdcardPath(path.join(configDir, 'sdcard/'));
@@ -319,6 +341,7 @@ async function findSdcard() {
       'Ryujinx not found!',
       'Ryujinx directory not found at ' + configDir + '!'
     );
+    Config.setSdcardPath("");
     app.quit();
   }
 }

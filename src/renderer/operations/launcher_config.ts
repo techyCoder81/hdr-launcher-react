@@ -118,7 +118,7 @@ export async function setTournamentMode(will_enable: boolean): Promise<void> {
       resolve();
     } catch (e) {
       console.error('failed to set tourney mode to ' + will_enable);
-      reject(e);
+      reject('Failed to set tourney mode to ' + will_enable + '\nReason: ' + e);
     }
   });
 }
