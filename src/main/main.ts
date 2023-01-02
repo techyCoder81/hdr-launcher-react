@@ -313,7 +313,7 @@ async function findSdcard() {
       message: 'Is this Ryujinx installation in portable mode?',
       buttons: ['Yes', 'No'],
     });
-    if (isPortable) {
+    if (isPortable === 0) {
       console.info("asking for sdcard folder from portable installation.");
       let selectedDir = dialog.showOpenDialogSync(mainWindow, {
         title: 'Please select your Ryujinx config directory',
