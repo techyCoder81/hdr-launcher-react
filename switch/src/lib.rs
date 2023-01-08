@@ -13,6 +13,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use skyline::info::get_program_id;
 use include_dir::*;
+use smashnet::curl::Curler;
 
 mod stage_config;
 
@@ -26,24 +27,15 @@ pub fn is_emulator() -> bool {
 
 pub fn check_for_self_updates() {
     println!("checking for updates");
-    let response = match minreq::get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest")
-        .with_header("User-Agent", "hdr-launcher")    
-        .send() {
+    let response = match Curler::new().get("https://api.github.com/repos/techyCoder81/hdr-launcher-react/releases/latest".to_owned()) {
         Ok(resp) => resp,
         Err(err) => {
             println!("{:?}", err);
             return;
         },
     };
-    let result = match response.as_str() {
-        Ok(res) => res,
-        Err(e) => {
-            println!("{:?}", e);
-            return;
-        }
-    };
-    println!("result: {}", &result);
-    let json: serde_json::Value = match serde_json::from_str(&result) {
+    println!("result: {}", &response);
+    let json: serde_json::Value = match serde_json::from_str(&response) {
         Ok(res) => res,
         Err(e) => {
             println!("{:?}", e);
@@ -81,23 +73,24 @@ pub fn check_for_self_updates() {
         if !ok {
             return;
         }
-        let update = match minreq::Request::new(minreq::Method::Get, "https://github.com/techyCoder81/hdr-launcher-react/releases/latest/download/hdr-launcher.nro")
-            .with_header("Accept", "application/octet-stream")
-            .with_header("User-Agent", "hdr-launcher")
-            .send() {
-            Ok(resp) => resp,
+        if std::fs::metadata("sd:/downloads").is_err() {
+            std::fs::create_dir_all("sd:/downloads");
+        }
+        match Curler::new().download(
+            "https://github.com/techyCoder81/hdr-launcher-react/releases/latest/download/hdr-launcher.nro".to_owned(),
+            "sd:/downloads/hdr-launcher.nro.dl".to_owned()
+        ) {
+            Ok(_) => {},
             Err(err) => {
                 println!("{:?}", err);
+                let info = format!("ERROR: Update Failed!\nCurl error code: {}", err);
+                skyline_web::DialogOk::ok(info);
                 return;
             },
         };
-        if !update.status_code == 200 {
-            let info = format!("ERROR: Update Failed! Status Code: {}\nExplanation:\n{}", update.status_code, update.reason_phrase);
-            skyline_web::DialogOk::ok(info);
-            return;
-        }
+        
         println!("finished get");
-        match std::fs::write("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro", update.into_bytes()){
+        match std::fs::copy("sd:/downloads/hdr-launcher.nro.dl", "sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/hdr-launcher.nro") {
             Ok(_) => println!("new update installed!"),
             Err(err) => println!("{:?}", err)
         };
@@ -113,11 +106,19 @@ pub fn main() {
         return;
     }
 
+    // check for launcher updates
+    #[cfg(feature = "updater")]
+    let update_thread = thread::spawn(move || unsafe {
+        skyline::nn::os::ChangeThreadPriority(skyline::nn::os::GetCurrentThread(), 2);
+        check_for_self_updates();
+        skyline::nn::os::ChangeThreadPriority(skyline::nn::os::GetCurrentThread(), 16);
+    });
+    #[cfg(feature = "updater")]
+    update_thread.join();
+
     println!("starting browser!");
     let browser_thread = thread::spawn(move || {
-        #[cfg(feature = "updater")]
-        check_for_self_updates();
-
+        
         unsafe {
             extern "C" {
                 #[link_name = "_ZN2nn2oe24SetExpectedVolumeBalanceEff"]

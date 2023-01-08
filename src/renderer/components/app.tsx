@@ -29,6 +29,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div className="full">
+        <base target="_blank"/>
         {Backend.isNode() ? (
           <SlidingBackground />
         ) : (

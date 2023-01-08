@@ -252,6 +252,7 @@ dependencies = [
  "skyline 0.2.1 (git+https://github.com/ultimate-research/skyline-rs.git)",
  "skyline-config",
  "skyline-web",
+ "smashnet",
  "walkdir",
  "zip",
 ]

@@ -29,7 +29,7 @@ export function StageEntry(props: {
       onClick={() => {
         return props.onClick();
       }}
-      className={'main-buttons smaller-main-button'}
+      className={'main-buttons smaller-main-button' + (Backend.isSwitch() ? ' no-transition' : '')}
       text={
         (stageInfo[props.stageName]
           ? stageInfo[props.stageName].display_name

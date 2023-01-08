@@ -75,6 +75,14 @@ export default class ToolsMenu extends AbstractMenu<{
           }}
           onFocus={() => this.props.setInfo('Verify your HDR files')}
         />
+        <FocusButton
+          text={'Stage Config\u00A0'}
+          className={'main-buttons smaller-main-button'}
+          onClick={() => this.props.switchTo(MenuType.StageConfig)}
+          onFocus={() =>
+            this.props.setInfo('Open the stage configuration menu')
+          }
+        />
         <NightlyBetaButton
           setInfo={(info: string) => this.props.setInfo(info)}
           onClick={async (version: string) => {
@@ -116,9 +124,9 @@ export default class ToolsMenu extends AbstractMenu<{
           }}
         />
         <FocusButton
-          text={'Stage Config\u00A0'}
+          text={'Install PR Build\u00A0'}
           className={'main-buttons smaller-main-button'}
-          onClick={() => this.props.switchTo(MenuType.StageConfig)}
+          onClick={() => this.props.switchTo(MenuType.PullRequestConfig)}
           onFocus={() =>
             this.props.setInfo('Open the stage configuration menu')
           }

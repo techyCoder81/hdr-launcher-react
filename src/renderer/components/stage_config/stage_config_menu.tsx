@@ -166,7 +166,7 @@ export default function StageConfigMenu(props: { onComplete: () => void }) {
       </div>
       {isShowTourneyMode ? (
         <div className="stage-config-body border-bottom">
-          <div className="scrolling-fit left-side">
+          <div className="scrolling-fit-nobar left-side">
             {stageData.map((stage) => (
               <StageEntry
                 onClick={() => {
