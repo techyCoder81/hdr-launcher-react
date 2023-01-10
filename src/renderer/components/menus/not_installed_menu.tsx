@@ -52,9 +52,8 @@ export default class NotInstalledMenu extends AbstractMenu<{
                   );*/
                   if (Backend.isSwitch()) {
                     alert(
-                      "HDR's files have been installed. Please enable hdr, hdr-assets, and hdr-stages when the Arcadia menu opens."
+                      "HDR's files have been installed. Please enable hdr, hdr-assets, and hdr-stages when arcropolis offers."
                     );
-                    await Backend.instance().openModManager();
                   } else {
                     alert("HDR's files have been installed.");
                   }

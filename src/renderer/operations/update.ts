@@ -5,18 +5,22 @@ import { getInstallType, getRepoName } from './install';
 export async function isAvailable(
   progressCallback?: (p: Progress) => void
 ): Promise<boolean> {
-  return new Promise(async (resolve) => {
-    var reportProgress = (prog: Progress) => {
-      if (typeof progressCallback !== 'undefined') {
-        progressCallback(prog);
+  return new Promise(async (resolve, reject) => {
+    try {
+      var reportProgress = (prog: Progress) => {
+        if (typeof progressCallback !== 'undefined') {
+          progressCallback(prog);
+        }
+      };
+      let latest = await getLatest(progressCallback);
+      let version = await Backend.instance().getVersion();
+      if (latest === version) {
+        resolve(false);
+      } else {
+        resolve(true);
       }
-    };
-    let latest = await getLatest(progressCallback);
-    let version = await Backend.instance().getVersion();
-    if (latest === version) {
-      resolve(false);
-    } else {
-      resolve(true);
+    } catch (e) {
+      reject(e);
     }
   });
 }

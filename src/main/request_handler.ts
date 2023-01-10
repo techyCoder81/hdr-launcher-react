@@ -347,7 +347,7 @@ async function handleInner(request: any, resolve: (value: Responses.OkOrError | 
       }
     case 'open_mod_manager':
       try {
-        explorer(Config.getSdcardPath(), (err: any) => {
+        explorer(Config.getSdcardPath() + "ultimate/mods/", (err: any) => {
           if (err) {
             resolve(
               new Responses.OkOrError(false, err.toString(), request.id)

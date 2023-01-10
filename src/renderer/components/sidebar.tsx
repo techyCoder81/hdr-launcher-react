@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { LogWindow } from './log_window';
-import LatestChanges from './latest_changes';
-import { TwitterEmbed } from './twitter_embed';
 import { FocusButton } from './buttons/focus_button';
 
 enum ContentType {
@@ -26,16 +24,10 @@ export default class Sidebar extends React.PureComponent {
             <LogWindow />
           </div>
         );
-      case ContentType.Changelogs:
-        return (
-          <div className="sidebar-content">
-            <LatestChanges count={10} />
-          </div>
-        );
       default:
         return (
           <div className="sidebar-content">
-            <TwitterEmbed />
+            <LogWindow />
           </div>
         );
     }

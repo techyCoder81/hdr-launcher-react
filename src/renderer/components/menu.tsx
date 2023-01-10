@@ -12,6 +12,7 @@ import NotInstalledMenu from './menus/not_installed_menu';
 import { skyline } from 'nx-request-api';
 import StageConfigMenu from './stage_config/stage_config_menu';
 import PullRequestMenu from './menus/pull_request_menu';
+import PrInstalledMenu from './menus/pr_installed_menu';
 
 export enum MenuType {
   MainMenu,
@@ -20,7 +21,8 @@ export enum MenuType {
   NotInstalled,
   CheckingInstalled,
   StageConfig,
-  PullRequestConfig
+  PullRequestConfig,
+  PrInstalled
 }
 
 /**
@@ -103,9 +105,9 @@ export default class Menu extends React.PureComponent {
       case MenuType.CheckingInstalled:
         return (
           <CheckingInstalled
-            onComplete={(installed: boolean) => {
-              installed
-                ? this.switchTo(MenuType.MainMenu)
+            onComplete={(installed: string | null) => {
+              installed !== null
+                ? (installed.includes("pr") ? this.switchTo(MenuType.PrInstalled) : this.switchTo(MenuType.MainMenu))
                 : this.switchTo(MenuType.NotInstalled);
             }}
           />
@@ -113,6 +115,13 @@ export default class Menu extends React.PureComponent {
       case MenuType.NotInstalled:
         return (
           <NotInstalledMenu
+            setInfo={(info: string) => this.setInfo(info)}
+            switchTo={(menu: MenuType) => this.switchTo(menu)}
+          />
+        );
+      case MenuType.PrInstalled:
+        return (
+          <PrInstalledMenu
             setInfo={(info: string) => this.setInfo(info)}
             switchTo={(menu: MenuType) => this.switchTo(menu)}
           />
