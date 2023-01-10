@@ -4,6 +4,7 @@ import { Remark } from "react-remark";
 import { Backend } from "renderer/operations/backend";
 import { Github } from "renderer/operations/github_utils";
 import { FocusButton } from "../buttons/focus_button";
+import { ScrollFocusButton } from "../buttons/scroll_focus_button";
 import { ExpandSidebar } from "../expand_sidebar";
 import { ProgressDisplay } from "../progress_bar";
 
@@ -47,25 +48,10 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
         {pullRequests !== null ? 
         <div className="stage-config-body border-bottom">
             <div className="scrolling-fit-nobar left-side">
-            {pullRequests.map(pr => <FocusButton 
+            {pullRequests.map(pr => <ScrollFocusButton 
                 className={'longer-main-button' + (Backend.isSwitch() ? ' no-transition' : '')} 
                 onFocus={() => {
                     setHoveredPull(pr);
-                    if (selfRef != null && Backend.isSwitch()) {
-                        let sibling = selfRef.current?.nextElementSibling;
-                        if (sibling !== null && sibling !== undefined) {
-                          if (sibling.getBoundingClientRect().top > window.innerHeight - 150) {
-                            sibling.scrollIntoView(false);
-                          }
-                        }
-              
-                        let prev_sibling = selfRef.current?.previousElementSibling;
-                        if (prev_sibling !== null && prev_sibling !== undefined) {
-                          if (prev_sibling.getBoundingClientRect().top < 70) {
-                            prev_sibling.scrollIntoView(true);
-                          }
-                        }
-                      }
                 }}
                 text={((pr.title.length < 27) ? pr.title : (pr.title.substring(0,24) + '...')) + ' | #' + pr.number + '\u00A0'} 
                 onClick={async () => {try {

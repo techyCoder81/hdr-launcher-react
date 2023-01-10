@@ -80,11 +80,11 @@ export default async function update(
       let repoName = getRepoName(getInstallType(version));
 
       if (version === latest) {
-        console.info('The latest version is already installed.');
-        resolve(['The latest version is already installed!']);
+        console.info('The latest version was already installed.');
+        resolve(['The latest version was already installed!']);
       }
 
-      //let changelogs = ["Changes:"];
+      let changelogs = ["Updates:"];
 
       console.info('attempting to update chain');
       while (!(version === latest)) {
@@ -100,8 +100,8 @@ export default async function update(
         }
         console.info('latest is: ' + latest);
         if (String(version) == latest) {
-          //resolve(changelogs);
-          resolve(['Your install has been updated.']);
+          resolve(changelogs);
+          //resolve(['Your install has been updated.']);
           return;
         }
         reportProgress(
@@ -144,11 +144,17 @@ export default async function update(
         );
         await backend.deleteFile(downloads + 'upgrade.zip');
         await handleDeletions(version, 'deletions.json', progressCallback);
-        //reportProgress(new Progress("Getting Changelog", "Getting changelog" + version, 0));
-        //let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
-        //      version_stripped + '/CHANGELOG.md');
-        //let changes = processChangelog(changelog);
-        //changes.forEach(entry => changelogs.push(entry));
+        // get changelogs. If these fail, we should still successfully finish updating.
+        try {
+          reportProgress(new Progress("Getting Changelog", "Getting changelog" + version, 0));
+          let changelog = await backend.getRequest('https://github.com/HDR-Development/' + repoName + '/releases/download/' +
+                version_stripped + '/CHANGELOG.md');
+          //let changes = processChangelog(changelog);
+          //changes.forEach(entry => changelogs.push(entry));
+          changelogs.push(JSON.parse(changelog));
+        } catch (e) {
+          console.error("Error while getting changelogs: " + e);
+        }
       }
     } catch (e) {
       console.error('During update: ' + e);
@@ -245,21 +251,6 @@ const MERGED_STRING = '**Merged pull requests:**';
 const CHANGELOG_GENERATOR_STRING = '* *This Changelog';
 
 function processChangelog(changelog: string): string[] {
-  if (!changelog.includes(MERGED_STRING)) {
-    return [];
-  }
-  /*
-  changelog = changelog.split(MERGED_STRING)[1];
-  if (changelog.includes(CHANGELOG_GENERATOR_STRING)) {
-    changelog = changelog.split(CHANGELOG_GENERATOR_STRING)[0];
-  }
-  let changes = changelog.trim().split("\n").map(line => {
-    line = line.replace("\\n\\n", "").replace("\n", "");
-    if (!line.includes("[")) {
-      return line;
-    }
-    return line.split("[")[0];
-  });*/
   let changes_out: string[] = [];
   let changes = changelog.split('\n');
   changes.forEach((line) => {

@@ -46,7 +46,7 @@ export default class ToolsMenu extends AbstractMenu<{
         <FocusButton
           text={
             'Open ' +
-            (Backend.isSwitch() ? 'Arcadia' : 'sdcard Folder') +
+            (Backend.isSwitch() ? 'Arcadia' : 'Mod Folder') +
             '\u00A0'
           }
           className={'main-buttons smaller-main-button'}

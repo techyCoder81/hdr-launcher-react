@@ -55,11 +55,22 @@ export default class MainMenu extends AbstractMenu<{
                   this.showMenu();
                   this.props.switchTo(MenuType.MainMenu);
                   this.showPopupData(
-                    new PopupData(['Ok'], text.join('\n'), () => {
-                      this.showMenu();
-                      resolve();
-                      // relaunch on switch
-                      Backend.instance().relaunchApplication();
+                    new PopupData(['Ok', 'See changes list'], "Your installation is up to date.", selected => {
+                      if (selected == 'Ok') {
+                        this.showMenu();
+                        resolve();
+                        // relaunch on switch
+                        Backend.instance().relaunchApplication();
+                      } else {
+                        this.showPopupData(
+                          new PopupData(['Ok'], text.join('\n'), () => {
+                            this.showMenu();
+                            resolve();
+                            // relaunch on switch
+                            Backend.instance().relaunchApplication();
+                          })
+                        );
+                      }
                     })
                   );
                 })
