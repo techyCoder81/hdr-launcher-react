@@ -124,9 +124,30 @@ body {
 }
 
 .smaller-main-button {
+  margin: 10px 0;
+  display: block;
+  border: 5px solid var(--main-button-border-color);
+  transform: skewX(-20deg);
+  left: -20px;
+  position: relative;
+  z-index: 10;
+  transition: 100ms linear;
+  -webkit-transition: 100ms linear;
+  outline: none;
+  box-shadow: 3px 3px 5px #333;
+  background-color: var(--main-button-bg-color);
+  color: var(--main-text-color);
+  z-index: 10;
+  text-align: right;
   height: var(--smaller-main-button-height);
   font-size: 2rem;
-  width: 400px;
+  width: 450px;
+}
+
+.smaller-main-button:focus {
+  width: 485px;
+  background-color: var(--main-button-bg-hover-color);
+  color: black;
 }
 
 .longer-main-button {

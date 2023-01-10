@@ -151,7 +151,8 @@ export default async function update(
                 version_stripped + '/CHANGELOG.md');
           //let changes = processChangelog(changelog);
           //changes.forEach(entry => changelogs.push(entry));
-          changelogs.push(JSON.parse(changelog));
+          //console.info("got changelog: " + changelog);
+          changelogs.push(changelog);
         } catch (e) {
           console.error("Error while getting changelogs: " + e);
         }

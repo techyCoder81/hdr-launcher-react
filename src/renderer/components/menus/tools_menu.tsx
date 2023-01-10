@@ -49,13 +49,13 @@ export default class ToolsMenu extends AbstractMenu<{
             (Backend.isSwitch() ? 'Arcadia' : 'Mod Folder') +
             '\u00A0'
           }
-          className={'main-buttons smaller-main-button'}
+          className={'smaller-main-button'}
           onClick={() => Backend.instance().openModManager()}
           onFocus={() => this.props.setInfo('Open the Mod Manager')}
         />
         <FocusButton
           text="Verify Files&nbsp;"
-          className={'main-buttons smaller-main-button'}
+          className={'smaller-main-button'}
           onClick={() => {
             verify((p: Progress) => this.showProgress(p))
               .then((results) => {
@@ -77,7 +77,7 @@ export default class ToolsMenu extends AbstractMenu<{
         />
         <FocusButton
           text={'Stage Config\u00A0'}
-          className={'main-buttons smaller-main-button'}
+          className={'smaller-main-button'}
           onClick={() => this.props.switchTo(MenuType.StageConfig)}
           onFocus={() =>
             this.props.setInfo('Open the stage configuration menu')
@@ -125,7 +125,7 @@ export default class ToolsMenu extends AbstractMenu<{
         />
         <FocusButton
           text={'Install PR Build\u00A0'}
-          className={'main-buttons smaller-main-button'}
+          className={'smaller-main-button'}
           onClick={() => this.props.switchTo(MenuType.PullRequestConfig)}
           onFocus={() =>
             this.props.setInfo('Open the stage configuration menu')

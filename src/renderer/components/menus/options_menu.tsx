@@ -35,7 +35,7 @@ export default class OptionsMenu extends AbstractMenu<{
         />
         {Backend.isSwitch() ? (
           <FocusCheckbox
-            className={'main-buttons smaller-main-button'}
+            className={'smaller-main-button'}
             onClick={async () => {
               let enabled = await config.getBoolean('skip_launcher');
               await config.setBoolean('skip_launcher', !enabled);
@@ -54,7 +54,7 @@ export default class OptionsMenu extends AbstractMenu<{
           <div />
         )}
         <FocusCheckbox
-          className={'main-buttons smaller-main-button'}
+          className={'smaller-main-button'}
           onClick={async () => {
             let enabled = await config.getBoolean('ignore_music');
             await config.setBoolean('ignore_music', !enabled);

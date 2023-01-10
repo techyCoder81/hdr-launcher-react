@@ -23,12 +23,15 @@ export function ScrollFocusButton(props: {
           props.onFocus();
         }
         if (selfRef == null) {
+          console.warn("Self ref not found for ScrollFocusButton!");
           return;
         }
 
-        if (selfRef === null) {
+        // don't need the scrolling feature on electron
+        if (Backend.isNode()) {
           return;
         }
+
         let parent = selfRef.current?.parentElement;
         if (parent === null || parent === undefined) {
           console.warn("no parent found for scrolling button!");

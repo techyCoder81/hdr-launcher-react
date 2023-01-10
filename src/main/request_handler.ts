@@ -595,7 +595,7 @@ async function handleInner(request: any, resolve: (value: Responses.OkOrError | 
               resolve(
                 new Responses.OkOrError(
                   true,
-                  JSON.stringify(res.data),
+                  (typeof res.data === 'string') ? res.data : JSON.stringify(res.data),
                   request.id
                 )
               );
