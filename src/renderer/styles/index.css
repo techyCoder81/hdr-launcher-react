@@ -341,6 +341,10 @@ p {
   border-color: var(--main-button-border-hover-color);
 }
 
+p img{
+  max-width:400px;
+}
+
 .inline {
   display: inline;
   margin-right: 5px;
@@ -359,6 +363,7 @@ p {
 
 .scrolling-fit {
   overflow-y: scroll;
+  overflow-x: scroll;
   position: relative;
   height: 95%;
   scroll-behavior: smooth;
