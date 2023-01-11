@@ -24,7 +24,7 @@ export default function Loading(props: { onLoad: () => void }) {
             will_skip = false;
           }
         })
-        .catch((e) => alert(e));
+        .catch(e => alert(e));
     } else {
       will_skip = false;
     }

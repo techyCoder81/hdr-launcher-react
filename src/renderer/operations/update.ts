@@ -20,7 +20,8 @@ export async function isAvailable(
         resolve(true);
       }
     } catch (e) {
-      reject(e);
+      console.warn("Could not determine if an update is available: " + e);
+      resolve(false);
     }
   });
 }
