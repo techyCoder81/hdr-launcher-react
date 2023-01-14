@@ -30,11 +30,12 @@ fn main() -> (){
     }
     std::fs::create_dir_all("./web-build").unwrap();
 
-    let options = CopyOptions::new();
+    
     let paths = std::fs::read_dir("../").unwrap();
     for path in paths {
         println!("Path: {}", path.unwrap().path().display());
     }
+    let options = CopyOptions::new();
     fs_extra::dir::copy("../release/app/dist/renderer/", "./web-build/", &options).unwrap();
 
     // read and transform the js file

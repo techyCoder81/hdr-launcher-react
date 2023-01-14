@@ -117,6 +117,16 @@ export class Backend extends DefaultMessenger {
     }
     return this.customRequest("relaunch_application", null);
   }
+
+  /** clones src into dest */
+  cloneMod(src: string, dest: string, progressCallback?: (p: Progress) => void): Promise<string> {
+    return this.customRequest('clone_mod', [src, dest], progressCallback);
+  }
+
+  /** removes the given directory and all its contents */
+  removeDirAll(path: string): Promise<string> {
+    return this.customRequest('remove_dir_all', [path]);
+  }
 }
 
 /**

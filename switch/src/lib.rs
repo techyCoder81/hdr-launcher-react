@@ -14,6 +14,7 @@ use std::fs::File;
 use skyline::info::get_program_id;
 use include_dir::*;
 use smashnet::curl::Curler;
+use fs_extra::dir::CopyOptions;
 
 mod stage_config;
 
@@ -259,6 +260,86 @@ pub fn main() {
                         Ok(version) => Ok(version.trim().to_string()),
                         Err(e) => Err(e.to_string())
                     }
+                }
+            })
+            .register("remove_dir_all", Some(1), |context| {
+                let args = context.arguments.as_ref().unwrap();
+                let path = &args[0];
+                return match fs::remove_dir_all(path) {
+                    Ok(version) => Ok("Path removed successfully.".to_string()),
+                    Err(e) => Err(e.to_string())
+                }
+            })
+            .register("clone_mod", Some(2), |context| {
+                let args = context.arguments.as_ref().unwrap();
+                let src_mod = &args[0];
+                let dest_mod = &args[1];
+                let src = format!("sd:/ultimate/mods/{}", &src_mod);
+                let dest = format!("sd:/ultimate/mods/{}-pr", &dest_mod);
+                let exists = Path::new(&src).exists();
+                if !exists {
+                    return Err(format!("{} folder does not exist, so we cannot make a copy of it!", &src_mod));
+                } else {
+                    // if the folder already exists, remove it
+                    if Path::new(&dest).exists() {
+                        match fs::remove_dir_all(&dest) {
+                            Ok(()) => {},
+                            Err(e) => return Err(format!("Error while removing existing {}: {}", &dest_mod, e.to_string()))
+                        }
+                    }
+                    
+                    // create a new pr folder
+                    match fs::create_dir(&dest) {
+                        Ok(()) => {},
+                        Err(e) => return Err(format!("Error while creating empty {}: {}", &dest_mod, e.to_string()))
+                    }
+
+                    // count how many files we will be cloning
+                    let mut total = 0.0;
+                    println!("counting files to clone");
+                    for entry in walkdir::WalkDir::new(&src) {
+                        let dir_entry = match entry {
+                            Ok(path) => path,
+                            Err(e) => return Err(format!("Error while walking {} directory: {}", &src_mod, e))
+                        };
+                        total += 1.0;
+                    }
+
+                    // copy the assets into the new pr assets dir
+                    println!("beginning directory clone");
+                    let mut count = 0.0;
+                    for entry in walkdir::WalkDir::new(src) {
+                        let dir_entry = match entry {
+                            Ok(path) => path,
+                            Err(e) => return Err(format!("Error while walking {} directory: {}", &src_mod, e))
+                        };
+
+                        let path = dir_entry.path();
+                        let progress = count / total;
+                        context.send_progress(Progress { title: format!("Cloning asset: {:?}", path.file_name().unwrap()), info: "cloning asset file".to_string(), progress: progress });
+                        //println!("sending progress: {progress}");
+                        count += 1.0;
+
+                        // create the PR equivalent path from the source mod path
+                        let pr_path = path.to_str().unwrap().replace(src_mod, dest_mod);
+                        match path.is_file() {
+                            true =>  match std::fs::copy(path, pr_path) {
+                                Ok(_) => {},
+                                Err(e) => return Err(format!("Error while handling path: {}", path.display()))
+                            },
+                            false => match std::fs::create_dir_all(pr_path) {
+                                Ok(_) => {},
+                                Err(e) => return Err(format!("Error while handling path: {}", path.display()))
+                            }
+                        };
+                    }
+
+                    let info_toml = format!("sd:/ultimate/mods/{}/info.toml", dest_mod);
+                    if Path::new(&info_toml).exists() {
+                        fs::remove_file(info_toml);
+                    }
+
+                    return Ok("All files were cloned successfully.".to_string());
                 }
             })
             .start();

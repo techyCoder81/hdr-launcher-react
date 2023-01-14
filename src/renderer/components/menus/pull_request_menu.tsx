@@ -7,6 +7,7 @@ import { FocusButton } from "../buttons/focus_button";
 import { ScrollFocusButton } from "../buttons/scroll_focus_button";
 import { ExpandSidebar } from "../expand_sidebar";
 import { ProgressDisplay } from "../progress_bar";
+import { PullRequestPreview } from "./pull_request_preview";
 
 export default function PullRequestMenu(props: { onComplete: () => void }) {
     const [pullRequests, setPullRequests] = useState(null as null | any[]);
@@ -68,6 +69,7 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
                         }
 
                         // parse the download link out of the comment body
+                        console.info("parsing hdr-pr comment body.")
                         let body = comment.body as string;
                         if (!body.includes("[hdr-switch](https://")) {
                             // this isnt a comment we care about (PR artifacts)
@@ -82,43 +84,96 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
                             continue;
                         }
 
-                        // TODO: need to report progress in progress menu
-                        // TODO: need to improve performance
-                        // TODO: need to show current version based on enabled
                         //alert("downloading from url: " + url);
+                        console.info("downloading hdr-pr")
                         await backend.downloadFile(url, root + "downloads/pr.zip", 
                             (p: Progress) => setProgress(p)
                         );
                         
                         // if an existing PR folder exists, remove it
+                        console.info("removing existing hdr-pr");
+                        setProgress(new Progress("Extracting PR", "Extracting", 0));
                         let exists = await backend.fileExists(root + "ultimate/mods/hdr-pr");
                         if (exists) {
-                            await backend.deleteFile(root + "ultimate/mods/hdr-pr")
+                            await backend.removeDirAll(root + "ultimate/mods/hdr-pr")
                         }
+                        console.info("extracting hdr-pr");
                         await backend.unzip(
                             root + "downloads/pr.zip", 
                             root, 
                             (p: Progress) => setProgress(p)
                         );
-                        
-                        alert("Pull Request downloaded! Please disable 'hdr' in Arcadia, and enable 'hdr-pr' instead.")
-                        backend.openModManager();
-                        setProgress(null);
+
+                        // check if it has 'includes assets', and if so, handle the assets zip
+                        if (pr.labels.filter((label: any) => label.name.includes('includes assets')) && pr.body.includes(".zip](https://")) {
+                            console.info("beginning handling of hdr-assets-pr");
+                            setProgress(new Progress("Installing PR Assets", "Getting PR assets", 0));
+
+                            // parse the pr assets url
+                            let startParse = pr.body.indexOf(".zip](https://");
+                            let startUrl = pr.body.indexOf("https://", startParse);
+                            let endUrl = pr.body.indexOf(')', startUrl);
+                            let url = pr.body.substring(startUrl, endUrl);
+                            if (url.length === 0) {
+                                alert("Error: bad url of length 0 for parsing asset body:\n" + pr.body);
+                                continue;
+                            }
+
+                            // if an existing pr assets folder exists, remove it
+                            console.info("checking if hdr-assets-pr exists");
+                            let exists = await backend.dirExists(root + "ultimate/mods/hdr-assets-pr");
+                            if (exists) {
+                                await backend.removeDirAll(root + "ultimate/mods/hdr-assets-pr")
+                            }
+
+                            // clone the existing hdr-assets into hdr-assets-pr
+                            console.info("cloning hdr-assets dir");
+                            await backend.cloneMod('hdr-assets', 'hdr-assets-pr', (p: Progress) => setProgress(p));
+
+                            // download the pr assets
+                            setProgress(new Progress("Downloading assets", "downloading assets", 0));
+                            //alert("downloading pr assets from url: " + url);
+                            // if an existing pr assets zip exists, remove it
+                            console.info("checking if a pr-assets.zip already exists");
+                            exists = await backend.dirExists(root + "downloads/pr-assets.zip");
+                            if (exists) {
+                                console.info("removing the existing pr-assets.zip");
+                                await backend.deleteFile(root + "downloads/pr-assets.zip")
+                            }
+                            console.info("downloading pr assets zip");
+                            await backend.downloadFile(url, root + "downloads/pr-assets.zip",
+                                (p: Progress) => setProgress(p)
+                            );
+
+                            // unzip the pr assets
+                            setProgress(new Progress("Extracting assets", "Extracting assets", 0));
+                            console.info("extracting pr assets");
+                            await backend.unzip(
+                                root + "downloads/pr-assets.zip", 
+                                root + 'ultimate/mods/hdr-assets-pr/',
+                                (p: Progress) => setProgress(p)
+                            );
+
+                            alert("Pull request and assets downloaded! Please disable 'hdr' and 'HDR Assets' in Arcadia, and enable 'hdr-pr' and 'hdr-assets-pr' instead.")
+                            backend.openModManager();
+                            setProgress(null);
+                            return;
+                        } else {
+                            alert("Pull request downloaded! Please disable 'hdr' in Arcadia, and enable 'hdr-pr' instead.")
+                            backend.openModManager();
+                            setProgress(null);
+                            return;
+                        }
                     }
                 } catch (e) { alert("Error while downloading PR: " + e); setProgress(null); }}}/>)
             }
             </div>
             <div className="right-side-pr thick-border">
                 {hoveredPull !== null ? 
-                    <div className="full">
-                        <h1 style={{color: "white"}} className="border-bottom">{hoveredPull.title}</h1>
-                        <div className="scrolling-fit">
-                            <p style={{color: "white", paddingTop: "10px", paddingLeft: "18px"}}><Remark>{hoveredPull.body}</Remark></p>
-                        </div>
-                    </div>
+                    <PullRequestPreview pullRequest={hoveredPull}/>
                  : <div/>}
             </div>
-        </div> : <h1>Getting pull requests...</h1>
+        </div> : <h1 style={{color: 'white'}}>Getting pull requests...</h1>
         }
          <ExpandSidebar />
     </div>);

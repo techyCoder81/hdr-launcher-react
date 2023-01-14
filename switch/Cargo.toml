@@ -23,12 +23,15 @@ serde_json = "1.0.79"
 arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
 md5 = "0.7.0"
 walkdir = "2"
+anyhow = "1"
 zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
-nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
+#nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
+nx-request-handler = { path = "../../nx-request-handler" }
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
 include_dir = "0.7.3"
 smashnet = "0.2"
+fs_extra = "1.2.0"
 
 [build-dependencies]
 prettify-js = "0.1.0"

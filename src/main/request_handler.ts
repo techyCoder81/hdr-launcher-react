@@ -382,6 +382,28 @@ async function handleInner(request: any, resolve: (value: Responses.OkOrError | 
         resolve(new Responses.OkOrError(true, 'false', request.id));
         break;
       }
+    case 'is_mod_enabled':
+      try {
+        if (!argcheck(1)) {
+          break;
+        }
+
+        // read the given file path
+        let file: string = request.arguments[0];
+
+        // on ryujinx, if the folder name exists, then its enabled
+        resolve(
+          new Responses.OkOrError(
+            true,
+            String(fs.existsSync(file) && fs.statSync(file).isDirectory()),
+            request.id
+          )
+        );
+        break;
+      } catch (e) {
+        resolve(new Responses.OkOrError(true, 'false', request.id));
+        break;
+      }
     case 'dir_exists':
       try {
         if (!argcheck(1)) {
@@ -401,6 +423,33 @@ async function handleInner(request: any, resolve: (value: Responses.OkOrError | 
         break;
       } catch (e) {
         resolve(new Responses.OkOrError(true, 'false', request.id));
+        break;
+      }
+    case 'remove_dir_all':
+      try {
+        if (!argcheck(1)) {
+          break;
+        }
+
+        // read the given dir path
+        let dir: string = request.arguments[0];
+
+        if (!fs.existsSync(dir)) {
+          resolve(
+            new Responses.OkOrError(
+              false,
+              'path does not exist!',
+              request.id
+            )
+          );
+          break;
+        }
+
+        fs.rmSync(dir, { recursive: true, force: true });
+        resolve(new Responses.OkOrError(true, 'removed directory successfully', request.id));
+        break;
+      } catch (e) {
+        resolve(new Responses.OkOrError(false, String(e), request.id));
         break;
       }
     case 'list_dir':
@@ -701,6 +750,51 @@ async function handleInner(request: any, resolve: (value: Responses.OkOrError | 
           new Responses.OkOrError(true, 'directory now exists.', request.id)
         );
         break;
+      } catch (e) {
+        resolve(new Responses.OkOrError(false, String(e), request.id));
+        break;
+      }
+    case 'clone_mod':
+      try {
+        if (!argcheck(2)) {
+          break;
+        }
+        let args = request.arguments;
+        let src = args[0];
+        let dest = args[1];
+        // make sure the assets dir exists
+        let assetsDir: string = path.join(
+          Config.getSdcardPath(),
+          'ultimate/mods/' + src
+        );
+        let exists = fs.existsSync(assetsDir);
+        if (!exists) {
+          resolve(
+            new Responses.OkOrError(
+              false,
+              src + ' dir does not exist, so we cannot clone it!',
+              request.id
+            )
+          );
+          break;
+        }
+
+        let prAssetsDir: string = path.join(
+          Config.getSdcardPath(),
+          'ultimate/mods/' + dest
+        );
+
+        // remove the existing pr assets dir if there is one
+        exists = fs.existsSync(prAssetsDir);
+        if (exists) {
+          fs.rmSync(prAssetsDir, { recursive: true, force: true });
+        }
+
+        // copy the directory
+        fs.cpSync(assetsDir, prAssetsDir, {recursive: true});
+        resolve(new Responses.OkOrError(true, "cloned " + src + " successfully", request.id));
+        break;
+        
       } catch (e) {
         resolve(new Responses.OkOrError(false, String(e), request.id));
         break;

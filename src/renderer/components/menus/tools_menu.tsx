@@ -95,6 +95,9 @@ export default class ToolsMenu extends AbstractMenu<{
                   //.then(() => verify((p: Progress) => this.setProgress(p)))
                   .then(() => {
                     alert('Switched successfully!');
+                    if (Backend.isSwitch()) {
+                      Backend.instance().relaunchApplication();
+                    }
                     this.props.switchTo(MenuType.MainMenu);
                   })
                   .catch((e) => {
@@ -109,6 +112,9 @@ export default class ToolsMenu extends AbstractMenu<{
                   //.then(() => verify((p: Progress) => this.setProgress(p)))
                   .then(() => {
                     alert('Switched successfully!');
+                    if (Backend.isSwitch()) {
+                      Backend.instance().relaunchApplication();
+                    }
                     this.props.switchTo(MenuType.MainMenu);
                   })
                   .catch((e) => {

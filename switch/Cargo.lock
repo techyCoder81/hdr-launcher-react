@@ -18,6 +18,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.68"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2cb2f989d18dd141ab8ae82f64d1a8cdd37e0840f73a406896cf5e99502fab61"
+
+[[package]]
 name = "arcropolis-api"
 version = "0.1.0"
 source = "git+https://github.com/Raytwo/arcropolis_api#dc27ee1ebe94ad4e9d5639e10ab42bc04b582b53"
@@ -238,6 +244,7 @@ dependencies = [
 name = "hdr-launcher-react"
 version = "0.3.1"
 dependencies = [
+ "anyhow",
  "arcropolis-api",
  "fs_extra",
  "include_dir",
@@ -415,7 +422,7 @@ dependencies = [
  "libc",
  "libc-nnsdk",
  "log",
- "nnsdk 0.2.0 (git+https://github.com/ultimate-research/nnsdk-rs)",
+ "nnsdk 0.2.1",
  "openssl",
  "openssl-probe",
  "openssl-sys",
@@ -441,8 +448,8 @@ dependencies = [
 
 [[package]]
 name = "nnsdk"
-version = "0.2.0"
-source = "git+https://github.com/ultimate-research/nnsdk-rs#40b9a7d06e157e3f3a74bc67e8e284d01d587564"
+version = "0.2.1"
+source = "git+https://github.com/ultimate-research/nnsdk-rs#c406340d9d1297080a25577031182b85e0fa2124"
 dependencies = [
  "libc-nnsdk",
 ]
@@ -459,7 +466,6 @@ dependencies = [
 [[package]]
 name = "nx-request-handler"
 version = "0.1.6"
-source = "git+https://github.com/techyCoder81/nx-request-handler#e1f3d8e967133b8710824b867b07baae28ad79af"
 dependencies = [
  "md5",
  "serde",
@@ -776,7 +782,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9950fc129490cff3f4755aa523df16aeeb80130699abfc59cc7c6df8fc5802ad"
 dependencies = [
  "libc-nnsdk",
- "nnsdk 0.2.0 (git+https://github.com/Raytwo/nnsdk-rs?branch=account_fs)",
+ "nnsdk 0.2.0",
  "skyline_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -786,7 +792,7 @@ version = "0.2.1"
 source = "git+https://github.com/ultimate-research/skyline-rs.git#d70df57f243fcb18f168c8ce9dca75f6490d3bf2"
 dependencies = [
  "libc-nnsdk",
- "nnsdk 0.2.0 (git+https://github.com/Raytwo/nnsdk-rs?branch=account_fs)",
+ "nnsdk 0.2.0",
  "skyline_macro 0.2.0 (git+https://github.com/ultimate-research/skyline-rs.git)",
 ]
 
@@ -806,7 +812,7 @@ name = "skyline-web"
 version = "0.1.0"
 source = "git+https://github.com/techyCoder81/skyline-web#f7f24d2721661e6c04927023972d03be4ace0f39"
 dependencies = [
- "nnsdk 0.2.0 (git+https://github.com/Raytwo/nnsdk-rs?branch=account_fs)",
+ "nnsdk 0.2.0",
  "ramhorns",
  "serde",
  "serde_json",
