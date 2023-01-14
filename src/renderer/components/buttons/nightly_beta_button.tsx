@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Backend } from '../../operations/backend';
 import { FocusButton } from './focus_button';
+import { ScrollFocusButton } from './scroll_focus_button';
 
 export const NightlyBetaButton = (props: {
   setInfo: (info: string) => void;
@@ -27,7 +28,7 @@ export const NightlyBetaButton = (props: {
   }
 
   return (
-    <FocusButton
+    <ScrollFocusButton
       text={'Install ' + buttonText + '\u00A0'}
       className={'smaller-main-button'}
       onClick={async () => {

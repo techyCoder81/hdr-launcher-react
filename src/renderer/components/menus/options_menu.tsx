@@ -29,7 +29,7 @@ export default class OptionsMenu extends AbstractMenu<{
       <div className="main-menu">
         <FocusButton
           text={'\u21e0 Main Menu\u00A0'}
-          className={'main-buttons'}
+          className={'smaller-main-button'}
           onClick={() => this.props.switchTo(MenuType.MainMenu)}
           onFocus={() => this.props.setInfo('Return to the Main menu')}
         />
@@ -53,6 +53,22 @@ export default class OptionsMenu extends AbstractMenu<{
         ) : (
           <div />
         )}
+        <FocusCheckbox
+            className={'smaller-main-button'}
+            onClick={async () => {
+              let enabled = await config.getBoolean('enable_dev_tools');
+              await config.setBoolean('enable_dev_tools', !enabled);
+            }}
+            checkStatus={async () => {
+              return await config.getBoolean('enable_dev_tools');
+            }}
+            text={'Enable Dev Tools\u00A0'}
+            onFocus={() =>
+              this.props.setInfo(
+                'Enable the dev tools menu (for HDR developers and contributors)'
+              )
+            }
+          />
         <FocusCheckbox
           className={'smaller-main-button'}
           onClick={async () => {

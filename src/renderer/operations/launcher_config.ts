@@ -1,7 +1,7 @@
 import { Backend } from './backend';
 import { StageConfig } from './stage_config';
 
-type BooleanSetting = 'skip_launcher' | 'ignore_music';
+type BooleanSetting = 'skip_launcher' | 'ignore_music' | 'enable_dev_tools';
 
 const ACTIVE_CONFIG_FILE =
   'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml';

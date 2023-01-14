@@ -22,7 +22,7 @@ export enum MenuType {
   CheckingInstalled,
   StageConfig,
   PullRequestConfig,
-  PrInstalled
+  PrInstalled,
 }
 
 /**
