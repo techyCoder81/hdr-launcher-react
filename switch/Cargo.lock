@@ -242,7 +242,7 @@ dependencies = [
 
 [[package]]
 name = "hdr-launcher-react"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "arcropolis-api",
@@ -466,6 +466,7 @@ dependencies = [
 [[package]]
 name = "nx-request-handler"
 version = "0.1.6"
+source = "git+https://github.com/techyCoder81/nx-request-handler#e1f3d8e967133b8710824b867b07baae28ad79af"
 dependencies = [
  "md5",
  "serde",

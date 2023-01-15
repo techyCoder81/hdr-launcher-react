@@ -1,6 +1,6 @@
 [package]
 name = "hdr-launcher-react"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["techyCoder81"]
 edition = "2021"
 
@@ -25,8 +25,8 @@ md5 = "0.7.0"
 walkdir = "2"
 anyhow = "1"
 zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
-#nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
-nx-request-handler = { path = "../../nx-request-handler" }
+nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler" }
+#nx-request-handler = { path = "../../nx-request-handler" }
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
 include_dir = "0.7.3"
