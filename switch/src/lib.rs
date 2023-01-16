@@ -275,7 +275,7 @@ pub fn main() {
                 let src_mod = &args[0];
                 let dest_mod = &args[1];
                 let src = format!("sd:/ultimate/mods/{}", &src_mod);
-                let dest = format!("sd:/ultimate/mods/{}-pr", &dest_mod);
+                let dest = format!("sd:/ultimate/mods/{}", &dest_mod);
                 let exists = Path::new(&src).exists();
                 if !exists {
                     return Err(format!("{} folder does not exist, so we cannot make a copy of it!", &src_mod));
