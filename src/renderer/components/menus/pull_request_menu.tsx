@@ -105,7 +105,7 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
                         );
 
                         // check if it has 'includes assets', and if so, handle the assets zip
-                        if (pr.labels.filter((label: any) => label.name.includes('includes assets')) && pr.body.includes(".zip](https://")) {
+                        if (pr.labels.filter((label: any) => label.name.includes('includes assets')).length && pr.body.includes(".zip](https://")) {
                             console.info("beginning handling of hdr-assets-pr");
                             setProgress(new Progress("Installing PR Assets", "Getting PR assets", 0));
 
