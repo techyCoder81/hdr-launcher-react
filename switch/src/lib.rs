@@ -321,7 +321,7 @@ pub fn main() {
                         count += 1.0;
 
                         // create the PR equivalent path from the source mod path
-                        let pr_path = path.to_str().unwrap().replace(src_mod, dest_mod);
+                        let pr_path = path.to_str().unwrap().replace(src, &dest);
                         match path.is_file() {
                             true =>  match std::fs::copy(path, pr_path) {
                                 Ok(_) => {},
