@@ -308,7 +308,7 @@ pub fn main() {
                     // copy the assets into the new pr assets dir
                     println!("beginning directory clone");
                     let mut count = 0.0;
-                    for entry in walkdir::WalkDir::new(src) {
+                    for entry in walkdir::WalkDir::new(&src) {
                         let dir_entry = match entry {
                             Ok(path) => path,
                             Err(e) => return Err(format!("Error while walking {} directory: {}", &src_mod, e))
@@ -321,7 +321,7 @@ pub fn main() {
                         count += 1.0;
 
                         // create the PR equivalent path from the source mod path
-                        let pr_path = path.to_str().unwrap().replace(src, &dest);
+                        let pr_path = path.to_str().unwrap().replace(&src, &dest);
                         match path.is_file() {
                             true =>  match std::fs::copy(path, pr_path) {
                                 Ok(_) => {},
