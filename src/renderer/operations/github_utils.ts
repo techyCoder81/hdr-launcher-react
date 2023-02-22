@@ -9,7 +9,7 @@ export class Github {
       if (Github.prs == null) {
         await Backend.instance()
           .getJson(
-            'https://api.github.com/repos/HDR-Development/HewDraw-Remix/pulls?per_page=25&state=open'
+            'https://api.github.com/repos/HDR-Development/HewDraw-Remix/pulls?per_page=100&state=open'
           )
           .then((data) => (Github.prs = data))
           .catch((e) => reject(e));
