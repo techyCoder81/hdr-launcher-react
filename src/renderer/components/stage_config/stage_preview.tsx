@@ -2,6 +2,18 @@ import React from 'react';
 import logo from '../../../../assets/logo_full.png';
 import { stageInfo } from '../../operations/stage_info';
 
+
+// require() all of the stage previews
+Object.keys(stageInfo).forEach((key) => {
+  try {
+    require('../../../../assets/stage_previews/stage_2_' +
+      key.toLowerCase() +
+      '.jpg');
+  } catch {
+    console.warn('Could not find stage preview for: ' + key);
+  }
+});
+
 export function StagePreview(props: { stageName: string | null }) {
   if (props.stageName === null) {
     return (
@@ -33,10 +45,11 @@ export function StagePreview(props: { stageName: string | null }) {
           : props.stageName) + '\u00A0'}
       </h1>
       <img 
-        src={'static/stage_2_' + props.stageName.toLowerCase() + '.jpg'} 
+        src={'/static/stage_2_' + props.stageName.toLowerCase() + '.jpg'} 
         alt="Preview"
         onError={({ currentTarget }) => {
           currentTarget.onerror = null; // prevents looping
+          console.warn("failed to load preview!");
           currentTarget.src=logo;
         }}
       />
