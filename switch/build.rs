@@ -41,10 +41,12 @@ fn main() -> (){
     // read and transform the js file
     let mut src_js = std::fs::File::open(JS_FILE_PATH).unwrap();
     let mut data_js = String::new();
-    src_js.read_to_string(&mut data_js).unwrap(); 
+    src_js.read_to_string(&mut data_js).unwrap();
     let new_data_js = data_js 
         .replace("const ", "var ")
         .replace("let ", "var ")
+        .replace("let{", "var{")
+        .replace("let[", "var[")
         .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
         .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)")
         .replace("() =>(module['default'])", "(()=>(module['default']))")
