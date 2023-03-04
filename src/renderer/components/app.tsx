@@ -11,42 +11,48 @@ import '../operations/background_music';
 import BackgroundMusic from '../operations/background_music';
 import * as LauncherConfig from '../operations/launcher_config';
 import { skyline } from 'nx-request-api';
+import { BrowserRouter, createBrowserRouter, createHashRouter, Navigate, Route, RouterProvider, Routes, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import {Pages} from '../constants';
+import MainMenu from './main_menu';
+import ErrorPage from './error_page';
+import PullRequestMenu from './menus/pull_request_menu';
+import StageConfigMenu from './stage_config/stage_config_menu';
 
-export default class App extends React.Component {
-  state = {
-    loading: true,
-  };
+const router = createHashRouter([
+  {
+    path: Pages.STARTUP,
+    element: <Navigate to={Pages.LOADING_SCREEN}/>,
+    errorElement: <ErrorPage/>
+  },
+  {
+    path: Pages.LOADING_SCREEN,
+    element: <Loading/>,
+    errorElement: <ErrorPage/>
+  },
+  { 
+    path: Pages.MAIN_MENU,
+    element: <MainMenu/>,
+    errorElement: <ErrorPage/>
+  },
+  { 
+    path: Pages.STAGE_CONFIG,
+    element: <StageConfigMenu/>,
+    errorElement: <ErrorPage/>
+  },
+  { 
+    path: Pages.PULL_REQUESTS,
+    element: <PullRequestMenu/>,
+    errorElement: <ErrorPage/>
+  },
+]);
 
-  componentDidMount(): void {
-    //BackgroundMusic.singleton().fadeIn();
+export default function App() {
+  useEffect(() => {
     Logs.instance();
-  }
+  }, []);
 
-  componentWillUnmount(): void {
-    //BackgroundMusic.singleton().fadeTo(0.0);
-  }
-
-  render() {
-    return (
-      <div className="full">
-        <base target="_blank"/>
-        {Backend.isNode() ? (
-          <SlidingBackground />
-        ) : (
-          <div className="gradient-background"></div>
-        )}
-        {this.state.loading ? (
-          <Loading
-            onLoad={() => {
-              this.setState({ loading: false });
-            }}
-          />
-        ) : (
-          <div />
-        )}
-        <Menu />
-        <ExpandSidebar />
-      </div>
-    );
-  }
+  return (
+      <RouterProvider router={router}/>
+  );
 }
