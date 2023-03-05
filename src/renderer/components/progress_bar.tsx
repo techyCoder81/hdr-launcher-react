@@ -4,7 +4,7 @@ import ReactModal from 'react-modal';
 import { Backend } from '../operations/backend';
 import { Progress } from 'nx-request-api';
 import './../styles/progress.css';
-import { LogPopout } from './logs/log_popout';
+import { LogPopout } from './logging/log_popout';
 import SlidingBackground from './sliding_background';
 
 ReactModal.setAppElement('#root');

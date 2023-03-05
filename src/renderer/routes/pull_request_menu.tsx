@@ -7,7 +7,7 @@ import { Backend } from "renderer/operations/backend";
 import { Github } from "renderer/operations/github_utils";
 import { FocusButton } from "../components/buttons/focus_button";
 import { ScrollFocusButton } from "../components/buttons/scroll_focus_button";
-import { LogPopout } from "../components/logs/log_popout";
+import { LogPopout } from "../components/logging/log_popout";
 import { ProgressDisplay } from "../components/progress_bar";
 import { PullRequestPreview } from "./menus/pull_request_preview";
 

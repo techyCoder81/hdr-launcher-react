@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LogPopout } from "../../components/logs/log_popout";
+import { LogPopout } from "../../components/logging/log_popout";
 import Menu from "./menu";
 import SlidingBackground from "../../components/sliding_background";
 
