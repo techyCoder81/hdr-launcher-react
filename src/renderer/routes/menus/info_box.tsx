@@ -1,4 +1,4 @@
-import '../styles/infobox.css';
+import '../../styles/infobox.css';
 
 export default function InfoBox(props: { text: string }) {
   return (

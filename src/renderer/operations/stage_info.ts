@@ -1,12 +1,3 @@
-export class StageParams {
-  enabled: boolean;
-  name_id: string;
-  constructor(name: string, enabled: boolean) {
-    this.name_id = name;
-    this.enabled = enabled;
-  }
-}
-
 enum Layout {
   TriPlat,
   BiPlat,
@@ -25,6 +16,31 @@ enum Layout {
 }
 
 type Stage = { display_name: string; layout: Layout };
+
+export function displayNames() {
+  return stageNames().map(properName => toDisplay(properName));
+}
+
+export function stageNames() {
+  return Object.keys(stageInfo);
+}
+
+export function toDisplay(properName: string) {
+  return stageInfo[properName].display_name;
+}
+
+/**
+ * gets the proper stageName from the display name
+ * @param displayName the display name
+ * @returns the internal stageName
+ */
+export function fromDisplay(displayName: string): string {
+  let properName = stageNames().find(name => stageInfo[name].display_name == displayName);
+  if (properName === undefined) {
+    return "Unknown";
+  }
+  return properName;
+}
 
 export const stageInfo: Record<string, Stage> = {
   Random: { display_name: 'Random (All)', layout: Layout.Unknown },

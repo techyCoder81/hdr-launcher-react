@@ -2,9 +2,9 @@ import { Backend } from '../../operations/backend';
 import { PopupData } from '../../operations/popup_data';
 import update from '../../operations/update';
 import { Progress } from 'nx-request-api';
-import { FocusButton } from '../buttons/focus_button';
-import { MenuType } from '../menu';
-import { UpdateButton } from '../buttons/update_button';
+import { FocusButton } from '../../components/buttons/focus_button';
+import { MenuType } from './menu';
+import { UpdateButton } from '../../components/buttons/update_button';
 import { AbstractMenu } from './abstract_menu';
 import BackgroundMusic from '../../operations/background_music';
 

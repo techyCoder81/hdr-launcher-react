@@ -1,19 +1,22 @@
 import { Progress } from "nx-request-api";
 import { useEffect, useRef, useState } from "react";
 import { Remark } from "react-remark";
+import { useNavigate } from "react-router-dom";
+import { Pages } from "renderer/constants";
 import { Backend } from "renderer/operations/backend";
 import { Github } from "renderer/operations/github_utils";
-import { FocusButton } from "../buttons/focus_button";
-import { ScrollFocusButton } from "../buttons/scroll_focus_button";
-import { ExpandSidebar } from "../expand_sidebar";
-import { ProgressDisplay } from "../progress_bar";
-import { PullRequestPreview } from "./pull_request_preview";
+import { FocusButton } from "../components/buttons/focus_button";
+import { ScrollFocusButton } from "../components/buttons/scroll_focus_button";
+import { LogPopout } from "../components/logs/log_popout";
+import { ProgressDisplay } from "../components/progress_bar";
+import { PullRequestPreview } from "./menus/pull_request_preview";
 
-export default function PullRequestMenu(props: { onComplete: () => void }) {
+export default function PullRequestMenu() {
     const [pullRequests, setPullRequests] = useState(null as null | any[]);
     const selfRef = useRef<HTMLButtonElement>(null);
     const [hoveredPull, setHoveredPull] = useState(null as null | any);
     const [progress, setProgress] = useState(null as null | Progress);
+    const navigate = useNavigate();
 
     useEffect(() => {
         Github.pullRequests()
@@ -39,8 +42,7 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
             autofocus={true}
             className="simple-button-bigger"
             onClick={async () => {
-                
-                props.onComplete();
+                navigate(Pages.MAIN_MENU);
             }}
             text={'Exit'}
             />
@@ -175,6 +177,6 @@ export default function PullRequestMenu(props: { onComplete: () => void }) {
             </div>
         </div> : <h1 style={{color: 'white'}}>Getting pull requests...</h1>
         }
-         <ExpandSidebar />
+         <LogPopout />
     </div>);
 }

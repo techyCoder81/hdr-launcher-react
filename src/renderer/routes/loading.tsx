@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Pages } from 'renderer/constants';
 import { Backend } from '../operations/backend';
 import * as launcher_config from '../operations/launcher_config';
 import * as update from '../operations/update';
@@ -6,8 +8,9 @@ import '../styles/opening.css';
 
 var will_skip = false;
 
-export default function Loading(props: { onLoad: () => void }) {
+export default function Loading() {
   const [showButton, setShowButton] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (Backend.isSwitch()) {
@@ -33,6 +36,7 @@ export default function Loading(props: { onLoad: () => void }) {
       if (will_skip) {
         Backend.instance().exitSession();
       }
+      navigate(Pages.MAIN_MENU);
     }, 2500);
   }, []);
 

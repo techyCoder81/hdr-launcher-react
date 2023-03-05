@@ -6,7 +6,7 @@ root_dir = os.getcwd()
 ip = ""
 electron = False
 listen = False
-package = False
+no_npm = ""
 updater = ""
 
 for arg in sys.argv:
@@ -19,19 +19,23 @@ for arg in sys.argv:
         electron = True
     if "listen" in arg:
         listen = True
-    if "npm" in arg:
-        package = True
     if "updater" in arg:
         updater = " --features updater"
-
-if package:
-    success = os.system("npm build")
-    if success != 0:
-        exit("NPM BUILD FAILED!")
+    if "no-npm" in arg:
+        no_npm = " --features no-npm"
+    if "help" in arg:
+        print("usage:")
+        print("ip=0.0.0.0 : send the plugin to the switch at the given IP")
+        print("electron : 'npm start'")
+        print("listen : 'cargo skyline listen'")
+        print("updater : enables the updater feature on the plugin")
+        print("help : shows this help message.")
+        print("no-npm : enable the no-npm feature")
+        exit()
 
 os.chdir("switch")
 
-success = os.system("cargo skyline build --release" + updater);
+success = os.system("cargo skyline build --release" + updater + no_npm);
 if success != 0:
     exit("SWITCH BUILD FAILED!")
 

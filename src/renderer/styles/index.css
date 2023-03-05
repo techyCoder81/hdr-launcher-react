@@ -250,13 +250,14 @@ body {
 }
 
 .preview {
-  height: 85%;
-  width: 80%;
+  height: 100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 80px;
-  margin-top: 20px;
+  box-sizing: border-box;
+  margin-left: 0%;
+  margin-top: 0%;
   border: 5px solid var(--main-button-border-color);
   position: relative;
   box-shadow: 3px 3px 5px #333;
@@ -356,6 +357,16 @@ p {
   outline: none;
 }
 
+.hover-color:focus,
+.hover-color:hover {
+  background-color: var(--main-button-bg-hover-color);
+  border-color: var(--main-button-border-hover-color);
+}
+
+.hover-color {
+  background-color: var(--main-button-bg-color);
+}
+
 .simple-button:focus,
 .simple-button:hover {
   background-color: var(--main-button-bg-hover-color);
@@ -403,6 +414,7 @@ p img{
 }
 
 .thick-border {
+  box-sizing: border-box;
   border: 3px solid var(--main-button-border-color);
   box-shadow: 3px 3px 5px #333;
 }

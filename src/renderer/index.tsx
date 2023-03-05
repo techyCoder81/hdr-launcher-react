@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import App from './components/app';
+import App from './app';
 import { skyline } from 'nx-request-api';
 
 const container = document.getElementById('root')!;

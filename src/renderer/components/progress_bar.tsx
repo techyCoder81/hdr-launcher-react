@@ -3,8 +3,8 @@ import React from 'react';
 import ReactModal from 'react-modal';
 import { Backend } from '../operations/backend';
 import { Progress } from 'nx-request-api';
-import '../styles/progress.css';
-import { ExpandSidebar } from './expand_sidebar';
+import './../styles/progress.css';
+import { LogPopout } from './logs/log_popout';
 import SlidingBackground from './sliding_background';
 
 ReactModal.setAppElement('#root');
@@ -39,7 +39,7 @@ function ProgressDisplayInner(props: { progress: Progress; animate: boolean }) {
           borderRadius="0px"
         />
       </div>
-      <ExpandSidebar />
+      <LogPopout />
     </div>
   );
 }

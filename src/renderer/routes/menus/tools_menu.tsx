@@ -7,14 +7,14 @@ import {
 } from '../../operations/install';
 import verify from '../../operations/verify';
 import { Progress } from 'nx-request-api';
-import { NightlyBetaButton } from '../buttons/nightly_beta_button';
-import { FocusButton } from '../buttons/focus_button';
-import { MenuType } from '../menu';
+import { NightlyBetaButton } from '../../components/buttons/nightly_beta_button';
+import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from '../../operations/popup_data';
-import * as LauncherConfig from '../../operations/launcher_config';
-import { ScrollFocusButton } from '../buttons/scroll_focus_button';
-import { CloneFolderForDev } from '../buttons/dev_tools_buttons';
+import { ScrollFocusButton } from '../../components/buttons/scroll_focus_button';
+import { CloneFolderForDev } from '../../components/buttons/dev_tools_buttons';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pages } from 'renderer/constants';
 
 /**
  * builds the tools menu components
@@ -79,14 +79,12 @@ export default class ToolsMenu extends AbstractMenu<{
             }}
             onFocus={() => this.props.setInfo('Verify your HDR files')}
           />
-          <ScrollFocusButton
-            text={'Stage Config\u00A0'}
-            className={'smaller-main-button'}
-            onClick={() => this.props.switchTo(MenuType.StageConfig)}
-            onFocus={() =>
-              this.props.setInfo('Open the stage configuration menu')
-            }
+          <NavigateButton
+            text='Stage Config'
+            page={Pages.STAGE_CONFIG}
+            onFocus={() => this.props.setInfo('Open the stage configuration menu')}
           />
+          
           <NightlyBetaButton
             setInfo={(info: string) => this.props.setInfo(info)}
             onClick={async (version: string) => {
@@ -133,15 +131,12 @@ export default class ToolsMenu extends AbstractMenu<{
               }
             }}
           />
-          
-          <ScrollFocusButton
-            text={'Install PR Build\u00A0'}
-            className={'smaller-main-button'}
-            onClick={() => this.props.switchTo(MenuType.PullRequestConfig)}
-            onFocus={() =>
-              this.props.setInfo('Open the stage configuration menu')
-            }
+          <NavigateButton
+            text='Install PR Build'
+            page={Pages.PULL_REQUESTS}
+            onFocus={() => this.props.setInfo('Open the stage configuration menu')}
           />
+          
           <CloneFolderForDev modName={'hdr'} onComplete={() => this.showMenu()} setInfo={info => this.props.setInfo(info)} showProgress={p => this.showProgress(p)} then={async () =>{
             let backend = Backend.instance();
             let root = await backend.getSdRoot();
@@ -153,4 +148,19 @@ export default class ToolsMenu extends AbstractMenu<{
       </div>
     );
   }
+}
+
+function NavigateButton(props: {text: string, page: Pages, onFocus: () => void}) {
+  const navigate = useNavigate();
+  return <ScrollFocusButton
+      text={props.text + '\u00A0'}
+      className={'smaller-main-button'}
+      onClick={() => {
+        
+        navigate(props.page);
+      }}
+      onFocus={() =>
+        props.onFocus()
+      }
+    />
 }
