@@ -1,5 +1,5 @@
 import { Backend } from './backend';
-import { stageInfo } from './stage_info';
+import { fromDisplay, stageInfo, toDisplay } from './stage_info';
 
 const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
 const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
@@ -72,7 +72,9 @@ export class TourneyConfig {
         await backend
           .readFile(root + ACTIVE_CONFIG_FILE)
           .then(json => {
-            let data = JSON.parse(json);
+            let data: ConfigData = JSON.parse(json);
+            data.counterpicks = data.counterpicks.map(properName => toDisplay(properName))
+            data.starters = data.starters.map(properName => toDisplay(properName))
             this.data = data;
             resolve(data);
           })
@@ -104,9 +106,13 @@ export class TourneyConfig {
         }
 
         let root = await Backend.instance().getSdRoot();
+        let config: ConfigData = {enabled: this.data.enabled, starters: [], counterpicks: []};
+        config.counterpicks = this.data.counterpicks.map(display => fromDisplay(display));
+        config.starters = this.data.starters.map(display => fromDisplay(display));
+        let json = JSON.stringify(config);
         await Backend.instance().writeFile(
           root + ACTIVE_CONFIG_FILE,
-          JSON.stringify(this.data)
+          json
         );
         resolve();
       } catch (e) {

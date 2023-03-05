@@ -3,7 +3,7 @@ import { FocusButton } from "renderer/components/buttons/focus_button";
 import { FocusCombo } from "renderer/components/buttons/focus_combo";
 import { Backend } from "renderer/operations/backend";
 import { TourneyConfig } from "renderer/operations/stage_config";
-import { stageInfo } from "renderer/operations/stage_info";
+import { displayNames, stageInfo } from "renderer/operations/stage_info";
 
 type Categories = 'Starter' | 'Counterpick';
 const MAX_STAGES = 7;
@@ -112,14 +112,14 @@ export default function StageListBox(props: {category: Categories, onHover?: (st
                 onClick={async () => {
                     let newSelected = [];
                     selected.forEach(entry => newSelected.push(entry));
-                    newSelected.push(Object.keys(stageInfo)[0]);
+                    newSelected.push(displayNames()[0]);
                     
                     let data = TourneyConfig.instance().data;
                     if (data !== undefined) {
                         if (props.category == 'Starter') {
-                            data.starters.push(Object.keys(stageInfo)[0]);
+                            data.starters.push(displayNames()[0]);
                         } else {
-                            data.counterpicks.push(Object.keys(stageInfo)[0]);
+                            data.counterpicks.push(displayNames()[0]);
                         }
                     }
                     setSelected(newSelected);
@@ -147,7 +147,7 @@ function StageListItem(props: {onChange: (item: any) => void, onRemove: () => vo
             onChange={props.onChange}
             defaultValue={props.selected}
             onFocus={() => {if (props.onHover) {props.onHover(props.selected)}}}
-            options={Object.keys(stageInfo)} 
+            options={displayNames()} 
         />
         <FocusButton
             className="hover-color"
