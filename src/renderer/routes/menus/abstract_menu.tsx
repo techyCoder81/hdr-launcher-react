@@ -2,8 +2,8 @@ import React from 'react';
 import { Backend } from '../../operations/backend';
 import { PopupData } from '../../operations/popup_data';
 import { Progress } from 'nx-request-api';
-import { Popup } from '../popup';
-import { ProgressDisplay } from '../progress_bar';
+import { Popup } from '../../components/popup';
+import { ProgressDisplay } from '../../components/progress_bar';
 
 export abstract class AbstractMenu<T> extends React.Component<T> {
   state = {

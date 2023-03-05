@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LogWindow } from './log_window';
+import { LogWindow } from './logs/log_window';
 import { FocusButton } from './buttons/focus_button';
 
 enum ContentType {

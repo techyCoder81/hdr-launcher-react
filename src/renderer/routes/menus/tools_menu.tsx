@@ -7,14 +7,12 @@ import {
 } from '../../operations/install';
 import verify from '../../operations/verify';
 import { Progress } from 'nx-request-api';
-import { NightlyBetaButton } from '../buttons/nightly_beta_button';
-import { FocusButton } from '../buttons/focus_button';
-import { MenuType } from '../menu';
+import { NightlyBetaButton } from '../../components/buttons/nightly_beta_button';
+import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from '../../operations/popup_data';
-import * as LauncherConfig from '../../operations/launcher_config';
-import { ScrollFocusButton } from '../buttons/scroll_focus_button';
-import { CloneFolderForDev } from '../buttons/dev_tools_buttons';
+import { ScrollFocusButton } from '../../components/buttons/scroll_focus_button';
+import { CloneFolderForDev } from '../../components/buttons/dev_tools_buttons';
 import { Link, useNavigate } from 'react-router-dom';
 import { Pages } from 'renderer/constants';
 

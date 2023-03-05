@@ -1,8 +1,8 @@
 import * as config from '../../operations/launcher_config';
 import { Backend } from '../../operations/backend';
-import { FocusButton } from '../buttons/focus_button';
-import { FocusCheckbox } from '../buttons/focus_checkbox';
-import { MenuType } from '../menu';
+import { FocusButton } from '../../components/buttons/focus_button';
+import { FocusCheckbox } from '../../components/buttons/focus_checkbox';
+import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from '../../operations/popup_data';
 import * as LauncherConfig from '../../operations/launcher_config';

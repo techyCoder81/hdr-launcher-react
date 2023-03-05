@@ -6,8 +6,8 @@ import {
 } from '../../operations/install';
 import verify from '../../operations/verify';
 import { Progress } from 'nx-request-api';
-import { FocusButton } from '../buttons/focus_button';
-import { MenuType } from '../menu';
+import { FocusButton } from '../../components/buttons/focus_button';
+import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from 'renderer/operations/popup_data';
 

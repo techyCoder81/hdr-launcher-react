@@ -1,17 +1,16 @@
 import * as React from 'react';
-import { Backend, NodeBackend } from '../operations/backend';
-import '../styles/progress.css';
+import { Backend, NodeBackend } from '../../operations/backend';
+import '../../styles/progress.css';
 import InfoBox from './info_box';
-import { Header } from './header';
-import { LogoRight } from './logo_right';
-import MainMenu from './menus/main_menu';
-import { CheckingInstalled } from './menus/checking_installed';
-import ToolsMenu from './menus/tools_menu';
-import OptionsMenu from './menus/options_menu';
-import NotInstalledMenu from './menus/not_installed_menu';
+import { Header } from './../../components/header';
+import { LogoRight } from './../../components/logo_right';
+import MainMenu from './main_menu';
+import { CheckingInstalled } from './checking_installed';
+import ToolsMenu from './tools_menu';
+import OptionsMenu from './options_menu';
+import NotInstalledMenu from './not_installed_menu';
 import { skyline } from 'nx-request-api';
-import PullRequestMenu from './menus/pull_request_menu';
-import PrInstalledMenu from './menus/pr_installed_menu';
+import PrInstalledMenu from './pr_installed_menu';
 
 export enum MenuType {
   MainMenu,

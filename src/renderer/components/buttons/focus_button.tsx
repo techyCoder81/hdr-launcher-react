@@ -10,11 +10,13 @@ export const FocusButton = React.forwardRef<
     children?: any;
     autofocus?: boolean;
     onFocus?: () => void;
+    style?: React.CSSProperties;
   }
 >((props, ref) => {
   return (
     <button
       ref={ref}
+      style={props.style}
       className={props.className}
       autoFocus={props.autofocus}
       onMouseMove={(e) => e.currentTarget.focus()}

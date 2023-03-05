@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { Pages } from "renderer/constants";
 import { Backend } from "renderer/operations/backend";
 import { Github } from "renderer/operations/github_utils";
-import { FocusButton } from "../buttons/focus_button";
-import { ScrollFocusButton } from "../buttons/scroll_focus_button";
-import { ExpandSidebar } from "../expand_sidebar";
-import { ProgressDisplay } from "../progress_bar";
-import { PullRequestPreview } from "./pull_request_preview";
+import { FocusButton } from "../components/buttons/focus_button";
+import { ScrollFocusButton } from "../components/buttons/scroll_focus_button";
+import { LogPopout } from "../components/logs/log_popout";
+import { ProgressDisplay } from "../components/progress_bar";
+import { PullRequestPreview } from "./menus/pull_request_preview";
 
 export default function PullRequestMenu() {
     const [pullRequests, setPullRequests] = useState(null as null | any[]);
@@ -177,6 +177,6 @@ export default function PullRequestMenu() {
             </div>
         </div> : <h1 style={{color: 'white'}}>Getting pull requests...</h1>
         }
-         <ExpandSidebar />
+         <LogPopout />
     </div>);
 }

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { ExpandSidebar } from "./expand_sidebar";
+import { LogPopout } from "../../components/logs/log_popout";
 import Menu from "./menu";
-import SlidingBackground from "./sliding_background";
+import SlidingBackground from "../../components/sliding_background";
 
-export default function MainMenu() {
+export default function Main() {
     useEffect(() => {
         console.log("we are on the main menu.")
     }, []);
@@ -11,7 +11,7 @@ export default function MainMenu() {
     return (
         <div className="full"> 
           <Menu />
-          <ExpandSidebar />
+          <LogPopout />
           <SlidingBackground/>
         </div>
       );

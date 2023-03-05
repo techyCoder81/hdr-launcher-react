@@ -51,29 +51,30 @@ export class TourneyConfig {
    * loads the currently tourney config from the sd card
    * @returns void when completed
    */
-  async load(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
+  async load(): Promise<ConfigData> {
+    return new Promise<ConfigData>(async (resolve, reject) => {
       try {
         let backend = Backend.instance();
         let root = await backend.getSdRoot();
 
         if (this.data != undefined) {
-          resolve();
+          resolve(this.data);
           return;
         }
 
         // if the config doesn't already exist, default to empty
         if (!(await backend.fileExists(root + ACTIVE_CONFIG_FILE))) {
           this.data = {enabled: false, starters: [], counterpicks: []};
-          resolve();
+          resolve(this.data);
           return;
         }
 
         await backend
           .readFile(root + ACTIVE_CONFIG_FILE)
           .then(json => {
-            this.data = JSON.parse(json);
-            resolve();
+            let data = JSON.parse(json);
+            this.data = data;
+            resolve(data);
           })
           .catch((e) => reject(e));
       } catch (e) {
