@@ -1,5 +1,5 @@
 import { Backend } from './backend';
-import { fromDisplay, stageInfo, toDisplay } from './stage_info';
+import { fromDisplay, stageInfo, toDisplay, UNKNOWN_STAGE } from './stage_info';
 
 const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
 const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
@@ -73,8 +73,8 @@ export class TourneyConfig {
           .readFile(root + ACTIVE_CONFIG_FILE)
           .then(json => {
             let data: ConfigData = JSON.parse(json);
-            data.counterpicks = data.counterpicks.map(properName => toDisplay(properName))
-            data.starters = data.starters.map(properName => toDisplay(properName))
+            data.counterpicks = data.counterpicks.map(properName => toDisplay(properName)).filter(stage => stage !== UNKNOWN_STAGE.display_name)
+            data.starters = data.starters.map(properName => toDisplay(properName)).filter(stage => stage !== UNKNOWN_STAGE.display_name)
             this.data = data;
             resolve(data);
           })

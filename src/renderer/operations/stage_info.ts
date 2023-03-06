@@ -16,17 +16,23 @@ enum Layout {
 }
 
 type Stage = { display_name: string; layout: Layout };
+export const UNKNOWN_STAGE = { display_name: 'Unknown Stage Name', layout: Layout.Unknown};
+export const UNKNOWN_STAGE_NAME = "UnknownStageName";
 
 export function displayNames() {
-  return stageNames().map(properName => toDisplay(properName));
+  return stageNames().map(properName => toDisplay(properName)).sort();
 }
 
 export function stageNames() {
-  return Object.keys(stageInfo);
+  return Object.keys(stageInfo).sort();
 }
 
 export function toDisplay(properName: string) {
-  return stageInfo[properName].display_name;
+  let display = stageInfo[properName]?.display_name;
+  if (display === undefined) {
+    return UNKNOWN_STAGE.display_name;
+  }
+  return display;
 }
 
 /**
@@ -35,16 +41,17 @@ export function toDisplay(properName: string) {
  * @returns the internal stageName
  */
 export function fromDisplay(displayName: string): string {
-  let properName = stageNames().find(name => stageInfo[name].display_name == displayName);
+  let properName = stageNames().find(name => stageInfo[name]?.display_name == displayName);
   if (properName === undefined) {
-    return "Unknown";
+    return UNKNOWN_STAGE_NAME;
   }
   return properName;
 }
 
 export const stageInfo: Record<string, Stage> = {
-  Random: { display_name: 'Random (All)', layout: Layout.Unknown },
-  RandomNormal: { display_name: 'Normal Random', layout: Layout.Unknown },
+  //Random: { display_name: 'Random (All)', layout: Layout.Unknown },
+  //RandomNormal: { display_name: 'Normal Random', layout: Layout.Unknown },
+  UNKNOWN_STAGE_NAME: UNKNOWN_STAGE,
   BattleField: { display_name: 'Battlefield', layout: Layout.TriPlat },
   BattleFieldL: { display_name: 'Deadline', layout: Layout.Deadline },
   End: { display_name: 'Final Destination', layout: Layout.FinalD },
@@ -100,7 +107,7 @@ export const stageInfo: Record<string, Stage> = {
   Mother_Fourside: { display_name: 'Fourside', layout: Layout.MonoPlatMoving },
   Mario_Dolpic: { display_name: 'Delfino Plaza', layout: Layout.Unknown },
   Mario_PastX: { display_name: 'Mushroomy Kingdom', layout: Layout.Unknown },
-  Kart_CircuitX: { display_name: 'Mario Circuit', layout: Layout.Unknown },
+  Kart_CircuitX: { display_name: 'Figure 8 Circuit', layout: Layout.Unknown },
   Wario_Madein: { display_name: 'WarioWare, Inc.', layout: Layout.WarioWare },
   Zelda_Oldin: { display_name: 'Bridge of Elden', layout: Layout.Asymmetric },
   Metroid_Norfair: { display_name: 'Norfair', layout: Layout.Unknown },
