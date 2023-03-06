@@ -196,7 +196,7 @@ export const stageInfo: Record<string, Stage> = {
   Zelda_Tower: { display_name: 'Great Plateau Tower', layout: Layout.MonoPlat },
   Spla_Parking: { display_name: 'Moray Towers', layout: Layout.Unknown },
   Dracula_Castle: { display_name: "Dracula's Castle", layout: Layout.BiPlat },
-  Training: { display_name: 'Training', layout: Layout.FinalD },
+  //Training: { display_name: 'Training', layout: Layout.FinalD },
   Jack_Mementoes: { display_name: 'Mementos', layout: Layout.Unknown },
   Brave_Altar: { display_name: "Yggdrasil's Altar", layout: Layout.Unknown },
   Buddy_Spiral: { display_name: 'Spiral Mountain', layout: Layout.Unknown },
