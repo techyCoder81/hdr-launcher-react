@@ -1,12 +1,12 @@
 import { Backend } from './backend';
-import { fromDisplay, stageInfo, toDisplay, UNKNOWN_STAGE } from './stage_info';
+import { Stage, StageInfo } from './stage_info';
 
 const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
 const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
 const CONFIG_PATH = 'ultimate/hdr-config/';
 
 // require() all of the stage previews
-Object.keys(stageInfo).forEach((key) => {
+new StageInfo().list().then(values => values.forEach((key) => {
   try {
     require('../../../assets/stage_previews/stage_2_' +
       key.toLowerCase() +
@@ -14,111 +14,117 @@ Object.keys(stageInfo).forEach((key) => {
   } catch {
     console.warn('Could not find stage preview for: ' + key);
   }
-});
+}));
 
 
 /**
- * this mirrors the tourney config in the plugin
+ * the ephemeral configuration data
  */
-export type ConfigData = {
-  enabled: boolean,
-  starters: string[],
-  counterpicks: string[]
+export class ConfigData {
+  public enabled: boolean;
+  public starters: Stage[];
+  public counterpicks: Stage[];
+
+  constructor(enabled: boolean, starters: Stage[], counterpicks: Stage[]) {
+    this.enabled = enabled;
+    this.starters = starters;
+    this.counterpicks = counterpicks;
+  }
+
+  public includes(nameId: string) {
+    return !(this.starters.find(stage => stage.nameId === nameId) === undefined
+      || this.counterpicks.find(stage => stage.nameId === nameId) === undefined);
+  }
 };
 
 /**
- * singleton class representing the currently configured tourney mode
+ * this mirrors the tourney config in the plugin, written to the json file
  */
-export class TourneyConfig {
-  public data: ConfigData | undefined;
+export type FileFormat = {
+  enabled: boolean,
+  starters: string[],
+  counterpicks: string[];
+}
 
-  private static singleton: undefined | TourneyConfig;
-
-  private constructor() {}
-
-  /**
-   * gets the singleton instance of the stage config
-   * @returns the instance of the StageConfig
-   */
-  static instance() {
-    if (this.singleton === undefined) {
-      this.singleton = new TourneyConfig();
-    }
-    return this.singleton;
-  }
-
-  /**
+/**
    * loads the currently tourney config from the sd card
    * @returns void when completed
    */
-  async load(): Promise<ConfigData> {
-    return new Promise<ConfigData>(async (resolve, reject) => {
-      try {
-        let backend = Backend.instance();
-        let root = await backend.getSdRoot();
+export async function load(): Promise<ConfigData> {
+  return new Promise<ConfigData>(async (resolve, reject) => {
+    try {
+      let backend = Backend.instance();
+      let root = await backend.getSdRoot();
 
-        if (this.data != undefined) {
-          resolve(this.data);
-          return;
-        }
-
-        // if the config doesn't already exist, default to empty
-        if (!(await backend.fileExists(root + ACTIVE_CONFIG_FILE))) {
-          this.data = {enabled: false, starters: [], counterpicks: []};
-          resolve(this.data);
-          return;
-        }
-
-        await backend
-          .readFile(root + ACTIVE_CONFIG_FILE)
-          .then(json => {
-            let data: ConfigData = JSON.parse(json);
-            data.counterpicks = data.counterpicks.map(properName => toDisplay(properName)).filter(stage => stage !== UNKNOWN_STAGE.display_name)
-            data.starters = data.starters.map(properName => toDisplay(properName)).filter(stage => stage !== UNKNOWN_STAGE.display_name)
-            this.data = data;
-            resolve(data);
-          })
-          .catch((e) => reject(e));
-      } catch (e) {
-        reject(e);
+      // if the config doesn't already exist, default to empty
+      if (!(await backend.fileExists(root + ACTIVE_CONFIG_FILE))) {
+        let data = new ConfigData(false, [], []);
+        resolve(data);
+        return;
       }
-    });
-  }
 
-  async resetDefaults(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        this.data = {enabled: false, starters: [], counterpicks: []};
-        await this.save();
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
+      await backend
+        .readFile(root + ACTIVE_CONFIG_FILE)
+        .then(async json => {
+          let fileData: FileFormat = JSON.parse(json);
+          let info = new StageInfo();
+          let data = new ConfigData(false, [], []);
+          data.enabled = fileData.enabled;
+          data.counterpicks = [];
+          for (const nameId of fileData.counterpicks) {
+            try {
+              data.counterpicks.push(await info.get(nameId));
+            } catch (e) {
+              console.error("Error loading stage " + nameId + ": " + e);
+            }
+          }
+          data.starters = [];
+          for (const nameId of fileData.starters) {
+            try {
+              data.starters.push(await info.get(nameId));
+            } catch (e) {
+              console.error("Error loading stage " + nameId + ": " + e);
+            }
+          }
 
-  async save(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        if (this.data === undefined) {
-          reject('the json data is not loaded!');
-          return;
-        }
+          resolve(data);
+        })
+        .catch((e) => reject(e));
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
-        let root = await Backend.instance().getSdRoot();
-        let config: ConfigData = {enabled: this.data.enabled, starters: [], counterpicks: []};
-        config.counterpicks = this.data.counterpicks.map(display => fromDisplay(display));
-        config.starters = this.data.starters.map(display => fromDisplay(display));
-        let json = JSON.stringify(config);
-        await Backend.instance().writeFile(
-          root + ACTIVE_CONFIG_FILE,
-          json
-        );
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
+export async function resetDefaults(): Promise<void> {
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+      let data = new ConfigData(false, [], []);
+      await save(data);
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
+export async function save(data: ConfigData): Promise<void> {
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+
+      let root = await Backend.instance().getSdRoot();
+      let config: FileFormat = {enabled: data.enabled, starters: [], counterpicks: []};
+      let info = new StageInfo();
+      config.counterpicks = data.counterpicks.map(stage => stage.nameId);
+      config.starters = data.starters.map(stage => stage.nameId);
+      let json = JSON.stringify(config);
+      await Backend.instance().writeFile(
+        root + ACTIVE_CONFIG_FILE,
+        json
+      );
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
