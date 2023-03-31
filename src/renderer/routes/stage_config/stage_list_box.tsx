@@ -18,7 +18,7 @@ export default function StageListBox(props: {
     onHover?: (stage: Stage) => void
 }) {
     const [stages, setStages] = useState(props.stages);
-
+    
     return <div style={{height: "300px", position: "relative", padding: 0}}>
         <div className="thick-border" style={{position: "relative", top: '2.5%', left: '2.5%', height: '95%', width: '95%'}}>
             <h2 style={{color: "white", backgroundColor: BACKGROUND_COLOR, padding: 5}} className="border-bottom">{props.category}s</h2>

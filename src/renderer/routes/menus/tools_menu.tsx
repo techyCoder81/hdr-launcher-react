@@ -15,6 +15,7 @@ import { ScrollFocusButton } from '../../components/buttons/scroll_focus_button'
 import { CloneFolderForDev } from '../../components/buttons/dev_tools_buttons';
 import { Link, useNavigate } from 'react-router-dom';
 import { Pages } from 'renderer/constants';
+import { NavigateButton } from 'renderer/components/buttons/navigate_button';
 
 /**
  * builds the tools menu components
@@ -82,6 +83,7 @@ export default class ToolsMenu extends AbstractMenu<{
           <NavigateButton
             text='Stage Config'
             page={Pages.STAGE_CONFIG}
+            className={'smaller-main-button'}
             onFocus={() => this.props.setInfo('Open the stage configuration menu')}
           />
           
@@ -132,6 +134,7 @@ export default class ToolsMenu extends AbstractMenu<{
             }}
           />
           <NavigateButton
+            className={'smaller-main-button'}
             text='Install PR Build'
             page={Pages.PULL_REQUESTS}
             onFocus={() => this.props.setInfo('Open the stage configuration menu')}
@@ -148,19 +151,4 @@ export default class ToolsMenu extends AbstractMenu<{
       </div>
     );
   }
-}
-
-function NavigateButton(props: {text: string, page: Pages, onFocus: () => void}) {
-  const navigate = useNavigate();
-  return <ScrollFocusButton
-      text={props.text + '\u00A0'}
-      className={'smaller-main-button'}
-      onClick={() => {
-        
-        navigate(props.page);
-      }}
-      onFocus={() =>
-        props.onFocus()
-      }
-    />
 }

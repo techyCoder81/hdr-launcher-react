@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FocusCheckbox } from "renderer/components/buttons/focus_checkbox";
+import { LogPopout } from "renderer/components/logging/log_popout";
 import { Pages } from "renderer/constants";
 import { ConfigData, load, save } from "renderer/operations/stage_config";
 import { Stage, StageInfo } from "renderer/operations/stage_info";
@@ -32,75 +33,75 @@ export default function StageConfigMenu() {
     }, [config]);
     
     return <FullScreenDiv>
-            <div id='header-bar' className="border-bottom" style={{}}>
-                <FocusButton
-                    text="Back"
-                    onClick={async () => {
-                        if (config !== null) {
-                            save(config);
-                        }
-                        navigate(Pages.MAIN_MENU);
-                    }}
-                    className='simple-button-bigger'
-                    onFocus={() => {}}
-                    autofocus
-                />
-                {config ?
-                <FocusCheckbox
-                    text="Enabled"
-                    onClick={async () => {
-                        config.enabled = !config.enabled;
+        <div id='header-bar' className="border-bottom" style={{}}>
+            <FocusButton
+                text="Back"
+                onClick={async () => {
+                    if (config !== null) {
                         save(config);
+                    }
+                    navigate(Pages.MAIN_MENU);
+                }}
+                className='simple-button-bigger'
+                onFocus={() => {}}
+                autofocus
+            />
+            {config ?
+            <FocusCheckbox
+                text="Enabled"
+                onClick={async () => {
+                    config.enabled = !config.enabled;
+                    save(config);
+                }}
+                className='simple-button-bigger'
+                onFocus={() => {}}
+                checkStatus={async () => {
+                    return config.enabled;
+                }}
+            /> : <div/>}
+        </div>
+        {config && options ?
+        <div id='main-content' className="stage-config-body">
+            <div style={{width: "40%"}}>
+                <StageListBox 
+                    category='Starter' 
+                    stages={config.starters}
+                    options={options}
+                    onUpdate={stages => {
+                        let newConfig = new ConfigData(
+                            config.enabled,
+                            stages,
+                            config.counterpicks
+                        );
+                        save(newConfig);
+                        setConfig(newConfig);
                     }}
-                    className='simple-button-bigger'
-                    onFocus={() => {}}
-                    checkStatus={async () => {
-                        return config.enabled;
+                    onHover={(stage) => setHoveredStage(stage)}
+                />
+                <StageListBox 
+                    category='Counterpick' 
+                    stages={config.counterpicks}
+                    options={options}
+                    onUpdate={stages => {
+                        let newConfig = new ConfigData(
+                            config.enabled,
+                            config.starters,
+                            stages
+                        );
+                        save(newConfig);
+                        setConfig(newConfig);
                     }}
-                /> : <div/>}
+                    onHover={(stage) => setHoveredStage(stage)}
+                />
             </div>
-            {config && options ?
-            <div id='main-content' className="stage-config-body">
-                <div style={{width: "40%"}}>
-                    <StageListBox 
-                        category='Starter' 
-                        stages={config.starters}
-                        options={options}
-                        onUpdate={stages => {
-                            let newConfig = new ConfigData(
-                                config.enabled,
-                                stages,
-                                config.counterpicks
-                            );
-                            save(newConfig);
-                            setConfig(newConfig);
-                        }}
-                        onHover={(stage) => setHoveredStage(stage)}
-                    />
-                    <StageListBox 
-                        category='Counterpick' 
-                        stages={config.counterpicks}
-                        options={options}
-                        onUpdate={stages => {
-                            let newConfig = new ConfigData(
-                                config.enabled,
-                                config.starters,
-                                stages
-                            );
-                            save(newConfig);
-                            setConfig(newConfig);
-                        }}
-                        onHover={(stage) => setHoveredStage(stage)}
-                    />
+            <div style={{width: "60%", height: "100%"}}>
+                <div style={{margin: 10, height: "80%"}}>
+                    {hoveredStage !== null ?
+                        <StagePreview stage={hoveredStage}/>
+                        : <div/>
+                    }
                 </div>
-                <div style={{width: "60%", height: "100%"}}>
-                    <div style={{margin: 10, height: "80%"}}>
-                        {hoveredStage !== null ?
-                            <StagePreview stage={hoveredStage}/>
-                            : <div/>
-                        }
-                    </div>
-                </div>
-            </div> : <div>loading...</div>}
+            </div>
+        </div> : <div>loading...</div>}
     </FullScreenDiv>
 }
