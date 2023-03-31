@@ -47,16 +47,16 @@ export function StagePreview(props: { stage: Stage}) {
   }
 
   return (
-    <div className="image preview" key={props.stage.nameId}>
+    <div className="image preview" key={props.stage?.display_name}>
       <div style={{left: 0, top: 0, position: 'absolute'}}>
-        <div style={labelStyle}>{props.stage.displayName}</div><br/>
-        <div style={detailsStyle}>Top Blastzone: {props.stage.blastzones.top}</div><br/>
+        <div style={labelStyle}>{props.stage?.display_name}</div><br/>
+        {/*<div style={detailsStyle}>Top Blastzone: {props.stage.blastzones.top}</div><br/>
         <div style={detailsStyle}>Side Blastzone: {props.stage.blastzones.side}</div><br/>
-        <div style={detailsStyle}>Bottom Blastzone: {props.stage.blastzones.bottom}</div><br/>
-      </div>
+        <div style={detailsStyle}>Bottom Blastzone: {props.stage.blastzones.bottom}</div><br/>*/}
+      </div> 
       <img 
       style={{position: "absolute", zIndex:-1}}
-        src={'/static/stage_2_' + props.stage.nameId.toLowerCase() + '.jpg'} 
+        src={'/static/stage_2_' + props.stage?.name_id.toLowerCase() + '.jpg'} 
         alt="Preview"
         onError={({ currentTarget }) => {
           currentTarget.onerror = null; // prevents looping

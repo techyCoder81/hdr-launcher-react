@@ -127,10 +127,21 @@ export class Backend extends DefaultMessenger {
   removeDirAll(path: string): Promise<string> {
     return this.customRequest('remove_dir_all', [path]);
   }
+
+  override customRequest(name: string, args: string[] | null, progressCallback?: ((p: Progress) => void) | undefined): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      super.customRequest(name, args, progressCallback)
+        .then(result => resolve(result))
+        .catch(e => {
+          console.error("request " + name + " rejected, args: " + args?.join(","));
+          reject(e);
+        });
+    });
+  }
 }
 
 /**
- * this is an implementation that intends to
+ * this is an implementation for the electron node backend
  */
 export class NodeBackend implements BackendSupplier {
   invoke(

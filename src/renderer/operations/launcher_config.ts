@@ -2,12 +2,7 @@ import { Backend } from './backend';
 
 type BooleanSetting = 'skip_launcher' | 'ignore_music' | 'enable_dev_tools';
 
-const ACTIVE_CONFIG_FILE =
-  'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml';
-const DEFAULT_CONFIG_FILE =
-  'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.default';
-const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/backup_ui_stage_db.prcxml';
-const CONFIG_PATH = 'ultimate/hdr-config/';
+const CONFIG_PATH = 'ultimate/hdr-config';
 
 export async function setBoolean(
   setting: BooleanSetting,
@@ -17,10 +12,12 @@ export async function setBoolean(
     try {
       let backend = Backend.instance();
       let sdroot = await backend.getSdRoot();
-      let configDir = sdroot + 'ultimate/hdr-config';
+      let configDir = sdroot + CONFIG_PATH;
       let exists = await backend.fileExists(configDir + '/' + setting);
       if (exists) {
-        await backend.deleteFile(configDir + '/' + setting);
+        // if the file already exists, then it's enabled.
+        resolve();
+        return;
       } else {
         await backend.mkdir(configDir);
         await backend.writeFile(configDir + '/' + setting, 'foo');
@@ -38,7 +35,7 @@ export async function getBoolean(setting: BooleanSetting): Promise<boolean> {
     try {
       let backend = Backend.instance();
       let sdroot = await backend.getSdRoot();
-      let configDir = sdroot + 'ultimate/hdr-config';
+      let configDir = sdroot + CONFIG_PATH;
       let exists = await backend.fileExists(configDir + '/' + setting);
       if (exists) {
         resolve(true);

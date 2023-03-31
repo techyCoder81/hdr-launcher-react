@@ -19,7 +19,7 @@ export default function StageConfigMenu() {
         if (config !== null) {
             return;
         }
-
+ 
         load()
             .then(data => setConfig(data))
             .catch(e => alert("failed to preload stage config: " + e));
@@ -27,7 +27,7 @@ export default function StageConfigMenu() {
 
     useEffect(() => {
         new StageInfo().list()
-        .then(list => setOptions(list))
+        .then(list => setOptions(list.map(stage => stage?.display_name)))
         .catch(e => alert("failed to set new options: " + e));
     }, [config]);
     

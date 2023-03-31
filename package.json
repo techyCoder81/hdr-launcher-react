@@ -92,6 +92,7 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^5.2.3",
+    "glob": "^9.3.1",
     "md5-file": "^5.0.0",
     "nx-request-api": "^0.1.21",
     "open-file-explorer": "^1.0.2",

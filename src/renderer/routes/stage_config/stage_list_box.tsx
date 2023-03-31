@@ -22,13 +22,13 @@ export default function StageListBox(props: {
     return <div style={{height: "300px", position: "relative", padding: 0}}>
         <div className="thick-border" style={{position: "relative", top: '2.5%', left: '2.5%', height: '95%', width: '95%'}}>
             <h2 style={{color: "white", backgroundColor: BACKGROUND_COLOR, padding: 5}} className="border-bottom">{props.category}s</h2>
-            {props.options ?
+            {props.options ? 
                 stages.map((entry, idx) => <StageListItem 
                     options={props.options}
                     selected={entry} 
                     onChange={async item => {
                         let info = new StageInfo();
-                        let stage = await info.get(item.target.value);
+                        let stage = await info.getByDisplay(item.target.value);
                         props.stages[idx] = stage;
                         props.onUpdate(props.stages);
                     }}
@@ -50,7 +50,7 @@ export default function StageListBox(props: {
                 onClick={async () => {
                     let newSelected = [];
                     let info = new StageInfo();
-                    let firstAvailable = await info.get((await info.list())[0]);
+                    let firstAvailable = await info.getByDisplay((await info.list())[0]?.display_name);
                     props.stages.forEach(entry => newSelected.push(entry));
                     newSelected.push(firstAvailable);
                     props.onUpdate(newSelected);
@@ -76,9 +76,9 @@ function StageListItem(props: {options: string[], onChange: (item: {target: {val
             className="hover-color"
             style={{width: "90%", color: 'white', fontSize: "large", paddingTop: 3, paddingBottom: 3}}
             onChange={props.onChange}
-            forcedValue={props.selected.nameId}
+            forcedValue={props.selected?.display_name}
             onFocus={() => {if (props.onHover) {props.onHover(props.selected)}}}
-            options={props.options} 
+            options={props.options}
         />
         <FocusButton
             className="hover-color"
