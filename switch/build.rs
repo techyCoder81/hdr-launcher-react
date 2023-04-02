@@ -47,11 +47,15 @@ fn main() -> (){
         .replace("let ", "var ")
         .replace("let{", "var{")
         .replace("let[", "var[")
+        .replace("const{", "var{")
+        .replace("const[", "var[")
         .replace("() => e.default : () => e", "(() => e.default) : (() => e)")
         .replace("()=>e.default:()=>e", "(()=>e.default):(()=>e)")
         .replace("() =>(module['default'])", "(()=>(module['default']))")
         .replace("() =>(module)", "(() =>(module))")
         .replace("e=>Object.getPrototypeOf(e)", "(e=>Object.getPrototypeOf(e))")
+        .replace(".Component{state=yr;", ".Component{")
+        .replace("resetErrorBoundary=(...e)=>", "resetErrorBoundary(e)")
         //.replace("this.isNode() ? \"Ryujinx\" : \"Switch\"", "(this.isNode() ? \"Ryujinx\" : \"Switch\")")
         .replace("\"assets/", "\"");
 
@@ -60,7 +64,10 @@ fn main() -> (){
 
     // prettyprint and then write the file
     let (pretty, _) = prettify_js::prettyprint(&new_data_js);
-    dest_js.write(pretty.as_bytes()).unwrap(); 
+    let formatted = pretty.replace(" ? .", "?.")
+        .replace("props.onReset?.(", "props.onReset && props.onReset(")
+        .replace("props.onError?.(", "props.onError && props.onError(");
+    dest_js.write(formatted.as_bytes()).unwrap(); 
 }
 
 

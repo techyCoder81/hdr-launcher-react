@@ -8,10 +8,10 @@ import {Pages} from './constants';
 import PullRequestMenu from './routes/pull_request_menu';
 import StageConfigMenu from './routes/stage_config/stage_config_menu';
 import Main from './routes/menus/main';
-import { ErrorBoundary } from 'react-error-boundary';
 import { FocusButton } from './components/buttons/focus_button';
 import { NavigateButton } from './components/buttons/navigate_button';
 import { LogPopout } from './components/logging/log_popout';
+import React from 'react';
 
 export default function App() {
   useEffect(() => {
@@ -23,22 +23,19 @@ export default function App() {
         <Routes>
           <Route path={Pages.STARTUP} element={<Navigate to={Pages.LOADING_SCREEN}/>}/>
           <Route path={Pages.LOADING_SCREEN} element={<Loading/>}/>
-          <Route path={Pages.MAIN_MENU} element={<ErrorHandler><Main/></ErrorHandler>}/>
-          <Route path={Pages.STAGE_CONFIG} element={<ErrorHandler><StageConfigMenu/></ErrorHandler>}/>
-          <Route path={Pages.PULL_REQUESTS} element={<ErrorHandler><PullRequestMenu/></ErrorHandler>}/>
+          <Route path={Pages.MAIN_MENU} element={<ErrorBoundary fallback={<ErrorPage/>}><Main/></ErrorBoundary>}/>
+          <Route path={Pages.STAGE_CONFIG} element={<ErrorBoundary fallback={<ErrorPage/>}><StageConfigMenu/></ErrorBoundary>}/>
+          <Route path={Pages.PULL_REQUESTS} element={<ErrorBoundary fallback={<ErrorPage/>}><PullRequestMenu/></ErrorBoundary>}/>
         </Routes>
       </HashRouter>
   );
 }
 
-const ErrorPage = (data: {error: any}) => {
-  const navigate = useNavigate();
+const ErrorPage = () => {
   return <div>
     <div style={{top: '25%', bottom: '25%', left: '25%', right: '25%', position: 'absolute'}}>
       <div style={{color: "white", textAlign: "center", top: "50%",transform: "translate(0, -50%)", position: "relative"}}>
-        An unexpected error ocurred in the launcher!
-        Details: <br/>
-        {JSON.stringify(data.error.message)}<br/>
+        An unexpected error ocurred in the launcher! Check the logs to investigate.
         <NavigateButton
           className={'simple-button'}
           text='Return to Main Menu'
@@ -50,11 +47,38 @@ const ErrorPage = (data: {error: any}) => {
       <LogPopout />
     </ErrorBoundary> 
   </div>
-
 }
 
-const ErrorHandler = (props : {children: JSX.Element[] | JSX.Element}) => {
-  return <ErrorBoundary FallbackComponent={ErrorPage}>
-    {props.children}
-  </ErrorBoundary>
+class ErrorBoundary extends React.Component<{children: JSX.Element[] | JSX.Element, fallback: JSX.Element}> {
+  state = {
+    hasError: false
+  };
+
+  constructor(props : {children: JSX.Element[] | JSX.Element, fallback: JSX.Element}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, info: any) {
+    // Example "componentStack":
+    //   in ComponentThatThrows (created by App)
+    //   in ErrorBoundary (created by App)
+    //   in div (created by App)
+    //   in App
+    //logErrorToMyService(error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // You can render any custom fallback UI
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
 }

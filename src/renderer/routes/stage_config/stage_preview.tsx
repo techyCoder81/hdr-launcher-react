@@ -55,7 +55,7 @@ export function StagePreview(props: { stage: Stage}) {
         <div style={detailsStyle}>Bottom Blastzone: {props.stage.blastzones.bottom}</div><br/>*/}
       </div> 
       <img 
-      style={{position: "absolute", zIndex:-1}}
+      style={{position: "absolute", zIndex:-1, height: '100%', top: 0, left: 0}}
         src={'/static/stage_2_' + props.stage?.name_id.toLowerCase() + '.jpg'} 
         alt="Preview"
         onError={({ currentTarget }) => {
