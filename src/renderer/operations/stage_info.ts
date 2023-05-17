@@ -54,6 +54,9 @@ export const stageInfo: Record<string, { display_name: string }> = {
   BattleField: {
     display_name: 'Battlefield',
   },
+  BattleFieldS: {
+      display_name: 'Duel Battlefield',
+  },
   BattleFieldL: {
     display_name: 'Deadline',
   },
@@ -69,17 +72,20 @@ export const stageInfo: Record<string, { display_name: string }> = {
   Zelda_Hyrule: {
     display_name: 'Hyrule Castle 64',
   },
+  Yoshi_Story: {
+      display_name: "Super Happy Tree",
+  },
   Kirby_Pupupu64: {
-    display_name: 'Dreamland',
+      display_name: 'Dream Land 64',
   },
   Poke_Yamabuki: {
     display_name: 'Saffron City',
   },
   Mario_Past64: {
-    display_name: 'Mushroom Kingdom',
+      display_name: 'Mushroom Kingdom 64',
   },
   Mario_CastleDx: {
-    display_name: "Princess Peach's Castle",
+      display_name: "Princess Peach's Castle (Melee)",
   },
   Mario_Rainbow: {
     display_name: 'Rainbow Cruise',
@@ -100,7 +106,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Brinstar',
   },
   Yoshi_Yoster: {
-    display_name: "Yoshi's Island (Melee)",
+      display_name: "Yoshi's Island (Melee)",
   },
   Yoshi_CartBoard: {
     display_name: "Yoshi's Story",
@@ -109,7 +115,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Fountain of Dreams',
   },
   Kirby_Greens: {
-    display_name: 'Green Greens',
+      display_name: 'Green Greens (Melee)',
   },
   Fox_Corneria: {
     display_name: 'Corneria',
@@ -118,19 +124,16 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Venom',
   },
   Poke_Stadium: {
-    display_name: 'Pokémon Stadium',
+      display_name: 'Pokémon Stadium',
   },
   Mother_Onett: {
     display_name: 'Onett',
   },
   Mario_PastUsa: {
-    display_name: 'Mushroom Kingdom II',
+      display_name: 'Mushroom Kingdom II',
   },
   Metroid_Kraid: {
     display_name: 'Brinstar Depths',
-  },
-  Yoshi_Story: {
-    display_name: "Yoshi's Island (Brawl)",
   },
   Fzero_Bigblue: {
     display_name: 'Big Blue',
@@ -145,13 +148,13 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Mushroomy Kingdom',
   },
   Kart_CircuitX: {
-    display_name: 'Figure 8 Circuit',
+      display_name: 'Figure-8 Circuit',
   },
   Wario_Madein: {
     display_name: 'WarioWare, Inc.',
   },
   Zelda_Oldin: {
-    display_name: 'Bridge of Elden',
+      display_name: 'Bridge of Eldin',
   },
   Metroid_Norfair: {
     display_name: 'Norfair',
@@ -160,7 +163,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Frigate Orpheon',
   },
   Yoshi_Island: {
-    display_name: "Yoshi's Island",
+      display_name: "Yoshi's Island (Brawl)",
   },
   Kirby_Halberd: {
     display_name: 'Halberd',
@@ -169,7 +172,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Lylat Cruise',
   },
   Poke_Stadium2: {
-    display_name: 'Pokémon Stadium 2',
+      display_name: 'Pokémon Stadium 3',
   },
   Fzero_Porttown: {
     display_name: 'Port Town Aero Dive',
@@ -184,7 +187,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Smashville',
   },
   Mother_Newpork: {
-    display_name: 'New Pork Town',
+      display_name: 'New Pork City',
   },
   Ice_Top: {
     display_name: 'Summit',
@@ -204,6 +207,9 @@ export const stageInfo: Record<string, { display_name: string }> = {
   Poke_Tengam: {
     display_name: 'Spear Pillar',
   },
+  75m : {
+      display_name: '75m',
+  },
   MarioBros: {
     display_name: 'Mario Bros.',
   },
@@ -217,7 +223,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: '3D Land',
   },
   Mario_NewBros2: {
-    display_name: 'Mushroom Kingdom 2',
+      display_name: 'Golden Plains',
   },
   Mario_Paper: {
     display_name: 'Paper Mario',
@@ -226,19 +232,19 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Gerudo Valley',
   },
   Zelda_Train: {
-    display_name: 'Spirit Tracks',
+      display_name: 'Spirit Train',
   },
   Kirby_Gameboy: {
-    display_name: 'Dreamland GB',
+      display_name: 'Dream Land GB',
   },
   Poke_Unova: {
-    display_name: 'Unova Pokemon League',
+      display_name: 'Unova Pokémon League',
   },
   Poke_Tower: {
     display_name: 'Prism Tower',
   },
   Fzero_Mutecity3DS: {
-    display_name: 'Mute City',
+      display_name: 'Mute City SNES',
   },
   Mother_Magicant: {
     display_name: 'Magicant',
@@ -256,16 +262,16 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Balloon Fight',
   },
   NintenDogs: {
-    display_name: 'NintenDogs',
+      display_name: 'Living Room',
   },
   StreetPass: {
-    display_name: 'Find Mii',
+      display_name: 'Find Mii / StreetPass Quest',
   },
   Tomodachi: {
     display_name: 'Tomodachi Life',
   },
   Pictochat2: {
-    display_name: 'Pictochat 2',
+      display_name: 'PictoChat 2',
   },
   Mario_Uworld: {
     display_name: 'Mushroom Kingdom U',
@@ -286,10 +292,10 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Kalos Pokemon League',
   },
   FE_Colloseum: {
-    display_name: 'Colloseum',
+      display_name: 'Coliseum',
   },
   FlatZoneX: {
-    display_name: 'Flat Zone',
+      display_name: 'Flat Zone X',
   },
   Icarus_Angeland: {
     display_name: "Palutena's Temple",
@@ -310,7 +316,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Boxing Ring (SSB)',
   },
   Xeno_Gaur: {
-    display_name: 'Guar Plains',
+      display_name: 'Gaur Plains',
   },
   DuckHunt: {
     display_name: 'Duck Hunt',
@@ -328,10 +334,10 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Windy Hill Zone',
   },
   Rock_Wily: {
-    display_name: "Wily's Castle",
+      display_name: "Wily Castle",
   },
   Pac_Land: {
-    display_name: 'Pac Land',
+      display_name: 'Pac-Land',
   },
   Mario_Maker: {
     display_name: 'Mario Maker',
@@ -346,7 +352,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Umbra Clock Tower',
   },
   Mario_Odyssey: {
-    display_name: 'New Donk City',
+      display_name: 'New Donk City Hall',
   },
   Zelda_Tower: {
     display_name: 'Great Plateau Tower',
@@ -368,7 +374,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Spiral Mountain',
   },
   Dolly_Stadium: {
-    display_name: 'KoF Stadium',
+      display_name: 'King of Fighters Stadium',
   },
   FE_Shrine: {
     display_name: 'Garreg Mach Monastery',
@@ -386,12 +392,9 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Cloud Sea of Alrest',
   },
   Demon_Dojo: {
-    display_name: 'Demon Dojo',
+      display_name: 'Mishima Dojo',
   },
   Trail_Castle: {
-    display_name: 'Hallow Bastion',
-  },
-  BattleFieldS: {
-    display_name: 'Small Battlefield',
+      display_name: 'Hollow Bastion',
   },
 };
