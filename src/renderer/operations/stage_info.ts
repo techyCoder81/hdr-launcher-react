@@ -57,7 +57,7 @@ export const stageInfo: Record <string, { display_name: string }> = {
       display_name: "Peach's Castle 64",
   },
   DK_Jungle: {
-      display_name: 'DK Jungle 64',
+      display_name: 'Bramble Blast',
   },
   Zelda_Hyrule: {
       display_name: 'Hyrule Castle 64',
@@ -195,7 +195,7 @@ export const stageInfo: Record <string, { display_name: string }> = {
       display_name: "Luigi's Mansion",
   },
   Zelda_Pirates: {
-      display_name: 'Pirate Ship',
+      display_name: 'Ganon\'s Tower',
   },
   Poke_Tengam: {
       display_name: 'Spear Pillar',
