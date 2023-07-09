@@ -1,5 +1,5 @@
-import { Backend } from './backend';
 import { Progress } from 'nx-request-api';
+import { Backend } from './backend';
 import { getInstallType, getRepoName } from './install';
 import * as config from './launcher_config';
 
@@ -7,14 +7,14 @@ import * as config from './launcher_config';
 const plugins_dir =
   'atmosphere/contents/01006A800016E000/romfs/skyline/plugins';
 const always_disable_plugins = [
-  plugins_dir + '/libsmashline_hook_development.nro',
-  plugins_dir + '/libhdr.nro',
-  plugins_dir + '/libnn_hid_hook',
-  plugins_dir + '/libparam_hook.nro',
-  plugins_dir + '/libtraining_modpack.nro',
-  plugins_dir + '/libHDR-Launcher.nro',
-  plugins_dir + '/libnn_hid_hook.nro',
-  plugins_dir + '/libacmd_hook.nro',
+  `${plugins_dir}/libsmashline_hook_development.nro`,
+  `${plugins_dir}/libhdr.nro`,
+  `${plugins_dir}/libnn_hid_hook`,
+  `${plugins_dir}/libparam_hook.nro`,
+  `${plugins_dir}/libtraining_modpack.nro`,
+  `${plugins_dir}/libHDR-Launcher.nro`,
+  `${plugins_dir}/libnn_hid_hook.nro`,
+  `${plugins_dir}/libacmd_hook.nro`,
 ];
 
 const music_files = [
@@ -48,55 +48,51 @@ export default async function verify(
 ): Promise<string> {
   return new Promise<string>(async (resolve, reject) => {
     try {
-      var reportProgress = (prog: Progress) => {
+      const reportProgress = (prog: Progress) => {
         if (typeof progressCallback !== 'undefined') {
           progressCallback(prog);
         }
       };
-      let backend = Backend.instance();
-      let sdroot = await backend.getSdRoot();
+      const backend = Backend.instance();
+      const sdroot = await backend.getSdRoot();
 
       reportProgress(new Progress('Checking Versions', 'Checking', null));
 
-      let downloads = sdroot + 'downloads/';
-      let version = await backend.getVersion();
-      console.debug('version is: ' + version);
-      let ignore_music = await config.getBoolean('ignore_music');
+      const downloads = `${sdroot}downloads/`;
+      const version = await backend.getVersion();
+      console.debug(`version is: ${version}`);
+      const ignore_music = await config.getBoolean('ignore_music');
 
-      let version_stripped = version.split('-')[0];
-      let hash_file = downloads + 'content_hashes.json';
-      let repoName = getRepoName(getInstallType(version));
+      const versionStripped = version.split('-')[0];
+      const hash_file = `${downloads}content_hashes.json`;
+      const repoName = getRepoName(getInstallType(version));
 
       // get the hashes file from github
       await backend.downloadFile(
-        'https://github.com/HDR-Development/' +
-          repoName +
-          '/releases/download/' +
-          version_stripped +
-          '/content_hashes.json',
+        `https://github.com/HDR-Development/${repoName}/releases/download/${versionStripped}/content_hashes.json`,
         hash_file,
         (p: Progress) => reportProgress(p)
       );
 
       let matches = true;
 
-      let hashes_str = await backend.readFile(hash_file);
-      let entries = JSON.parse(hashes_str);
+      const hashes_str = await backend.readFile(hash_file);
+      const entries = JSON.parse(hashes_str);
       let count = 0;
-      let total = entries.length;
+      const total = entries.length;
       if (entries.length === undefined || entries.length == 0) {
         throw new Error('Could not get file hashes!');
       }
 
-      let missing = [];
-      let wrong: any[] = [];
-      let errors: string[] = [];
+      const missing = [];
+      const wrong: any[] = [];
+      const errors: string[] = [];
       let result_str = '';
 
       // check to make sure every file has the right hash
       while (count < total) {
-        let path = entries[count].path;
-        let expected_hash = entries[count].hash;
+        const { path } = entries[count];
+        const expected_hash = entries[count].hash;
 
         // continue if we arent supposed to hash-check this file.
         let ignored = false;
@@ -114,9 +110,9 @@ export default async function verify(
           });
         }
 
-        //if we're supposed to ignore this file, break out
+        // if we're supposed to ignore this file, break out
         if (ignored) {
-          console.info('Ignoring: ' + path);
+          console.info(`Ignoring: ${path}`);
           count++;
           continue;
         }
@@ -124,12 +120,12 @@ export default async function verify(
         reportProgress(
           new Progress(
             'Verifying Files',
-            'File: ' + path,
+            `File: ${path}`,
             count / entries.length
           )
         );
 
-        let exists = await backend.fileExists(sdroot + path);
+        const exists = await backend.fileExists(sdroot + path);
 
         // file did not exist, report error and go to next file
         if (!exists) {
@@ -138,19 +134,14 @@ export default async function verify(
           continue;
         }
 
-        //console.debug("Checking file " + path + ", with expected hash: " + expected_hash);
+        // console.debug("Checking file " + path + ", with expected hash: " + expected_hash);
         await backend
           .getMd5(sdroot + path)
           .then((hash) => {
             if (hash != expected_hash) {
               matches = false;
               console.error(
-                'hash was wrong for ' +
-                  path +
-                  '\nGot: ' +
-                  hash +
-                  ', Expected: ' +
-                  expected_hash
+                `hash was wrong for ${path}\nGot: ${hash}, Expected: ${expected_hash}`
               );
               wrong.push(path);
             }
@@ -158,15 +149,15 @@ export default async function verify(
           .catch((e) => {
             matches = false;
             console.error(
-              'Error while getting hash for path :' + path + '\nError: ' + e
+              `Error while getting hash for path :${path}\nError: ${e}`
             );
-            errors.push(path + ': ' + e);
+            errors.push(`${path}: ${e}`);
           });
         count++;
       }
 
       // check for any files which should not exist in the HDR folders
-      let expected_files: string[] = [];
+      const expected_files: string[] = [];
       let unexpected_files: string[] = [];
       entries.forEach((element: any) =>
         expected_files.push(element.path.replace(/\\/g, '/'))
@@ -175,17 +166,17 @@ export default async function verify(
       for (const folder of hdr_folders) {
         reportProgress(
           new Progress(
-            'Checking ' + folder,
-            'Folder: ' + folder,
+            `Checking ${folder}`,
+            `Folder: ${folder}`,
             count / hdr_folders.length
           )
         );
 
         // check the files in this directory
-        let hdr_files = (await backend.listDirAll(sdroot + folder))
-          .toList('/' + folder)
+        const hdr_files = (await backend.listDirAll(sdroot + folder))
+          .toList(`/${folder}`)
           .map((str) => str.replace(/\\/g, '/'));
-        console.info('got ' + folder + ' files');
+        console.info(`got ${folder} files`);
 
         for (const element of hdr_files) {
           if (
@@ -193,7 +184,7 @@ export default async function verify(
             always_ignore_files.filter((item) => element.includes(item))
               .length == 0
           ) {
-            console.error('File should be removed: ' + element);
+            console.error(`File should be removed: ${element}`);
             unexpected_files.push(element);
           }
         }
@@ -201,20 +192,20 @@ export default async function verify(
 
       // delete any problematic files in the HDR dirs
       if (unexpected_files.length > 0) {
-        let text =
+        const text =
           unexpected_files.length < 10
-            ? 'The following unexpected files were found which will be deleted:\n' +
-              unexpected_files.join('\n')
+            ? `The following unexpected files were found which will be deleted:\n${unexpected_files.join(
+                '\n'
+              )}`
             : 'Multiple unexpected files were found in the HDR folders, which will be deleted.';
-        let ok = confirm(text);
+        const ok = confirm(text);
 
         if (ok) {
-          unexpected_files.forEach(
-            async (file) =>
-              await backend.deleteFile(sdroot + file).catch((e) => {
-                alert('an error occurred while deleting file:\n' + e);
-                errors.push(e);
-              })
+          unexpected_files.forEach(async (file) =>
+            backend.deleteFile(sdroot + file).catch((e) => {
+              alert(`an error occurred while deleting file:\n${e}`);
+              errors.push(e);
+            })
           );
           unexpected_files = [];
         } else {
@@ -224,19 +215,19 @@ export default async function verify(
         }
       }
 
-      let should_disable = [];
-      let should_warn = [];
+      const should_disable = [];
+      const should_warn = [];
 
       // check the plugins
-      let plugins = (await backend.listDirAll(sdroot + plugins_dir))
-        .toList('/' + plugins_dir)
+      const plugins = (await backend.listDirAll(sdroot + plugins_dir))
+        .toList(`/${plugins_dir}`)
         .map((str) => str.replace(/\\/g, '/'));
       console.info('got existing plugins.');
 
       // for every plugin in their plugins dir, make sure it should be there
       for (const plugin of plugins) {
         if (always_disable_plugins.includes(plugin)) {
-          console.error('Plugin should be disabled: ' + plugin);
+          console.error(`Plugin should be disabled: ${plugin}`);
           should_disable.push(plugin);
         } else if (!expected_files.includes(plugin)) {
           should_warn.push(plugin);
@@ -245,7 +236,7 @@ export default async function verify(
 
       // warn the user if there is a development.nro
       if (await backend.fileExists(sdroot + dev_nro_path)) {
-        let ok = confirm(
+        const ok = confirm(
           'You have a development nro, would you like to delete it?'
         );
         if (ok) {
@@ -265,11 +256,7 @@ export default async function verify(
           .listDir(sdroot + deprecated_ryu_mods_dir)
           .then((contents) => {
             if (contents.list.length > 0) {
-              result_str +=
-                '\nThere are files in ' +
-                sdroot +
-                deprecated_ryu_mods_dir +
-                ' which may cause conflicts with HDR, as we do not use this form of mod loading.';
+              result_str += `\nThere are files in ${sdroot}${deprecated_ryu_mods_dir} which may cause conflicts with HDR, as we do not use this form of mod loading.`;
             }
           })
           .catch((e) => console.error(e));
@@ -278,10 +265,10 @@ export default async function verify(
       // launcher nro is unnecessary on ryujinx and will actually cause a crash (for the old launcher)
       if (
         Backend.isNode() &&
-        (await backend.fileExists(sdroot + plugins_dir + '/hdr-launcher.nro'))
+        (await backend.fileExists(`${sdroot + plugins_dir}/hdr-launcher.nro`))
       ) {
         await backend
-          .deleteFile(sdroot + plugins_dir + '/hdr-launcher.nro')
+          .deleteFile(`${sdroot + plugins_dir}/hdr-launcher.nro`)
           .then((str) => console.debug('deleted old launcher'))
           .catch((e) =>
             alert(
@@ -291,20 +278,22 @@ export default async function verify(
       }
 
       if (Backend.isSwitch()) {
-        let api_version = (await backend.getArcropApiVersion()).split('.');
+        const api_version = (await backend.getArcropApiVersion()).split('.');
         if (Number(api_version[0]) >= 1 && Number(api_version[1]) >= 7) {
           // check if hdr is enabled
-          let hdr_enabled = await backend.isModEnabled('sd:/ultimate/mods/hdr');
-          let hdr_assets_enabled = await backend.isModEnabled(
+          const hdr_enabled = await backend.isModEnabled(
+            'sd:/ultimate/mods/hdr'
+          );
+          const hdr_assets_enabled = await backend.isModEnabled(
             'sd:/ultimate/mods/hdr-assets'
           );
-          let hdr_stages_enabled = await backend.isModEnabled(
+          const hdr_stages_enabled = await backend.isModEnabled(
             'sd:/ultimate/mods/hdr-stages'
           );
-          let hdr_dev_enabled = await backend.isModEnabled(
+          const hdr_dev_enabled = await backend.isModEnabled(
             'sd:/ultimate/mods/hdr-dev'
           );
-          let hdr_pr_enabled = await backend.isModEnabled(
+          const hdr_pr_enabled = await backend.isModEnabled(
             'sd:/ultimate/mods/hdr-pr'
           );
 
@@ -333,23 +322,24 @@ export default async function verify(
 
       // build the results of hash checking
       if (missing.length > 0) {
-        result_str += '\nMissing files: \n' + missing.join('\n');
+        result_str += `\nMissing files: \n${missing.join('\n')}`;
       }
       if (wrong.length > 0) {
-        result_str += '\nWrong: \n' + wrong.join('\n');
+        result_str += `\nWrong: \n${wrong.join('\n')}`;
       }
       if (unexpected_files.length > 0) {
-        result_str += '\nUnexpected files: \n' + unexpected_files.join('\n');
+        result_str += `\nUnexpected files: \n${unexpected_files.join('\n')}`;
       }
       if (should_disable.length > 0) {
-        result_str +=
-          '\nPlugins to please disable: \n' + should_disable.join('\n');
+        result_str += `\nPlugins to please disable: \n${should_disable.join(
+          '\n'
+        )}`;
       }
       if (should_warn.length > 0) {
-        result_str += '\nnon-HDR plugins: \n' + should_warn.join('\n');
+        result_str += `\nnon-HDR plugins: \n${should_warn.join('\n')}`;
       }
       if (errors.length > 0) {
-        result_str += '\nErrors during verify: \n' + errors.join('\n');
+        result_str += `\nErrors during verify: \n${errors.join('\n')}`;
       }
 
       if (result_str.length == 0) {
@@ -358,7 +348,7 @@ export default async function verify(
         reject(result_str);
       }
 
-      console.info('All expected files are correct: ' + matches);
+      console.info(`All expected files are correct: ${matches}`);
     } catch (e) {
       reject(e);
     }

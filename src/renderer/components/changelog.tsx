@@ -17,18 +17,16 @@ export default class Changelog extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    var check = async () => {
+    const check = async () => {
       let logs = '';
-      for (var version of props.versions) {
+      for (const version of props.versions) {
         await Backend.instance()
           .getJson(
-            'https://github.com/HDR-Development/' +
-              getRepoName(getInstallType(version)) +
-              '/releases/download/' +
-              version.split('-')[0] +
-              '/CHANGELOG.md'
+            `https://github.com/HDR-Development/${getRepoName(
+              getInstallType(version)
+            )}/releases/download/${version.split('-')[0]}/CHANGELOG.md`
           )
-          .then((str) => (logs += str + '\n'))
+          .then((str) => (logs += `${str}\n`))
           .catch((e) => console.info(e));
       }
       this.setState({ text: logs });

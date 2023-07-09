@@ -14,6 +14,7 @@ type BackendType = 'Node' | 'Switch';
 export class Backend extends DefaultMessenger {
   /** singleton instance of the backend */
   private static backendInstance: Backend | null = null;
+
   private backendType: BackendType;
 
   constructor(backendType: BackendType, supplier?: BackendSupplier) {
@@ -113,13 +114,17 @@ export class Backend extends DefaultMessenger {
   /** request to relaunch the application (does nothing on pc) */
   relaunchApplication(): Promise<string> {
     if (Backend.isNode()) {
-      return new Promise<string>(resolve => resolve("relaunch is NOP on PC"));
+      return new Promise<string>((resolve) => resolve('relaunch is NOP on PC'));
     }
-    return this.customRequest("relaunch_application", null);
+    return this.customRequest('relaunch_application', null);
   }
 
   /** clones src into dest */
-  cloneMod(src: string, dest: string, progressCallback?: (p: Progress) => void): Promise<string> {
+  cloneMod(
+    src: string,
+    dest: string,
+    progressCallback?: (p: Progress) => void
+  ): Promise<string> {
     return this.customRequest('clone_mod', [src, dest], progressCallback);
   }
 
@@ -128,12 +133,17 @@ export class Backend extends DefaultMessenger {
     return this.customRequest('remove_dir_all', [path]);
   }
 
-  override customRequest(name: string, args: string[] | null, progressCallback?: ((p: Progress) => void) | undefined): Promise<string> {
+  override customRequest(
+    name: string,
+    args: string[] | null,
+    progressCallback?: ((p: Progress) => void) | undefined
+  ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      super.customRequest(name, args, progressCallback)
-        .then(result => resolve(result))
-        .catch(e => {
-          console.error("request " + name + " rejected, args: " + args?.join(","));
+      super
+        .customRequest(name, args, progressCallback)
+        .then((result) => resolve(result))
+        .catch((e) => {
+          console.error(`request ${name} rejected, args: ${args?.join(',')}`);
           reject(e);
         });
     });
@@ -149,9 +159,9 @@ export class NodeBackend implements BackendSupplier {
     args: string[] | null,
     progressCallback?: (p: Progress) => void
   ): Promise<string> {
-    let message = new Messages.Message(call_name, args);
-    console.debug('invoking on node backend:\n' + JSON.stringify(message));
-    var retval = null;
+    const message = new Messages.Message(call_name, args);
+    console.debug(`invoking on node backend:\n${JSON.stringify(message)}`);
+    const retval = null;
     return new Promise<string>((resolve, reject) => {
       // if defined, set the progress callback
       if (typeof progressCallback !== 'undefined') {
@@ -162,15 +172,14 @@ export class NodeBackend implements BackendSupplier {
       // send the request
       window.Main.invoke('request', message)
         .then((response: any) => {
-          console.debug('got response: ' + JSON.stringify(response));
-          let output = JSON.stringify(response);
-          //console.debug("resolving with: " + output);
+          console.debug(`got response: ${JSON.stringify(response)}`);
+          const output = JSON.stringify(response);
+          // console.debug("resolving with: " + output);
           resolve(output);
-          return;
         })
         .catch((e: any) => {
           console.error(
-            'error while invoking on node backend. ' + JSON.stringify(e)
+            `error while invoking on node backend. ${JSON.stringify(e)}`
           );
           throw e;
         });

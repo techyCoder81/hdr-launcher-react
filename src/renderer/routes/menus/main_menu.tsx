@@ -1,10 +1,10 @@
+import { Progress } from 'nx-request-api';
 import { Backend } from '../../operations/backend';
 import { PopupData } from '../../operations/popup_data';
 import update from '../../operations/update';
-import { Progress } from 'nx-request-api';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { MenuType } from './menu';
-import { UpdateButton } from '../../components/buttons/update_button';
+import UpdateButton from '../../components/buttons/update_button';
 import { AbstractMenu } from './abstract_menu';
 import BackgroundMusic from '../../operations/background_music';
 
@@ -33,14 +33,14 @@ export default class MainMenu extends AbstractMenu<{
       <div className="main-menu" id="menu">
         <FocusButton
           text="Play&nbsp;"
-          className={'main-buttons'}
+          className="main-buttons"
           onClick={() => {
-            //BackgroundMusic.singleton().fadeOut().then(() => BackgroundMusic.singleton().pause());
+            // BackgroundMusic.singleton().fadeOut().then(() => BackgroundMusic.singleton().pause());
             Backend.instance()
               .play()
               .then(() => {
-                //BackgroundMusic.singleton().play();
-                //BackgroundMusic.singleton().fadeIn();
+                // BackgroundMusic.singleton().play();
+                // BackgroundMusic.singleton().fadeIn();
               });
           }}
           autofocus={Backend.isSwitch()}
@@ -50,32 +50,41 @@ export default class MainMenu extends AbstractMenu<{
           onClick={() => {
             return new Promise<void>(async (resolve, reject) => {
               await update((p: Progress) => this.showProgress(p))
-                .then((text) => {
+                .then((result) => {
+                  const { updated, text } = result;
                   console.info('finished updating');
                   this.showMenu();
                   this.props.switchTo(MenuType.MainMenu);
                   this.showPopupData(
-                    new PopupData(['Ok', 'See changes list'], "Your installation is up to date.", selected => {
-                      if (selected == 'Ok') {
-                        this.showMenu();
-                        resolve();
-                        // relaunch on switch
-                        Backend.instance().relaunchApplication();
-                      } else {
-                        this.showPopupData(
-                          new PopupData(['Ok'], text.join('\n'), () => {
-                            this.showMenu();
-                            resolve();
-                            // relaunch on switch
+                    new PopupData(
+                      ['Ok', 'See changes list'],
+                      'Your installation is up to date.',
+                      (selected) => {
+                        if (selected == 'Ok') {
+                          this.showMenu();
+                          resolve();
+                          // relaunch on switch
+                          if (updated) {
                             Backend.instance().relaunchApplication();
-                          })
-                        );
+                          }
+                        } else {
+                          this.showPopupData(
+                            new PopupData(['Ok'], text.join('\n'), () => {
+                              this.showMenu();
+                              resolve();
+                              // relaunch on switch
+                              if (updated) {
+                                Backend.instance().relaunchApplication();
+                              }
+                            })
+                          );
+                        }
                       }
-                    })
+                    )
                   );
                 })
                 .catch((e) => {
-                  alert('Error while updating: ' + e);
+                  alert(`Error while updating: ${e}`);
                   // relaunch on switch
                   Backend.instance().relaunchApplication();
                   this.showMenu();
@@ -87,19 +96,19 @@ export default class MainMenu extends AbstractMenu<{
         />
         <FocusButton
           text="Tools&nbsp;"
-          className={'main-buttons'}
+          className="main-buttons"
           onClick={() => this.props.switchTo(MenuType.Tools)}
           onFocus={() => this.props.setInfo('Open the Tools menu')}
         />
         <FocusButton
           text="Options&nbsp;"
-          className={'main-buttons'}
+          className="main-buttons"
           onClick={() => this.props.switchTo(MenuType.Options)}
           onFocus={() => this.props.setInfo('Open the Options menu')}
         />
         <FocusButton
           text="Exit&nbsp;"
-          className={'main-buttons'}
+          className="main-buttons"
           onClick={() => Backend.instance().exitApplication()}
           onFocus={() => this.props.setInfo('Exit the game')}
         />

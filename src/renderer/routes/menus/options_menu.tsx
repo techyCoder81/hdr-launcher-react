@@ -29,19 +29,19 @@ export default class OptionsMenu extends AbstractMenu<{
       <div className="main-menu">
         <FocusButton
           text={'\u21e0 Main Menu\u00A0'}
-          className={'smaller-main-button'}
+          className="smaller-main-button"
           onClick={() => this.props.switchTo(MenuType.MainMenu)}
           onFocus={() => this.props.setInfo('Return to the Main menu')}
         />
         {Backend.isSwitch() ? (
           <FocusCheckbox
-            className={'smaller-main-button'}
+            className="smaller-main-button"
             onClick={async () => {
-              let enabled = await config.getBoolean('skip_launcher');
+              const enabled = await config.getBoolean('skip_launcher');
               await config.setBoolean('skip_launcher', !enabled);
             }}
             checkStatus={async () => {
-              return await config.getBoolean('skip_launcher');
+              return config.getBoolean('skip_launcher');
             }}
             text={'Skip Launcher\u00A0'}
             onFocus={() =>
@@ -54,31 +54,31 @@ export default class OptionsMenu extends AbstractMenu<{
           <div />
         )}
         <FocusCheckbox
-            className={'smaller-main-button'}
-            onClick={async () => {
-              let enabled = await config.getBoolean('enable_dev_tools');
-              await config.setBoolean('enable_dev_tools', !enabled);
-            }}
-            checkStatus={async () => {
-              return await config.getBoolean('enable_dev_tools');
-            }}
-            text={'Enable Dev Tools\u00A0'}
-            onFocus={() =>
-              this.props.setInfo(
-                'Enable the dev tools menu (for HDR developers and contributors)'
-              )
-            }
-          />
-        <FocusCheckbox
-          className={'smaller-main-button'}
+          className="smaller-main-button"
           onClick={async () => {
-            let enabled = await config.getBoolean('ignore_music');
-            await config.setBoolean('ignore_music', !enabled);
-            console.info('setting: ' + !enabled);
+            const enabled = await config.getBoolean('enable_dev_tools');
+            await config.setBoolean('enable_dev_tools', !enabled);
           }}
           checkStatus={async () => {
-            let checked = !(await config.getBoolean('ignore_music'));
-            console.info('Checked: ' + checked);
+            return config.getBoolean('enable_dev_tools');
+          }}
+          text={'Enable Dev Tools\u00A0'}
+          onFocus={() =>
+            this.props.setInfo(
+              'Enable the dev tools menu (for HDR developers and contributors)'
+            )
+          }
+        />
+        <FocusCheckbox
+          className="smaller-main-button"
+          onClick={async () => {
+            const enabled = await config.getBoolean('ignore_music');
+            await config.setBoolean('ignore_music', !enabled);
+            console.info(`setting: ${!enabled}`);
+          }}
+          checkStatus={async () => {
+            const checked = !(await config.getBoolean('ignore_music'));
+            console.info(`Checked: ${checked}`);
             return checked;
           }}
           text={'Verify Music\u00A0'}

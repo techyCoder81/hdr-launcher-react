@@ -9,23 +9,22 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
-import { dialog } from 'electron';
-import Config from './config';
 import * as fs from 'fs';
 import * as os from 'os';
-import { RequestHandler } from './request_handler';
 import { Responses } from 'nx-request-api';
+import MenuBuilder from './menu';
+import { resolveHtmlPath } from './util';
+import Config from './config';
+import { RequestHandler } from './request_handler';
 
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify().catch(e => console.error(e));
+    autoUpdater.checkForUpdatesAndNotify().catch((e) => console.error(e));
   }
 }
 
@@ -166,7 +165,7 @@ async function findEmulator() {
   }
   while (Config.getRyuPath() == null || Config.getRyuPath() == '') {
     // show instructions to the user
-    let response = dialog.showMessageBoxSync(mainWindow, {
+    const response = dialog.showMessageBoxSync(mainWindow, {
       title: 'Instructions',
       message: 'Please select your Ryujinx executable.',
       buttons: ['ok', 'cancel'],
@@ -197,7 +196,7 @@ async function findEmulator() {
       app.exit(0);
       continue;
     }
-    let ryuPath = selectedPath[0];
+    const ryuPath = selectedPath[0];
 
     // ensure that the path exists
     if (fs.existsSync(ryuPath)) {
@@ -207,10 +206,10 @@ async function findEmulator() {
       continue;
     }
 
-    let fileName = path.basename(ryuPath);
-    console.log('filename: ' + fileName);
-    if (fileName.includes("Ryujinx")) {
-      console.log('setting ryu path: ' + ryuPath);
+    const fileName = path.basename(ryuPath);
+    console.log(`filename: ${fileName}`);
+    if (fileName.includes('Ryujinx')) {
+      console.log(`setting ryu path: ${ryuPath}`);
       Config.setRyuPath(ryuPath);
     } else {
       dialog.showErrorBox(
@@ -234,7 +233,7 @@ async function findRom() {
 
   while (Config.getRomPath() == null || Config.getRomPath() == '') {
     // show instructions to the user
-    let response = dialog.showMessageBoxSync(mainWindow, {
+    const response = dialog.showMessageBoxSync(mainWindow, {
       title: 'Instructions',
       message: 'Please select your valid Smash Ultimate 13.0.1 dump.',
       buttons: ['ok', 'cancel'],
@@ -246,7 +245,7 @@ async function findRom() {
     }
 
     // let the user point us to the rom
-    let selectedPath = dialog.showOpenDialogSync(mainWindow, {
+    const selectedPath = dialog.showOpenDialogSync(mainWindow, {
       title: 'Please select your valid Smash Ultimate dump.',
       properties: ['openFile'],
       filters: [{ name: 'Switch Roms', extensions: ['nsp', 'xci'] }],
@@ -256,7 +255,7 @@ async function findRom() {
       app.exit(0);
       continue;
     }
-    let romPath = selectedPath[0];
+    const romPath = selectedPath[0];
 
     // ensure that the path exists
     if (fs.existsSync(romPath)) {
@@ -285,11 +284,11 @@ async function findSdcard() {
     return;
   }
 
-  var configDir = '';
+  let configDir = '';
   if (process.platform == 'win32') {
-    configDir = process.env.APPDATA + '/Ryujinx';
+    configDir = `${process.env.APPDATA}/Ryujinx`;
   } else if (process.platform == 'darwin') {
-    let selectedPath = dialog.showOpenDialogSync(mainWindow, {
+    const selectedPath = dialog.showOpenDialogSync(mainWindow, {
       title: 'Please select your Ryujinx config directory',
       properties: ['openDirectory'],
     });
@@ -308,50 +307,50 @@ async function findSdcard() {
 
   if (!fs.existsSync(configDir)) {
     // expected config dir was not found! Check for portable mode...
-    let isPortable = dialog.showMessageBoxSync(mainWindow, {
+    const isPortable = dialog.showMessageBoxSync(mainWindow, {
       title: 'Portable Mode?',
       message: 'Is this Ryujinx installation in portable mode?',
       buttons: ['Yes', 'No'],
     });
     if (isPortable === 0) {
-      console.info("asking for sdcard folder from portable installation.");
-      let selectedDir = dialog.showOpenDialogSync(mainWindow, {
+      console.info('asking for sdcard folder from portable installation.');
+      const selectedDir = dialog.showOpenDialogSync(mainWindow, {
         title: 'Please select your Ryujinx config directory',
         properties: ['openDirectory'],
       });
       if (selectedDir) {
-        console.info("Selected config directory: " + selectedDir);
+        console.info(`Selected config directory: ${selectedDir}`);
         configDir = selectedDir[0];
       } else {
-        console.error("User cancelled sdcard selection!");
+        console.error('User cancelled sdcard selection!');
       }
     }
   }
 
   if (fs.existsSync(configDir)) {
-    console.info('setting sdcard root to ' + path.join(configDir, 'sdcard'));
+    console.info(`setting sdcard root to ${path.join(configDir, 'sdcard')}`);
     Config.setSdcardPath(path.join(configDir, 'sdcard/'));
     // create the sdcard folder if its not there
     if (!fs.existsSync(Config.getSdcardPath())) {
       fs.mkdirSync(Config.getSdcardPath());
     }
   } else {
-    console.error('Ryujinx directory not found at ' + configDir + '!');
+    console.error(`Ryujinx directory not found at ${configDir}!`);
     dialog.showErrorBox(
       'Ryujinx not found!',
-      'Ryujinx directory not found at ' + configDir + '!'
+      `Ryujinx directory not found at ${configDir}!`
     );
-    Config.setSdcardPath("");
+    Config.setSdcardPath('');
     app.quit();
   }
 }
 
 async function registerListeners() {
-  let requestHandler = new RequestHandler();
+  const requestHandler = new RequestHandler();
 
   // register listening to the request channel
   ipcMain.handle('request', (event, request): Promise<Responses.OkOrError> => {
-    //console.log("main thread received request: " + JSON.stringify(request));
+    // console.log("main thread received request: " + JSON.stringify(request));
     return requestHandler.handle(request);
   });
 }

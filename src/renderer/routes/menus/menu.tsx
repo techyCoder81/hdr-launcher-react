@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Backend, NodeBackend } from '../../operations/backend';
 import '../../styles/progress.css';
 import InfoBox from './info_box';
-import { Header } from './../../components/header';
-import { LogoRight } from './../../components/logo_right';
+import { Header } from '../../components/header';
+import { LogoRight } from '../../components/logo_right';
 import MainMenu from './main_menu';
 import { CheckingInstalled } from './checking_installed';
 import ToolsMenu from './tools_menu';
@@ -55,10 +55,10 @@ export default class Menu extends React.PureComponent {
   }
 
   setVersion(version: string) {
-    console.debug('setting version: ' + version);
+    console.debug(`setting version: ${version}`);
     this.setState({
       currentMenu: this.state.currentMenu,
-      version: version,
+      version,
       info: this.state.info,
     });
   }
@@ -67,17 +67,17 @@ export default class Menu extends React.PureComponent {
     Backend.instance()
       .getVersion()
       .then((ver) => {
-        console.debug('loaded version: ' + ver);
+        console.debug(`loaded version: ${ver}`);
         this.setVersion(ver);
       })
-      .catch((e) => console.error('console error: ' + e));
+      .catch((e) => console.error(`console error: ${e}`));
   }
 
   setInfo(info: string) {
     this.setState({
       currentMenu: this.state.currentMenu,
       version: this.state.version,
-      info: info,
+      info,
     });
   }
 
@@ -104,7 +104,9 @@ export default class Menu extends React.PureComponent {
             onComplete={(installed: string | null) => {
               console.info(installed);
               installed !== null
-                ? (installed.includes("pr") ? this.switchTo(MenuType.PrInstalled) : this.switchTo(MenuType.MainMenu))
+                ? installed.includes('pr')
+                  ? this.switchTo(MenuType.PrInstalled)
+                  : this.switchTo(MenuType.MainMenu)
                 : this.switchTo(MenuType.NotInstalled);
             }}
           />

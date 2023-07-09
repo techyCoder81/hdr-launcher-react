@@ -3,8 +3,11 @@ import { LogListener } from './log_listener';
 
 class Node {
   public next;
+
   public previous;
+
   public entry: LogEntry;
+
   constructor(next: Node | null, previous: Node | null, entry: LogEntry) {
     this.next = next;
     this.previous = previous;
@@ -14,8 +17,11 @@ class Node {
 
 class LogList {
   public head: Node | null = null;
+
   public tail: Node | null = null;
+
   public length = 0;
+
   append(entry: LogEntry) {
     this.length += 1;
     if (this.head === null || this.tail === null) {
@@ -26,6 +32,7 @@ class LogList {
     this.tail.next = new Node(null, this.tail, entry);
     this.tail = this.tail.next;
   }
+
   prepend(entry: LogEntry) {
     this.length += 1;
     if (this.head === null || this.tail === null) {
@@ -36,12 +43,13 @@ class LogList {
     this.head.previous = new Node(this.head, null, entry);
     this.head = this.head.previous;
   }
+
   removeHead() {
     if (this.head === null) {
       // it must be empty
       return;
     }
-    this.length = this.length - 1;
+    this.length -= 1;
     if (this.head.next !== null) {
       // make the next node the head
       this.head = this.head.next;
@@ -52,12 +60,13 @@ class LogList {
       this.tail = null;
     }
   }
+
   removeTail() {
     if (this.tail === null) {
       // it must be empty
       return;
     }
-    this.length = this.length - 1;
+    this.length -= 1;
     if (this.tail.previous !== null) {
       // make the second to last node the tail
       this.tail = this.tail.previous;
@@ -74,8 +83,11 @@ export type Level = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
 
 export class LogEntry {
   public level: Level;
+
   public data: any;
+
   public time: Date;
+
   constructor(level: Level, data: any) {
     this.level = level;
     this.data = data;
@@ -141,22 +153,22 @@ export class Logs {
    * saves the logs to the log file on sd root
    */
   public async save() {
-    let backend = Backend.instance();
-    let root = await backend.getSdRoot();
-    let logPath = root + 'hdr_launcher_log.json';
-    let exists = await backend.fileExists(logPath);
+    const backend = Backend.instance();
+    const root = await backend.getSdRoot();
+    const logPath = `${root}hdr_launcher_log.json`;
+    const exists = await backend.fileExists(logPath);
     if (exists) {
       await backend.deleteFile(logPath);
     }
     await backend
       .writeFile(logPath, JSON.stringify(Logs.instance().getAll()))
       .then((result) => {
-        let str = 'Logs were written to sd:/hdr_launcher_log.json';
+        const str = 'Logs were written to sd:/hdr_launcher_log.json';
         console.info(str);
         alert(str);
       })
       .catch((e) => {
-        let err = 'Error while saving logs: ' + e;
+        const err = `Error while saving logs: ${e}`;
         console.error(err);
         alert(err);
       });
@@ -203,7 +215,7 @@ export class Logs {
         try {
           element.update();
         } catch (e) {
-          alert('Error while calling back log listener ' + element + ' : ' + e);
+          alert(`Error while calling back log listener ${element} : ${e}`);
         }
       }
     });
@@ -265,21 +277,21 @@ export class Logs {
   private redirectLogs() {
     // the first time the log singleton is made, we want
     // to go ahead and redirect the log output.
-    var old_debug = console.debug;
+    const old_debug = console.debug;
     console.debug = (...data) => {
       try {
         old_debug(...data);
       } catch (e) {}
       data.forEach((item) => Logs.instance().add('DEBUG', item));
     };
-    var old_log = console.log;
+    const old_log = console.log;
     console.log = (...data) => {
       try {
         old_log(...data);
       } catch (e) {}
       data.forEach((item) => Logs.instance().add('INFO', item));
     };
-    var old_info = console.info;
+    const old_info = console.info;
     console.info = (...data) => {
       try {
         old_info(...data);
@@ -287,21 +299,21 @@ export class Logs {
       data.forEach((item) => Logs.instance().add('INFO', item));
     };
 
-    var old_warn = console.warn;
+    const old_warn = console.warn;
     console.warn = (...data) => {
       try {
         old_warn(...data);
       } catch (e) {}
       data.forEach((item) => Logs.instance().add('WARNING', item));
     };
-    var old_error = console.error;
+    const old_error = console.error;
     console.error = (...data) => {
       try {
         old_error(...data);
       } catch (e) {}
       data.forEach((item) => Logs.instance().add('ERROR', item));
     };
-    var old_trace = console.trace;
+    const old_trace = console.trace;
     console.trace = (...data) => {
       try {
         old_trace(...data);

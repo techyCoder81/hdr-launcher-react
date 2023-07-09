@@ -22,12 +22,11 @@ export default class FocusTimer {
       return true;
     }
 
-    let current_time = new Date().getTime();
+    const current_time = new Date().getTime();
     if (current_time - this.last_time < this.MIN_WAIT_TIME) {
       return false;
-    } else {
-      this.last_time = current_time;
-      return true;
     }
+    this.last_time = current_time;
+    return true;
   }
 }

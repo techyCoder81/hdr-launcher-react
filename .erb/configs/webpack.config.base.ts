@@ -1,5 +1,3 @@
-const WebpackAssetsManifest = require('webpack-assets-manifest');
-
 /**
  * Base webpack config used across other specific configs
  */
@@ -7,6 +5,8 @@ const WebpackAssetsManifest = require('webpack-assets-manifest');
 import webpack from 'webpack';
 import webpackPaths from './webpack.paths';
 import { dependencies as externals } from '../../release/app/package.json';
+
+const WebpackAssetsManifest = require('webpack-assets-manifest');
 
 const configuration: webpack.Configuration = {
   externals: [...Object.keys(externals || {})],

@@ -10,6 +10,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
+
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
@@ -94,7 +95,7 @@ const configuration: webpack.Configuration = {
         test: /\.(png|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'static/[name][ext]'
+          filename: 'static/[name][ext]',
         },
       },
       // music
@@ -102,7 +103,7 @@ const configuration: webpack.Configuration = {
         test: /\.(wav)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'static/[name][ext]'
+          filename: 'static/[name][ext]',
         },
       },
       // SVG
@@ -151,7 +152,7 @@ const configuration: webpack.Configuration = {
      * By default, use 'development' as NODE_ENV. This can be overriden with
      * 'staging', for example, by changing the ENV variables in the npm scripts
      */
-     new WebpackAssetsManifest({
+    new WebpackAssetsManifest({
       writeToDisk: true,
     }),
     new webpack.EnvironmentPlugin({

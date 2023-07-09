@@ -3,7 +3,9 @@
  */
 export class PopupData {
   public options: string[];
+
   public text: string;
+
   public onSelect: (selected: string) => void;
 
   /**

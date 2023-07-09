@@ -1,3 +1,5 @@
+import { Progress } from 'nx-request-api';
+import { PopupData } from 'renderer/operations/popup_data';
 import { Backend } from '../../operations/backend';
 import {
   installLatest,
@@ -5,11 +7,9 @@ import {
   switchToNightly,
 } from '../../operations/install';
 import verify from '../../operations/verify';
-import { Progress } from 'nx-request-api';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
-import { PopupData } from 'renderer/operations/popup_data';
 
 /**
  * builds the menu that appears when HDR is not installed
@@ -33,23 +33,23 @@ export default class NotInstalledMenu extends AbstractMenu<{
         <div className="main-menu">
           <FocusButton
             text="Play Vanilla&nbsp;"
-            className={'main-buttons'}
+            className="main-buttons"
             onClick={() => Backend.instance().play()}
             onFocus={() => this.props.setInfo('Play vanilla Ultimate')}
           />
 
           <FocusButton
             text="Install HDR&nbsp;"
-            className={'main-buttons'}
+            className="main-buttons"
             onClick={async () => {
-              await installLatest((p: Progress) => this.showProgress(p))
+              await installLatest((p: Progress) => this.showProgress(p));
               verify((p: Progress) => this.showProgress(p))
                 .then(async (results) => {
                   console.info('finished verifying installation successfully');
                   this.showMenu();
-                  /*this.showPopupData(
+                  /* this.showPopupData(
                     new PopupData(['Ok'], results, () => this.showMenu())
-                  );*/
+                  ); */
                   if (Backend.isSwitch()) {
                     alert(
                       "HDR's files have been installed. Please enable hdr, hdr-assets, and hdr-stages when arcropolis offers."
@@ -63,7 +63,10 @@ export default class NotInstalledMenu extends AbstractMenu<{
                   console.info('finished installing, issues reported.');
                   this.showMenu();
                   this.showPopupData(
-                    new PopupData(['Ok'], results, () => {this.props.switchTo(MenuType.CheckingInstalled); Backend.instance().relaunchApplication();})
+                    new PopupData(['Ok'], results, () => {
+                      this.props.switchTo(MenuType.CheckingInstalled);
+                      Backend.instance().relaunchApplication();
+                    })
                   );
                 });
             }}

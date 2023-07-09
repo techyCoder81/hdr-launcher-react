@@ -6,7 +6,7 @@ import * as launcher_config from '../operations/launcher_config';
 import * as update from '../operations/update';
 import '../styles/opening.css';
 
-var will_skip = false;
+let will_skip = false;
 
 export default function Loading() {
   const [showButton, setShowButton] = useState(false);
@@ -27,7 +27,7 @@ export default function Loading() {
             will_skip = false;
           }
         })
-        .catch(e => alert(e));
+        .catch((e) => alert(e));
     } else {
       will_skip = false;
     }

@@ -16,7 +16,7 @@ export const NightlyBetaButton = (props: {
         setVersion(version);
       })
       .catch((e) =>
-        console.error('Error while loading version for switch button: ' + e)
+        console.error(`Error while loading version for switch button: ${e}`)
       );
   }, []);
 
@@ -29,8 +29,8 @@ export const NightlyBetaButton = (props: {
 
   return (
     <ScrollFocusButton
-      text={'Install ' + buttonText + '\u00A0'}
-      className={'smaller-main-button'}
+      text={`Install ${buttonText}\u00A0`}
+      className="smaller-main-button"
       onClick={async () => {
         props.onClick(version);
         Backend.instance()
@@ -39,11 +39,11 @@ export const NightlyBetaButton = (props: {
             setVersion(version);
           })
           .catch((e) =>
-            console.error('Error while loading version for switch button: ' + e)
+            console.error(`Error while loading version for switch button: ${e}`)
           );
       }}
       onFocus={() =>
-        props.setInfo('Switch to the ' + buttonText + ' version of HDR')
+        props.setInfo(`Switch to the ${buttonText} version of HDR`)
       }
     />
   );

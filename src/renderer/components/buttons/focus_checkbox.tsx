@@ -23,9 +23,9 @@ export function FocusCheckbox(props: {
   return (
     <button
       key={props.text}
-      //type="checkbox"
+      // type="checkbox"
       className={props.className}
-      //name={props.text}
+      // name={props.text}
       autoFocus={props.autofocus}
       onMouseMove={(e) => e.currentTarget.focus()}
       onMouseEnter={(e) => e.currentTarget.focus()}

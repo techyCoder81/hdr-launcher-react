@@ -1,3 +1,7 @@
+import { Progress } from 'nx-request-api';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pages } from 'renderer/constants';
+import { NavigateButton } from 'renderer/components/buttons/navigate_button';
 import { Backend } from '../../operations/backend';
 import {
   getInstallType,
@@ -6,16 +10,12 @@ import {
   switchToNightly,
 } from '../../operations/install';
 import verify from '../../operations/verify';
-import { Progress } from 'nx-request-api';
 import { NightlyBetaButton } from '../../components/buttons/nightly_beta_button';
 import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from '../../operations/popup_data';
 import { ScrollFocusButton } from '../../components/buttons/scroll_focus_button';
 import { CloneFolderForDev } from '../../components/buttons/dev_tools_buttons';
-import { Link, useNavigate } from 'react-router-dom';
-import { Pages } from 'renderer/constants';
-import { NavigateButton } from 'renderer/components/buttons/navigate_button';
 
 /**
  * builds the tools menu components
@@ -44,23 +44,19 @@ export default class ToolsMenu extends AbstractMenu<{
         <div className="scrolling-fit-nobar scroll-hidden">
           <ScrollFocusButton
             text={'\u21e0 Main Menu\u00A0'}
-            className={'smaller-main-button'}
+            className="smaller-main-button"
             onClick={() => this.props.switchTo(MenuType.MainMenu)}
             onFocus={() => this.props.setInfo('Return to the Main menu')}
           />
           <ScrollFocusButton
-            text={
-              'Open ' +
-              (Backend.isSwitch() ? 'Arcadia' : 'Mod Folder') +
-              '\u00A0'
-            }
-            className={'smaller-main-button'}
+            text={`Open ${Backend.isSwitch() ? 'Arcadia' : 'Mod Folder'}\u00A0`}
+            className="smaller-main-button"
             onClick={() => Backend.instance().openModManager()}
             onFocus={() => this.props.setInfo('Open the Mod Manager')}
           />
           <ScrollFocusButton
             text="Verify Files&nbsp;"
-            className={'smaller-main-button'}
+            className="smaller-main-button"
             onClick={() => {
               verify((p: Progress) => this.showProgress(p))
                 .then((results) => {
@@ -81,22 +77,24 @@ export default class ToolsMenu extends AbstractMenu<{
             onFocus={() => this.props.setInfo('Verify your HDR files')}
           />
           <NavigateButton
-            text='Stage Config'
+            text="Stage Config"
             page={Pages.STAGE_CONFIG}
-            className={'smaller-main-button'}
-            onFocus={() => this.props.setInfo('Open the stage configuration menu')}
+            className="smaller-main-button"
+            onFocus={() =>
+              this.props.setInfo('Open the stage configuration menu')
+            }
           />
-          
+
           <NightlyBetaButton
             setInfo={(info: string) => this.props.setInfo(info)}
             onClick={async (version: string) => {
-              let installType = getInstallType(version);
+              const installType = getInstallType(version);
               switch (installType) {
                 case InstallType.Beta:
                   await switchToNightly(version, (p: Progress) =>
                     this.showProgress(p)
                   )
-                    //.then(() => verify((p: Progress) => this.setProgress(p)))
+                    // .then(() => verify((p: Progress) => this.setProgress(p)))
                     .then(() => {
                       alert('Switched successfully!');
                       if (Backend.isSwitch()) {
@@ -106,14 +104,14 @@ export default class ToolsMenu extends AbstractMenu<{
                     })
                     .catch((e) => {
                       this.props.switchTo(MenuType.MainMenu);
-                      alert('Error during nightly switch: ' + e);
+                      alert(`Error during nightly switch: ${e}`);
                     });
                   break;
                 case InstallType.Nightly:
                   await switchToBeta(version, (p: Progress) =>
                     this.showProgress(p)
                   )
-                    //.then(() => verify((p: Progress) => this.setProgress(p)))
+                    // .then(() => verify((p: Progress) => this.setProgress(p)))
                     .then(() => {
                       alert('Switched successfully!');
                       if (Backend.isSwitch()) {
@@ -123,30 +121,48 @@ export default class ToolsMenu extends AbstractMenu<{
                     })
                     .catch((e) => {
                       this.props.switchTo(MenuType.MainMenu);
-                      alert('Error during beta switch: ' + e);
+                      alert(`Error during beta switch: ${e}`);
                     });
                   break;
                 default:
-                  console.error('Could not switch! Current version is unknown!');
+                  console.error(
+                    'Could not switch! Current version is unknown!'
+                  );
                   alert('Could not switch! Current version is unknown!');
                   break;
               }
             }}
           />
           <NavigateButton
-            className={'smaller-main-button'}
-            text='Install PR Build'
+            className="smaller-main-button"
+            text="Install PR Build"
             page={Pages.PULL_REQUESTS}
-            onFocus={() => this.props.setInfo('Open the stage configuration menu')}
+            onFocus={() =>
+              this.props.setInfo('Open the stage configuration menu')
+            }
           />
-          
-          <CloneFolderForDev modName={'hdr'} onComplete={() => this.showMenu()} setInfo={info => this.props.setInfo(info)} showProgress={p => this.showProgress(p)} then={async () =>{
-            let backend = Backend.instance();
-            let root = await backend.getSdRoot();
-            await backend.writeFile(root + 'ultimate/mods/hdr-dev/ui/hdr_version.txt', 'v0.69.420-dev');
-          }}/>
-          <CloneFolderForDev modName={'hdr-assets'} onComplete={() => this.showMenu()} setInfo={info => this.props.setInfo(info)} showProgress={p => this.showProgress(p)}/>
-          </div>
+
+          <CloneFolderForDev
+            modName="hdr"
+            onComplete={() => this.showMenu()}
+            setInfo={(info) => this.props.setInfo(info)}
+            showProgress={(p) => this.showProgress(p)}
+            then={async () => {
+              const backend = Backend.instance();
+              const root = await backend.getSdRoot();
+              await backend.writeFile(
+                `${root}ultimate/mods/hdr-dev/ui/hdr_version.txt`,
+                'v0.69.420-dev'
+              );
+            }}
+          />
+          <CloneFolderForDev
+            modName="hdr-assets"
+            onComplete={() => this.showMenu()}
+            setInfo={(info) => this.props.setInfo(info)}
+            showProgress={(p) => this.showProgress(p)}
+          />
+        </div>
         {super.render()}
       </div>
     );

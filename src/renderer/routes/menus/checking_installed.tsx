@@ -9,13 +9,15 @@ export const CheckingInstalled = (props: {
   useEffect(() => {
     Backend.instance()
       .getVersion()
-      .then(version => props.onComplete(version))
+      .then((version) => props.onComplete(version))
       .catch(async (e) => {
-        let backend = Backend.instance();
-        let root = await backend.getSdRoot();
+        const backend = Backend.instance();
+        const root = await backend.getSdRoot();
         try {
-          let prVersion = await backend.readFile(root + "ultimate/mods/hdr-pr/ui/hdr_version.txt");
-          let prEnabled = await backend.isModEnabled(
+          const prVersion = await backend.readFile(
+            `${root}ultimate/mods/hdr-pr/ui/hdr_version.txt`
+          );
+          const prEnabled = await backend.isModEnabled(
             'sd:/ultimate/mods/hdr-pr'
           );
           // if the PR build is enabled, then use that
@@ -25,8 +27,8 @@ export const CheckingInstalled = (props: {
             props.onComplete(null);
           }
         } catch (e) {
-          console.error('Error while checking if HDR is installed!\n' + e);
-          alert('Error while checking if HDR is installed!\n' + e);
+          console.error(`Error while checking if HDR is installed!\n${e}`);
+          alert(`Error while checking if HDR is installed!\n${e}`);
           props.onComplete(null);
         }
       });

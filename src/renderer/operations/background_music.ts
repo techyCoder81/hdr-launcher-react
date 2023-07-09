@@ -1,7 +1,8 @@
-
 export default class BackgroundMusic {
   private static instance: BackgroundMusic;
+
   music: HTMLAudioElement;
+
   fadeInterval: NodeJS.Timer | null = null;
 
   public static singleton(): BackgroundMusic {
@@ -12,7 +13,7 @@ export default class BackgroundMusic {
   }
 
   private constructor() {
-    this.music = new Audio("assets/theme.wav");
+    this.music = new Audio('assets/theme.wav');
     this.music.load();
     this.music.volume = 0.1;
 
@@ -30,6 +31,7 @@ export default class BackgroundMusic {
   public play(): Promise<void> {
     return new Promise<void>(() => this.music.play());
   }
+
   public pause(): Promise<void> {
     return new Promise<void>(() => this.music.pause());
   }
@@ -48,7 +50,7 @@ export default class BackgroundMusic {
     if (this.fadeInterval !== null) {
       clearInterval(this.fadeInterval);
     }
-    let music = this.music;
+    const { music } = this;
     let vol = this.music.volume;
 
     return new Promise<number>((resolve) => {
@@ -60,7 +62,7 @@ export default class BackgroundMusic {
           );
           music.volume = vol;
         } else {
-          let interval = BackgroundMusic.singleton().fadeInterval;
+          const interval = BackgroundMusic.singleton().fadeInterval;
           if (interval !== null) {
             clearInterval(interval);
             BackgroundMusic.singleton().fadeInterval = null;

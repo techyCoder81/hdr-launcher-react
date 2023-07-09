@@ -1,9 +1,9 @@
 import ProgressBar from '@ramonak/react-progress-bar';
 import React from 'react';
 import ReactModal from 'react-modal';
-import { Backend } from '../operations/backend';
 import { Progress } from 'nx-request-api';
-import './../styles/progress.css';
+import { Backend } from '../operations/backend';
+import '../styles/progress.css';
 import { LogPopout } from './logging/log_popout';
 import SlidingBackground from './sliding_background';
 
@@ -19,15 +19,15 @@ const customStyles = {
  */
 function ProgressDisplayInner(props: { progress: Progress; animate: boolean }) {
   if (props.progress === undefined || props.progress == null) {
-    return <div></div>;
+    return <div />;
   }
 
   return (
     <div className="overlay-progress">
       <div className="progress-block vertical-center">
-        {props.animate ? <SlidingBackground /> : <div></div>}
+        {props.animate ? <SlidingBackground /> : <div />}
         <h1>{props.progress.title}</h1>
-        {/*<p>{props.progress.info}</p> */}
+        {/* <p>{props.progress.info}</p> */}
         <ProgressBar
           className="progress-wrapper"
           completed={

@@ -1,14 +1,16 @@
+/* eslint-disable no-alert */
 import { useEffect, useState } from 'react';
-import { Backend } from '../../operations/backend';
 import * as update from '../../operations/update';
 import { FocusButton } from './focus_button';
 
 /// check for updates when the button is loaded
-export const UpdateButton = (props: {
+const UpdateButton = (props: {
   onClick: () => Promise<void>;
   onFocus: () => void;
 }) => {
   const [available, setAvailable] = useState(false);
+
+  const { onClick, onFocus } = props;
 
   useEffect(() => {
     update
@@ -20,16 +22,17 @@ export const UpdateButton = (props: {
   return (
     <FocusButton
       className="main-buttons"
-      text={'Update' + (available ? '(!)\u00A0' : '\u00A0')}
+      text={`Update${available ? '(!)\u00A0' : '\u00A0'}`}
       onClick={() => {
-        props
-          .onClick()
+        onClick()
           .then(() => setAvailable(false))
           .then(() => update.isAvailable())
           .then((isAvailable) => setAvailable(isAvailable))
           .catch((e) => alert(e));
       }}
-      onFocus={() => props.onFocus()}
+      onFocus={() => onFocus()}
     />
   );
 };
+
+export { UpdateButton as default };

@@ -10,9 +10,9 @@ export class LogPopout extends React.Component {
     contents: 'No logs.',
   };
 
-  render() { 
+  render() {
     return (
-      <div className={'sidebar-container' + (this.state.isOpen ? ' wide' : '')}>
+      <div className={`sidebar-container${this.state.isOpen ? ' wide' : ''}`}>
         <div className="button-container">
           <FocusButton
             className="open-button simple-button"
@@ -27,9 +27,9 @@ export class LogPopout extends React.Component {
         </div>
         {this.state.isOpen ? (
           <div
-            className={
-              'open-sidebar' + (Backend.isNode() ? ' blur-back' : ' opaque')
-            }
+            className={`open-sidebar${
+              Backend.isNode() ? ' blur-back' : ' opaque'
+            }`}
           >
             <LogWindow />
           </div>

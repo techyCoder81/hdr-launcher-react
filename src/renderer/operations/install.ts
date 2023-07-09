@@ -1,5 +1,5 @@
-import { Backend } from './backend';
 import { Progress } from 'nx-request-api';
+import { Backend } from './backend';
 import { handleDeletions } from './update';
 import verify from './verify';
 
@@ -12,11 +12,11 @@ export enum InstallType {
 export function getInstallType(version: string): InstallType {
   if (version.toLowerCase().includes('nightly')) {
     return InstallType.Nightly;
-  } else if (version.toLowerCase().includes('beta')) {
-    return InstallType.Beta;
-  } else {
-    return InstallType.Unknown;
   }
+  if (version.toLowerCase().includes('beta')) {
+    return InstallType.Beta;
+  }
+  return InstallType.Unknown;
 }
 
 export function getRepoName(type: InstallType) {
@@ -91,8 +91,8 @@ async function installArtifact(
   progressCallback?: (p: Progress) => void
 ) {
   try {
-    var backend = Backend.instance();
-    var sdroot = '';
+    const backend = Backend.instance();
+    let sdroot = '';
 
     await backend
       .getSdRoot()
@@ -100,56 +100,49 @@ async function installArtifact(
         sdroot = value;
       })
       .catch((e) => {
-        console.error('Could not get SD root. ' + e);
-        return;
+        console.error(`Could not get SD root. ${e}`);
       });
 
     if (progressCallback) {
       progressCallback(new Progress('Checking version', 'Checking', null));
     }
 
-    let downloads = sdroot + 'downloads/';
+    const downloads = `${sdroot}downloads/`;
 
-    console.info('version: ' + version);
+    console.info(`version: ${version}`);
 
-    let repoName = getRepoName(type);
+    const repoName = getRepoName(type);
 
-    let url =
+    const url =
       version == 'latest'
-        ? 'https://github.com/HDR-Development/' +
-          repoName +
-          '/releases/latest/download/' +
-          artifact
-        : 'https://github.com/HDR-Development/' +
-          repoName +
-          '/releases/download/' +
-          version.split('-')[0] +
-          '/' +
-          artifact;
+        ? `https://github.com/HDR-Development/${repoName}/releases/latest/download/${artifact}`
+        : `https://github.com/HDR-Development/${repoName}/releases/download/${
+            version.split('-')[0]
+          }/${artifact}`;
 
-    console.info('downloading from: ' + url);
+    console.info(`downloading from: ${url}`);
     if (progressCallback) {
       progressCallback(
-        new Progress('Downloading ' + artifact, 'Downloading', null)
+        new Progress(`Downloading ${artifact}`, 'Downloading', null)
       );
     }
     await backend
-      .downloadFile(url, downloads + 'hdr-install.zip', progressCallback)
-      .then((result) => console.info('Result of download: ' + result))
+      .downloadFile(url, `${downloads}hdr-install.zip`, progressCallback)
+      .then((result) => console.info(`Result of download: ${result}`))
       .then(() => {
         if (progressCallback) {
           progressCallback(new Progress('Extracting', 'Extracting files', 0));
         }
       })
       .then(() =>
-        backend.unzip(downloads + 'hdr-install.zip', sdroot, progressCallback)
+        backend.unzip(`${downloads}hdr-install.zip`, sdroot, progressCallback)
       )
-      .then((result) => console.info('Result of extraction: ' + result))
+      .then((result) => console.info(`Result of extraction: ${result}`))
       .catch((e) => {
-        console.error('Error during install! ' + e);
-        alert('Error during install: ' + e);
+        console.error(`Error during install! ${e}`);
+        alert(`Error during install: ${e}`);
       });
   } catch (e) {
-    alert('Exception while installing: ' + e);
+    alert(`Exception while installing: ${e}`);
   }
 }

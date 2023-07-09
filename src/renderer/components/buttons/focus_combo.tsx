@@ -3,19 +3,18 @@ import { Backend } from 'renderer/operations/backend';
 import FocusTimer from '../../operations/focus_singleton';
 
 export const FocusCombo = React.forwardRef<
-HTMLSelectElement,
-{
-  className: string;
-  onChange: (item: { target: { value: string } }) => void;
-  options: string[];
-  autofocus?: boolean;
-  defaultValue?: string;
-  forcedValue?: string;
-  onFocus?: () => void;
-  style?: React.CSSProperties; 
-}
+  HTMLSelectElement,
+  {
+    className: string;
+    onChange: (item: { target: { value: string } }) => void;
+    options: string[];
+    autofocus?: boolean;
+    defaultValue?: string;
+    forcedValue?: string;
+    onFocus?: () => void;
+    style?: React.CSSProperties;
+  }
 >((props, ref) => {
-  
   return (
     <select
       style={props.style}
@@ -42,7 +41,11 @@ HTMLSelectElement,
       }}
       onChange={props.onChange}
     >
-      {props.options.map(option => <option value={option} key={option}>{option}</option>)}
+      {props.options.map((option) => (
+        <option value={option} key={option}>
+          {option}
+        </option>
+      ))}
     </select>
   );
 });

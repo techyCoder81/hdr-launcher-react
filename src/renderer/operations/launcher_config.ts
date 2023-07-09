@@ -10,21 +10,21 @@ export async function setBoolean(
 ): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     try {
-      let backend = Backend.instance();
-      let sdroot = await backend.getSdRoot();
-      let configDir = sdroot + CONFIG_PATH;
-      let exists = await backend.fileExists(configDir + '/' + setting);
+      const backend = Backend.instance();
+      const sdroot = await backend.getSdRoot();
+      const configDir = sdroot + CONFIG_PATH;
+      const exists = await backend.fileExists(`${configDir}/${setting}`);
       if (exists) {
         // if the file already exists, then it's enabled.
         resolve();
         return;
-      } else {
-        await backend.mkdir(configDir);
-        await backend.writeFile(configDir + '/' + setting, 'foo');
       }
+      await backend.mkdir(configDir);
+      await backend.writeFile(`${configDir}/${setting}`, 'foo');
+
       resolve();
     } catch (e) {
-      alert('Could not set config setting ' + setting + '\n' + e);
+      alert(`Could not set config setting ${setting}\n${e}`);
       reject(e);
     }
   });
@@ -33,17 +33,17 @@ export async function setBoolean(
 export async function getBoolean(setting: BooleanSetting): Promise<boolean> {
   return new Promise<boolean>(async (resolve, reject) => {
     try {
-      let backend = Backend.instance();
-      let sdroot = await backend.getSdRoot();
-      let configDir = sdroot + CONFIG_PATH;
-      let exists = await backend.fileExists(configDir + '/' + setting);
+      const backend = Backend.instance();
+      const sdroot = await backend.getSdRoot();
+      const configDir = sdroot + CONFIG_PATH;
+      const exists = await backend.fileExists(`${configDir}/${setting}`);
       if (exists) {
         resolve(true);
       } else {
         resolve(false);
       }
     } catch (e) {
-      alert('Could not get config setting ' + setting + '\n' + e);
+      alert(`Could not get config setting ${setting}\n${e}`);
       reject(e);
     }
   });

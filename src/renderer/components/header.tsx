@@ -19,7 +19,7 @@ function HeaderInner(props: { version: string; submenu: string[] }) {
     <div id="header" className="header">
       <p id="title" className="header-item">
         HDR {Backend.platformName()} Launcher{' '}
-        {props.submenu.length > 0 ? ' > ' + props.submenu.join('>') : ''}
+        {props.submenu.length > 0 ? ` > ${props.submenu.join('>')}` : ''}
       </p>
       <p id="version" className="header-right">
         HDR {props.version}, Launcher v{launcherVersion}

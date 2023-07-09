@@ -11,12 +11,11 @@ export const Popup = (props: { data: PopupData }) => {
           return (
             <FocusButton
               key={index}
-              autofocus={index == 0 ? true : false}
+              autofocus={index == 0}
               className="simple-button inline popup-button"
               onClick={() => props.data.onSelect(option)}
               text={option}
-            >
-            </FocusButton>
+            />
           );
         })}
       </div>
