@@ -14,13 +14,14 @@ export async function setBoolean(
       const sdroot = await backend.getSdRoot();
       const configDir = sdroot + CONFIG_PATH;
       const exists = await backend.fileExists(`${configDir}/${setting}`);
-      if (exists) {
-        // if the file already exists, then it's enabled.
-        resolve();
-        return;
+      if (exists && !enabled) {
+        // the file exists and should be removed.
+        await backend.deleteFile(`${configDir}/${setting}`);
+      } else if (!exists && enabled) {
+        // the file does not exist and should be created.
+        await backend.mkdir(configDir);
+        await backend.writeFile(`${configDir}/${setting}`, 'foo');
       }
-      await backend.mkdir(configDir);
-      await backend.writeFile(`${configDir}/${setting}`, 'foo');
 
       resolve();
     } catch (e) {
