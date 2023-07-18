@@ -7,6 +7,10 @@ Releases can be found on the [releases page](https://github.com/techyCoder81/hdr
 ![launcher_main](https://user-images.githubusercontent.com/42820193/205082618-e6fbaf05-cced-4625-bbfb-372536f5f2aa.png)
 ![launcher_verify](https://user-images.githubusercontent.com/42820193/205082615-de3591f8-5054-4d26-98ff-706afe0f1159.png)
 ![launcher_logs](https://user-images.githubusercontent.com/42820193/205082612-b96e96c0-a93d-4519-a9e6-940d51c95fd7.png)
+![pr_menu](https://github.com/techyCoder81/hdr-launcher-react/assets/42820193/976f3af1-c1f3-42d0-a3fc-461efca22244)
+![stage_config](https://github.com/techyCoder81/hdr-launcher-react/assets/42820193/9428ac6b-ad0f-4ebe-8348-48ea790a968e)
+
+
 
 ## Building
 
