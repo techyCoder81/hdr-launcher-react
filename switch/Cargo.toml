@@ -30,7 +30,7 @@ nx-request-handler = { git = "https://github.com/techyCoder81/nx-request-handler
 semver = "1.0.14"
 minreq = { version = "2", features = ["https-native", "json-using-serde"] }
 include_dir = "0.7.3"
-smashnet = "0.2"
+smashnet = "0.2.1"
 fs_extra = "1.2.0"
 
 [build-dependencies]
