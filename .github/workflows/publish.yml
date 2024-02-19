@@ -118,10 +118,10 @@ jobs:
         path: frontend
         
   build_the_plugin:
-    runs-on: ubuntu-latest
-    needs: build_frontend
+    runs-on: ubuntu-20.04
     container: 
-      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
+      image: hewdrawremix/hewdraw-builder:latest
+    needs: build_frontend
     steps:
     - name: checkout version
       uses: actions/checkout@v2
