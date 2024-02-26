@@ -183,6 +183,9 @@ export const stageInfo: Record<string, { display_name: string }> = {
   Pikmin_Planet: {
     display_name: 'Distant Planet',
   },
+  Animal_Island: {
+    display_name: 'Tortimer Island',
+  },
   Animal_Village: {
     display_name: 'Smashville',
   },
@@ -251,9 +254,6 @@ export const stageInfo: Record<string, { display_name: string }> = {
   },
   Icarus_Uprising: {
     display_name: 'Reset Bomb Forest',
-  },
-  Animal_Island: {
-    display_name: 'Tortimer Island',
   },
   BalloonFight: {
     display_name: 'Balloon Fight',
