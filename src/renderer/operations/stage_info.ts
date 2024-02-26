@@ -55,10 +55,13 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Battlefield',
   },
   BattleFieldL: {
-    display_name: 'Deadline',
+    display_name: 'Big Battlefield',
   },
   End: {
     display_name: 'Final Destination',
+  },
+  BossStage_Final2: {
+    display_name: 'Deadline',
   },
   Mario_Castle64: {
     display_name: "Peach's Castle 64",
@@ -79,7 +82,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Mushroom Kingdom',
   },
   Mario_CastleDx: {
-    display_name: "Princess Peach's Castle",
+    display_name: "Bowser's Castle",
   },
   Mario_Rainbow: {
     display_name: 'Rainbow Cruise',
@@ -100,7 +103,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Brinstar',
   },
   Yoshi_Yoster: {
-    display_name: "Yoshi's Island (Melee)",
+    display_name: "Dinosaur Land",
   },
   Yoshi_CartBoard: {
     display_name: "Yoshi's Story",
@@ -148,7 +151,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Figure 8 Circuit',
   },
   Wario_Madein: {
-    display_name: 'WarioWare, Inc.',
+    display_name: 'Wario Land',
   },
   Zelda_Oldin: {
     display_name: 'Bridge of Elden',
@@ -169,7 +172,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Lylat Cruise',
   },
   Poke_Stadium2: {
-    display_name: 'Pokémon Stadium 2',
+    display_name: 'Pokémon Stadium 3',
   },
   Fzero_Porttown: {
     display_name: 'Port Town Aero Dive',
@@ -211,13 +214,13 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Electroplankton',
   },
   Sonic_Greenhill: {
-    display_name: 'Green Hill Zone',
+    display_name: 'Sky Sanctuary Zone',
   },
   Mario_3DLand: {
     display_name: '3D Land',
   },
   Mario_NewBros2: {
-    display_name: 'Mushroom Kingdom 2',
+    display_name: 'World 1-2',
   },
   Mario_Paper: {
     display_name: 'Paper Mario',
@@ -232,7 +235,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Dreamland GB',
   },
   Poke_Unova: {
-    display_name: 'Unova Pokemon League',
+    display_name: 'Unova Pokémon League',
   },
   Poke_Tower: {
     display_name: 'Prism Tower',
@@ -268,7 +271,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Pictochat 2',
   },
   Mario_Uworld: {
-    display_name: 'Mushroom Kingdom U',
+    display_name: 'Snake Train Chamber',
   },
   Mario_Galaxy: {
     display_name: 'Mario Galaxy',
@@ -283,7 +286,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Great Cave Offensive',
   },
   Poke_Kalos: {
-    display_name: 'Kalos Pokemon League',
+    display_name: 'Kalos Pokémon League',
   },
   FE_Colloseum: {
     display_name: 'Colloseum',
@@ -310,13 +313,13 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Boxing Ring (SSB)',
   },
   Xeno_Gaur: {
-    display_name: 'Guar Plains',
+    display_name: 'Guar Plain',
   },
   DuckHunt: {
     display_name: 'Duck Hunt',
   },
   WreckingCrew: {
-    display_name: 'Wrecking Crew',
+    display_name: 'Realm of Gamecube',
   },
   Pilotwings: {
     display_name: 'Pilotwings',
@@ -386,12 +389,12 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Cloud Sea of Alrest',
   },
   Demon_Dojo: {
-    display_name: 'Demon Dojo',
+    display_name: 'Mishima Dojo',
   },
   Trail_Castle: {
     display_name: 'Hallow Bastion',
   },
   BattleFieldS: {
-    display_name: 'Small Battlefield',
+    display_name: 'Duel Battlefield',
   },
 };
