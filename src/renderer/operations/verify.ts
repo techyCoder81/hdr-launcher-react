@@ -262,7 +262,7 @@ export default async function verify(
           .catch((e) => console.error(e));
       }
 
-      // launcher nro is unnecessary on ryujinx and will actually cause a crash (for the old launcher)
+      // launcher nro is unnecessary on emulator and will actually cause a crash (for the old launcher)
       if (
         Backend.isNode() &&
         (await backend.fileExists(`${sdroot + plugins_dir}/hdr-launcher.nro`))
@@ -272,7 +272,7 @@ export default async function verify(
           .then((str) => console.debug('deleted old launcher'))
           .catch((e) =>
             alert(
-              'Failed to delete old launcher nro for Ryujinx, which will likely crash on game boot.'
+              'Failed to delete old launcher nro for emulator, which will likely crash on game boot.'
             )
           );
       }

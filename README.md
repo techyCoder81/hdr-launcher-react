@@ -1,6 +1,6 @@
 The HDR Launcher, this time written in the React framework with TypeScript with both a Switch and Desktop backend.
 Switch backend runs as a skyline plugin using skyline-web.
-Desktop application is an electron app for use with Ryujinx.
+Desktop application is an electron app for use with Emulators.
 
 Releases can be found on the [releases page](https://github.com/techyCoder81/hdr-launcher-react/releases), or bundled as part of HDR [Beta](https://github.com/HDR-Development/HDR-Releases/releases) and [Nightly](https://github.com/HDR-Development/HDR-Nightlies/releases) full packages.
 

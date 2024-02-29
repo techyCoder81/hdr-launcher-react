@@ -135,7 +135,6 @@ app
   .then(async () => {
     createWindow()
       .then(findEmulator)
-      .then(findRom)
       .then(findSdcard)
       .then(registerListeners)
       .then(() => {
@@ -167,7 +166,7 @@ async function findEmulator() {
     // show instructions to the user
     const response = dialog.showMessageBoxSync(mainWindow, {
       title: 'Instructions',
-      message: 'Please select your Ryujinx executable.',
+      message: 'Please select your emulator\'s executable.',
       buttons: ['ok', 'cancel'],
     });
 
@@ -178,21 +177,21 @@ async function findEmulator() {
 
     let selectedPath;
     if (os.platform() == 'win32') {
-      // let the user point us to ryujinx on windows
+      // let the user point us to emulator on windows
       selectedPath = dialog.showOpenDialogSync(mainWindow, {
-        title: 'Please select your Ryujinx executable',
+        title: 'Please select your emulator\'s executable',
         properties: ['openFile'],
-        filters: [{ name: 'Ryujinx Executables', extensions: ['exe'] }],
+        filters: [{ name: 'Emulator Executables', extensions: ['exe'] }],
       });
     } else {
-      // let the user point us to ryujinx on linux
+      // let the user point us to emulator on linux
       selectedPath = dialog.showOpenDialogSync(mainWindow, {
-        title: 'Please select your Ryujinx executable',
+        title: 'Please select your emulator\'s executable',
         properties: ['openFile'],
       });
     }
     if (!selectedPath || selectedPath.length < 1) {
-      console.warn('User cancelled finding ryujinx!');
+      console.warn('User cancelled finding emulator!');
       app.exit(0);
       continue;
     }
@@ -201,71 +200,11 @@ async function findEmulator() {
     // ensure that the path exists
     if (fs.existsSync(ryuPath)) {
       console.log('given path exists');
-    } else {
-      dialog.showErrorBox('Invalid path!', 'The given path does not exist!');
-      continue;
-    }
-
-    const fileName = path.basename(ryuPath);
-    console.log(`filename: ${fileName}`);
-    if (fileName.includes('Ryujinx')) {
       console.log(`setting ryu path: ${ryuPath}`);
       Config.setRyuPath(ryuPath);
     } else {
-      dialog.showErrorBox(
-        'Invalid path!',
-        'The given file is not a Ryujinx executable!'
-      );
-    }
-  }
-}
-
-async function findRom() {
-  if (mainWindow == null) {
-    console.error('Browserwindow was not defined!');
-    dialog.showErrorBox(
-      'Invalid window context!',
-      'Browser window was not defined! The application will now close'
-    );
-    app.exit(0);
-    return;
-  }
-
-  while (Config.getRomPath() == null || Config.getRomPath() == '') {
-    // show instructions to the user
-    const response = dialog.showMessageBoxSync(mainWindow, {
-      title: 'Instructions',
-      message: 'Please select your valid Smash Ultimate 13.0.1 dump.',
-      buttons: ['ok', 'cancel'],
-    });
-
-    if (response != 0) {
-      app.exit(0);
-      return;
-    }
-
-    // let the user point us to the rom
-    const selectedPath = dialog.showOpenDialogSync(mainWindow, {
-      title: 'Please select your valid Smash Ultimate dump.',
-      properties: ['openFile'],
-      filters: [{ name: 'Switch Roms', extensions: ['nsp', 'xci'] }],
-    });
-    if (!selectedPath || selectedPath.length < 1) {
-      console.warn('User cancelled finding ultimate dump!');
-      app.exit(0);
-      continue;
-    }
-    const romPath = selectedPath[0];
-
-    // ensure that the path exists
-    if (fs.existsSync(romPath)) {
-      console.log('given path exists');
-    } else {
       dialog.showErrorBox('Invalid path!', 'The given path does not exist!');
-      continue;
     }
-    console.log('setting rom path.');
-    Config.setRomPath(romPath);
   }
 }
 
@@ -285,60 +224,32 @@ async function findSdcard() {
   }
 
   let configDir = '';
-  if (process.platform == 'win32') {
-    configDir = `${process.env.APPDATA}/Ryujinx`;
-  } else if (process.platform == 'darwin') {
-    const selectedPath = dialog.showOpenDialogSync(mainWindow, {
-      title: 'Please select your Ryujinx config directory',
-      properties: ['openDirectory'],
-    });
-    if (selectedPath === undefined) {
-      dialog.showErrorBox(
-        'Error!',
-        'Ryujinx config directory is required for the HDR launcher to function. We will now close.'
-      );
-      app.quit();
-      return;
-    }
-    configDir = path.join(selectedPath[0], '/');
-  } else {
-    configDir = path.join(os.homedir(), '.config/Ryujinx/');
+  const selectedPath = dialog.showOpenDialogSync(mainWindow, {
+    title: 'Please select your emulator\'s SD Card directory',
+    properties: ['openDirectory'],
+  });
+  if (selectedPath === undefined) {
+    dialog.showErrorBox(
+      'Error!',
+      'SD Card directory is required for the HDR launcher to function. We will now close.'
+    );
+    app.quit();
+    return;
   }
-
-  if (!fs.existsSync(configDir)) {
-    // expected config dir was not found! Check for portable mode...
-    const isPortable = dialog.showMessageBoxSync(mainWindow, {
-      title: 'Portable Mode?',
-      message: 'Is this Ryujinx installation in portable mode?',
-      buttons: ['Yes', 'No'],
-    });
-    if (isPortable === 0) {
-      console.info('asking for sdcard folder from portable installation.');
-      const selectedDir = dialog.showOpenDialogSync(mainWindow, {
-        title: 'Please select your Ryujinx config directory',
-        properties: ['openDirectory'],
-      });
-      if (selectedDir) {
-        console.info(`Selected config directory: ${selectedDir}`);
-        configDir = selectedDir[0];
-      } else {
-        console.error('User cancelled sdcard selection!');
-      }
-    }
-  }
+  configDir = path.join(selectedPath[0], '/');
 
   if (fs.existsSync(configDir)) {
-    console.info(`setting sdcard root to ${path.join(configDir, 'sdcard')}`);
-    Config.setSdcardPath(path.join(configDir, 'sdcard/'));
+    console.info(`setting sdcard root to ${path.join(configDir)}`);
+    Config.setSdcardPath(configDir);
     // create the sdcard folder if its not there
     if (!fs.existsSync(Config.getSdcardPath())) {
       fs.mkdirSync(Config.getSdcardPath());
     }
   } else {
-    console.error(`Ryujinx directory not found at ${configDir}!`);
+    console.error(`SD Card directory not found at ${configDir}!`);
     dialog.showErrorBox(
-      'Ryujinx not found!',
-      `Ryujinx directory not found at ${configDir}!`
+      'SD Card folder not found!',
+      `SD Card directory not found at ${configDir}!`
     );
     Config.setSdcardPath('');
     app.quit();

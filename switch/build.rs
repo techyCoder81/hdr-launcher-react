@@ -56,7 +56,7 @@ fn main() -> (){
         .replace("e=>Object.getPrototypeOf(e)", "(e=>Object.getPrototypeOf(e))")
         .replace(".Component{state=yr;", ".Component{")
         .replace("resetErrorBoundary=(...e)=>", "resetErrorBoundary(e)")
-        //.replace("this.isNode() ? \"Ryujinx\" : \"Switch\"", "(this.isNode() ? \"Ryujinx\" : \"Switch\")")
+        //.replace("this.isNode() ? \"Emulator\" : \"Switch\"", "(this.isNode() ? \"Emulator\" : \"Switch\")")
         .replace("\"assets/", "\"");
 
     std::fs::remove_file(JS_FILE_PATH).unwrap();
