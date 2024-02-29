@@ -317,6 +317,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6823e4bff6dee10a75dfee95afe1c5a7f93a1b99a20013663e0cb04b3a64f867"
 
 [[package]]
+name = "libc-nnsdk"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99102e4669e461772fcdfeb04ce9dec03c5fade700a3c12b1a4c2a27d97e9b68"
+
+[[package]]
 name = "lock_api"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -420,9 +426,9 @@ source = "git+https://github.com/skyline-rs/rust-native-tls?branch=switch#f202fc
 dependencies = [
  "lazy_static",
  "libc",
- "libc-nnsdk",
+ "libc-nnsdk 0.2.0",
  "log",
- "nnsdk 0.2.1",
+ "nnsdk 0.3.0",
  "openssl",
  "openssl-probe",
  "openssl-sys",
@@ -443,15 +449,15 @@ name = "nnsdk"
 version = "0.2.0"
 source = "git+https://github.com/Raytwo/nnsdk-rs?branch=account_fs#305075deada1be65827019810469fc0f3d519160"
 dependencies = [
- "libc-nnsdk",
+ "libc-nnsdk 0.2.0",
 ]
 
 [[package]]
 name = "nnsdk"
-version = "0.2.1"
-source = "git+https://github.com/ultimate-research/nnsdk-rs#ec4c77cc2946721f1b815a9ab794241febb68037"
+version = "0.3.0"
+source = "git+https://github.com/ultimate-research/nnsdk-rs#bb0ee1d213393d1eaeb9b380064e97bfada199d1"
 dependencies = [
- "libc-nnsdk",
+ "libc-nnsdk 0.3.0",
 ]
 
 [[package]]
@@ -781,7 +787,7 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9950fc129490cff3f4755aa523df16aeeb80130699abfc59cc7c6df8fc5802ad"
 dependencies = [
- "libc-nnsdk",
+ "libc-nnsdk 0.2.0",
  "nnsdk 0.2.0",
  "skyline_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -791,7 +797,7 @@ name = "skyline"
 version = "0.2.1"
 source = "git+https://github.com/ultimate-research/skyline-rs.git#d70df57f243fcb18f168c8ce9dca75f6490d3bf2"
 dependencies = [
- "libc-nnsdk",
+ "libc-nnsdk 0.2.0",
  "nnsdk 0.2.0",
  "skyline_macro 0.2.0 (git+https://github.com/ultimate-research/skyline-rs.git)",
 ]
@@ -865,9 +871,9 @@ dependencies = [
 
 [[package]]
 name = "smashnet"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9371bdc9b319f649ca6a7f75ee397eae5247735979632cc39dcfb20ea85152e6"
+checksum = "b2a31891313daacdbddc5c51f4f8f9b457ad2df5be34a06447bd2c2106b29c1d"
 dependencies = [
  "skyline 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

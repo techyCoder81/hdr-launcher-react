@@ -17,6 +17,7 @@ import * as Process from 'child_process';
 import * as net from 'net';
 import { mainWindow } from './main';
 import Config from './config';
+import * as os from 'os';
 
 const webrequest = require('request');
 const explorer = require('open-file-explorer');
@@ -112,7 +113,7 @@ async function handleInner(
       );
       break;
     case 'get_platform':
-      resolve(new Responses.OkOrError(true, 'Ryujinx', request.id));
+      resolve(new Responses.OkOrError(true, 'Emulator', request.id));
       break;
     case 'get_sdcard_root':
       resolve(
@@ -356,7 +357,11 @@ async function handleInner(
       }
     case 'open_mod_manager':
       try {
-        explorer(`${Config.getSdcardPath()}ultimate/mods/`, (err: any) => {
+        let mods_path = 'ultimate/mods/';
+        if (os.platform() == 'win32') {
+          mods_path = 'ultimate\\mods\\';
+        }
+        explorer(`${Config.getSdcardPath()}${mods_path}`, (err: any) => {
           if (err) {
             resolve(new Responses.OkOrError(false, err.toString(), request.id));
           } else {
@@ -398,7 +403,7 @@ async function handleInner(
         // read the given file path
         const file: string = request.arguments[0];
 
-        // on ryujinx, if the folder name exists, then its enabled
+        // on emulator, if the folder name exists, then its enabled
         resolve(
           new Responses.OkOrError(
             true,
@@ -811,10 +816,10 @@ async function handleInner(
       // play the game
       // resolve(new Responses.OkOrError(true, "starting the game...", request.id));
       let command = path.normalize(
-        `${Config.getRyuPath()} "${Config.getRomPath()}"`
+        `${Config.getRyuPath()}`
       );
       if (process.platform == 'win32') {
-        command = `cmd /C ""${Config.getRyuPath()}" a "${Config.getRomPath()}""`;
+        command = `cmd /C ""${Config.getRyuPath()}""`;
       }
       console.log(`Starting the game, with command: ${command}`);
       Process.exec(command, (result) => {

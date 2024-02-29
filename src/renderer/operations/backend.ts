@@ -56,7 +56,7 @@ export class Backend extends DefaultMessenger {
    * @returns the platform name
    */
   public static platformName() {
-    return this.isNode() ? 'Ryujinx' : 'Switch';
+    return this.isNode() ? 'Emulator' : 'Switch';
   }
 
   private static platform: string;
