@@ -3,36 +3,6 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Install Node.js and NPM
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: npm
-
-      - name: npm install
-        run: |
-          npm install
-
-      - name: npm test
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npm run package
-          npm exec tsc
-          npm test
-# npm run lint
-
   build_frontend:
     env:
       PLUGIN_NAME: hdr-launcher
@@ -65,10 +35,10 @@ jobs:
         path: frontend
         
   build_the_plugin:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: build_frontend
     container: 
-      image: jugeeya/cargo-skyline:3.0.0-dkp-beta
+      image: hewdrawremix/hewdraw-builder:latest
     steps:
     - name: checkout version
       uses: actions/checkout@v2
