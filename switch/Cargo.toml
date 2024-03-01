@@ -1,6 +1,6 @@
 [package]
 name = "hdr-launcher-react"
-version = "0.4.7"
+version = "0.5.0"
 authors = ["techyCoder81"]
 edition = "2021"
 
