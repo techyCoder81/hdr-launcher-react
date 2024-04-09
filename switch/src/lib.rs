@@ -23,7 +23,8 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 static WEB_DIR: Dir = include_dir!("./web-build/renderer");
 
 pub fn is_emulator() -> bool {
-    return unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 } == 0x8004000;
+    let text_addr = unsafe { skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as u64 };
+    text_addr == 0x8504000 || text_addr == 0x80004000
 }
 
 pub fn check_for_self_updates() {
