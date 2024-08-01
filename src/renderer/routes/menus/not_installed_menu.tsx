@@ -4,7 +4,7 @@ import { Backend } from '../../operations/backend';
 import {
   installLatest,
   switchToBeta,
-  switchToNightly,
+  switchToPrerelease,
 } from '../../operations/install';
 import verify from '../../operations/verify';
 import { FocusButton } from '../../components/buttons/focus_button';

@@ -5,13 +5,13 @@ import verify from './verify';
 
 export enum InstallType {
   Beta,
-  Nightly,
+  PreRelease,
   Unknown,
 }
 
 export function getInstallType(version: string): InstallType {
-  if (version.toLowerCase().includes('nightly')) {
-    return InstallType.Nightly;
+  if (version.toLowerCase().includes('prerelease')) {
+    return InstallType.PreRelease;
   }
   if (version.toLowerCase().includes('beta')) {
     return InstallType.Beta;
@@ -23,8 +23,8 @@ export function getRepoName(type: InstallType) {
   switch (type) {
     case InstallType.Beta:
       return 'HDR-Releases';
-    case InstallType.Nightly:
-      return 'HDR-Nightlies';
+    case InstallType.PreRelease:
+      return 'HDR-PreReleases';
     default:
       return 'unknown';
   }
@@ -52,19 +52,19 @@ export async function installLatest(
   );
 }
 
-export async function switchToNightly(
+export async function switchToPrerelease(
   currentVersion: string,
   progressCallback?: (p: Progress) => void
 ) {
   return installArtifact(
-    'to-nightly.zip',
+    'to-prerelease.zip',
     currentVersion,
     InstallType.Beta,
     progressCallback
   ).then(() =>
     handleDeletions(
       currentVersion,
-      'to_nightly_deletions.json',
+      'to_prerelease_deletions.json',
       progressCallback
     )
   );
@@ -77,7 +77,7 @@ export async function switchToBeta(
   return installArtifact(
     'to-beta.zip',
     currentVersion,
-    InstallType.Nightly,
+    InstallType.PreRelease,
     progressCallback
   ).then(() =>
     handleDeletions(currentVersion, 'to_beta_deletions.json', progressCallback)
