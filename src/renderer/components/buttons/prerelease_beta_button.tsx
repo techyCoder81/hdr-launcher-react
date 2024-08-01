@@ -3,7 +3,7 @@ import { Backend } from '../../operations/backend';
 import { FocusButton } from './focus_button';
 import { ScrollFocusButton } from './scroll_focus_button';
 
-export const NightlyBetaButton = (props: {
+export const PrereleaseBetaButton = (props: {
   setInfo: (info: string) => void;
   onClick: (version: string) => void;
 }) => {
@@ -21,10 +21,10 @@ export const NightlyBetaButton = (props: {
   }, []);
 
   let buttonText = '...';
-  if (version.toLowerCase().includes('nightly')) {
+  if (version.toLowerCase().includes('prerelease')) {
     buttonText = 'Beta';
   } else if (version.toLowerCase().includes('beta')) {
-    buttonText = 'Nightly';
+    buttonText = 'PreRelease';
   }
 
   return (

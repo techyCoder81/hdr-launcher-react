@@ -7,10 +7,10 @@ import {
   getInstallType,
   InstallType,
   switchToBeta,
-  switchToNightly,
+  switchToPrerelease,
 } from '../../operations/install';
 import verify from '../../operations/verify';
-import { NightlyBetaButton } from '../../components/buttons/nightly_beta_button';
+import { PrereleaseBetaButton } from '../../components/buttons/prerelease_beta_button';
 import { MenuType } from './menu';
 import { AbstractMenu } from './abstract_menu';
 import { PopupData } from '../../operations/popup_data';
@@ -85,13 +85,13 @@ export default class ToolsMenu extends AbstractMenu<{
             }
           />
 
-          <NightlyBetaButton
+          <PrereleaseBetaButton
             setInfo={(info: string) => this.props.setInfo(info)}
             onClick={async (version: string) => {
               const installType = getInstallType(version);
               switch (installType) {
                 case InstallType.Beta:
-                  await switchToNightly(version, (p: Progress) =>
+                  await switchToPrerelease(version, (p: Progress) =>
                     this.showProgress(p)
                   )
                     // .then(() => verify((p: Progress) => this.setProgress(p)))
@@ -104,10 +104,10 @@ export default class ToolsMenu extends AbstractMenu<{
                     })
                     .catch((e) => {
                       this.props.switchTo(MenuType.MainMenu);
-                      alert(`Error during nightly switch: ${e}`);
+                      alert(`Error during prerelease switch: ${e}`);
                     });
                   break;
-                case InstallType.Nightly:
+                case InstallType.PreRelease:
                   await switchToBeta(version, (p: Progress) =>
                     this.showProgress(p)
                   )
