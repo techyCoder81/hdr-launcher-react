@@ -104,7 +104,7 @@ export default class Menu extends React.PureComponent {
             onComplete={(installed: string | null) => {
               console.info(installed);
               installed !== null
-                ? installed.includes('pr')
+                ? installed.endsWith('pr')
                   ? this.switchTo(MenuType.PrInstalled)
                   : this.switchTo(MenuType.MainMenu)
                 : this.switchTo(MenuType.NotInstalled);
