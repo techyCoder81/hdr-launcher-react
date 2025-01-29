@@ -1,8 +1,9 @@
 import { Backend } from './backend';
 import { Stage, StageInfo } from './stage_info';
 
-const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
-const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
+export const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
+export const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
+export const OFFICIAL_STAGE_CONFIG = 'ultimate/mods/hdr-stages/tourney_mode_official.json';
 const CONFIG_PATH = 'ultimate/hdr-config/';
 
 // require() all of the stage previews
@@ -56,21 +57,21 @@ export type FileFormat = {
  * loads the currently tourney config from the sd card
  * @returns void when completed
  */
-export async function load(): Promise<ConfigData> {
+export async function loadConfigData(location: string): Promise<ConfigData> {
   return new Promise<ConfigData>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
       const root = await backend.getSdRoot();
 
       // if the config doesn't already exist, default to empty
-      if (!(await backend.fileExists(root + ACTIVE_CONFIG_FILE))) {
+      if (!(await backend.fileExists(root + location))) {
         const data = new ConfigData(false, [], []);
         resolve(data);
         return;
       }
 
       await backend
-        .readFile(root + ACTIVE_CONFIG_FILE)
+        .readFile(root + location)
         .then(async (json) => {
           const fileData: FileFormat = JSON.parse(json);
           const info = new StageInfo();

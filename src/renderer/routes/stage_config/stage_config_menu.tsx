@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
-import { LogPopout } from 'renderer/components/logging/log_popout';
 import { Pages } from 'renderer/constants';
-import { ConfigData, load, save } from 'renderer/operations/stage_config';
+import { ACTIVE_CONFIG_FILE, ConfigData, loadConfigData, OFFICIAL_STAGE_CONFIG, save } from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
@@ -21,7 +20,7 @@ export default function StageConfigMenu() {
       return;
     }
 
-    load()
+    loadConfigData(ACTIVE_CONFIG_FILE)
       .then((data) => setConfig(data))
       .catch((e) => alert(`failed to preload stage config: ${e}`));
   }, []);
@@ -61,6 +60,26 @@ export default function StageConfigMenu() {
               return config.enabled;
             }}
           />
+        ) : (
+          <div />
+        )}
+        {config ? (
+        <FocusButton
+          text="Load Official Stagelist"
+          onClick={() => loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
+              const newConfig = new ConfigData(
+                data.enabled,
+                data.starters,
+                data.counterpicks
+              );
+              await save(newConfig); 
+              setConfig(newConfig);
+              navigate(0);
+            }).catch((e) => alert(`failed to preload stage config: ${e}`))}
+          className="simple-button-bigger"
+          onFocus={() => {}}
+          autofocus
+        />
         ) : (
           <div />
         )}
