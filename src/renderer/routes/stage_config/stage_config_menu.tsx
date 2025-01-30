@@ -70,7 +70,7 @@ export default function StageConfigMenu() {
         )}
         {config ? (
           <FocusCheckbox
-            text="Use Official Stagelist"
+            text="Use Seasonal Stagelist"
             onClick={async () => {
               config.useOfficial = !config.useOfficial;
               if (config.useOfficial === true) {
