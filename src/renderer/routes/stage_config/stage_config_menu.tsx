@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
 import { Pages } from 'renderer/constants';
-import { ACTIVE_CONFIG_FILE, ConfigData, loadConfigData, OFFICIAL_STAGE_CONFIG, save } from 'renderer/operations/stage_config';
+import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, ConfigData, loadConfigData, OFFICIAL_STAGE_CONFIG, save } from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
@@ -39,7 +39,7 @@ export default function StageConfigMenu() {
           text="Back"
           onClick={async () => {
             if (config !== null) {
-              save(config);
+              save(ACTIVE_CONFIG_FILE, config);
             }
             navigate(Pages.MAIN_MENU);
           }}
@@ -52,7 +52,7 @@ export default function StageConfigMenu() {
             text="Enabled"
             onClick={async () => {
               config.enabled = !config.enabled;
-              save(config);
+              save(ACTIVE_CONFIG_FILE, config);
             }}
             className="simple-button-bigger"
             onFocus={() => {}}
@@ -64,22 +64,45 @@ export default function StageConfigMenu() {
           <div />
         )}
         {config ? (
-        <FocusButton
-          text="Load Official Stagelist"
-          onClick={() => loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
-              const newConfig = new ConfigData(
-                data.enabled,
-                data.starters,
-                data.counterpicks
-              );
-              await save(newConfig); 
-              setConfig(newConfig);
-              navigate(0);
-            }).catch((e) => alert(`failed to preload stage config: ${e}`))}
-          className="simple-button-bigger"
-          onFocus={() => {}}
-          autofocus
-        />
+          <FocusCheckbox
+            text="Use Official Stagelist"
+            onClick={async () => {
+              config.useOfficial = !config.useOfficial;
+              if (config.useOfficial === true) {
+                // save the current stagelist to the backup file, then load the official stagelist
+                await save(BACKUP_STAGE_CONFIG, config);
+                loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
+                  const newConfig = new ConfigData(
+                    data.enabled,
+                    data.useOfficial,
+                    data.starters,
+                    data.counterpicks
+                  );
+                  await save(ACTIVE_CONFIG_FILE, newConfig); 
+                  setConfig(newConfig);
+                  navigate(0);
+                })
+              } else {
+                // load the stagelist from the backup file
+                loadConfigData(BACKUP_STAGE_CONFIG).then(async (data) => {
+                  const newConfig = new ConfigData(
+                    data.enabled,
+                    false,
+                    data.starters,
+                    data.counterpicks
+                  );
+                  await save(ACTIVE_CONFIG_FILE, newConfig); 
+                  setConfig(newConfig);
+                  navigate(0);
+                })
+              }
+            }}
+            className="simple-button-bigger"
+            onFocus={() => {}}
+            checkStatus={async () => {
+              return config.useOfficial;
+            }}
+          />
         ) : (
           <div />
         )}
@@ -94,13 +117,15 @@ export default function StageConfigMenu() {
               onUpdate={(stages) => {
                 const newConfig = new ConfigData(
                   config.enabled,
+                  config.useOfficial,
                   stages,
                   config.counterpicks
                 );
-                save(newConfig);
+                save(ACTIVE_CONFIG_FILE, newConfig);
                 setConfig(newConfig);
               }}
               onHover={(stage) => setHoveredStage(stage)}
+              disabled={config.useOfficial}
             />
             <StageListBox
               category="Counterpick"
@@ -109,13 +134,15 @@ export default function StageConfigMenu() {
               onUpdate={(stages) => {
                 const newConfig = new ConfigData(
                   config.enabled,
+                  config.useOfficial,
                   config.starters,
                   stages
                 );
-                save(newConfig);
+                save(ACTIVE_CONFIG_FILE, newConfig);
                 setConfig(newConfig);
               }}
               onHover={(stage) => setHoveredStage(stage)}
+              disabled={config.useOfficial}
             />
           </div>
           <div style={{ width: '60%', height: '100%' }}>

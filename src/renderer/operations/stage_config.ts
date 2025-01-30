@@ -23,12 +23,15 @@ new StageInfo().list().then((stages) =>
 export class ConfigData {
   public enabled: boolean;
 
+  public useOfficial: boolean;
+
   public starters: Stage[];
 
   public counterpicks: Stage[];
 
-  constructor(enabled: boolean, starters: Stage[], counterpicks: Stage[]) {
+  constructor(enabled: boolean, useOfficial: boolean, starters: Stage[], counterpicks: Stage[]) {
     this.enabled = enabled;
+    this.useOfficial = useOfficial;
     this.starters = starters;
     this.counterpicks = counterpicks;
   }
@@ -49,6 +52,7 @@ export class ConfigData {
  */
 export type FileFormat = {
   enabled: boolean;
+  useOfficial: boolean;
   starters: string[];
   counterpicks: string[];
 };
@@ -65,7 +69,7 @@ export async function loadConfigData(location: string): Promise<ConfigData> {
 
       // if the config doesn't already exist, default to empty
       if (!(await backend.fileExists(root + location))) {
-        const data = new ConfigData(false, [], []);
+        const data = new ConfigData(false, false, [], []);
         resolve(data);
         return;
       }
@@ -75,8 +79,9 @@ export async function loadConfigData(location: string): Promise<ConfigData> {
         .then(async (json) => {
           const fileData: FileFormat = JSON.parse(json);
           const info = new StageInfo();
-          const data = new ConfigData(false, [], []);
+          const data = new ConfigData(false, false, [], []);
           data.enabled = fileData.enabled;
+          data.useOfficial = fileData.useOfficial ?? false;
           data.counterpicks = [];
           for (const nameId of fileData.counterpicks) {
             try {
@@ -108,13 +113,14 @@ export async function loadConfigData(location: string): Promise<ConfigData> {
   });
 }
 
-export async function save(data: ConfigData): Promise<void> {
+export async function save(location: string, data: ConfigData): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
       const root = await backend.getSdRoot();
       const config: FileFormat = {
         enabled: data.enabled,
+        useOfficial: data.useOfficial,
         starters: [],
         counterpicks: [],
       };
@@ -129,7 +135,7 @@ export async function save(data: ConfigData): Promise<void> {
         await backend.mkdir(configDir);
       }
 
-      await Backend.instance().writeFile(root + ACTIVE_CONFIG_FILE, json);
+      await Backend.instance().writeFile(root + location, json);
       resolve();
     } catch (e) {
       reject(e);
