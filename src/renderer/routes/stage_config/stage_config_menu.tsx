@@ -21,7 +21,12 @@ export default function StageConfigMenu() {
     }
 
     loadConfigData(ACTIVE_CONFIG_FILE)
-      .then((data) => setConfig(data))
+      .then(async (data) => {
+        if (data.useOfficial) {
+          data = await loadConfigData(OFFICIAL_STAGE_CONFIG);
+        }
+        setConfig(data);
+      })
       .catch((e) => alert(`failed to preload stage config: ${e}`));
   }, []);
 
