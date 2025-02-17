@@ -1,8 +1,9 @@
 import { Backend } from './backend';
 import { Stage, StageInfo } from './stage_info';
 
-const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
-const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
+export const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
+export const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
+export const OFFICIAL_STAGE_CONFIG = 'ultimate/mods/hdr-stages/tourney_mode_official.json';
 const CONFIG_PATH = 'ultimate/hdr-config/';
 
 // require() all of the stage previews
@@ -22,12 +23,15 @@ new StageInfo().list().then((stages) =>
 export class ConfigData {
   public enabled: boolean;
 
+  public useOfficial: boolean;
+
   public starters: Stage[];
 
   public counterpicks: Stage[];
 
-  constructor(enabled: boolean, starters: Stage[], counterpicks: Stage[]) {
+  constructor(enabled: boolean, useOfficial: boolean, starters: Stage[], counterpicks: Stage[]) {
     this.enabled = enabled;
+    this.useOfficial = useOfficial;
     this.starters = starters;
     this.counterpicks = counterpicks;
   }
@@ -48,6 +52,7 @@ export class ConfigData {
  */
 export type FileFormat = {
   enabled: boolean;
+  useOfficial: boolean;
   starters: string[];
   counterpicks: string[];
 };
@@ -56,26 +61,27 @@ export type FileFormat = {
  * loads the currently tourney config from the sd card
  * @returns void when completed
  */
-export async function load(): Promise<ConfigData> {
+export async function loadConfigData(location: string): Promise<ConfigData> {
   return new Promise<ConfigData>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
       const root = await backend.getSdRoot();
 
       // if the config doesn't already exist, default to empty
-      if (!(await backend.fileExists(root + ACTIVE_CONFIG_FILE))) {
-        const data = new ConfigData(false, [], []);
+      if (!(await backend.fileExists(root + location))) {
+        const data = new ConfigData(false, false, [], []);
         resolve(data);
         return;
       }
 
       await backend
-        .readFile(root + ACTIVE_CONFIG_FILE)
+        .readFile(root + location)
         .then(async (json) => {
           const fileData: FileFormat = JSON.parse(json);
           const info = new StageInfo();
-          const data = new ConfigData(false, [], []);
+          const data = new ConfigData(false, false, [], []);
           data.enabled = fileData.enabled;
+          data.useOfficial = fileData.useOfficial ?? false;
           data.counterpicks = [];
           for (const nameId of fileData.counterpicks) {
             try {
@@ -107,13 +113,14 @@ export async function load(): Promise<ConfigData> {
   });
 }
 
-export async function save(data: ConfigData): Promise<void> {
+export async function save(location: string, data: ConfigData): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
       const root = await backend.getSdRoot();
       const config: FileFormat = {
         enabled: data.enabled,
+        useOfficial: data.useOfficial,
         starters: [],
         counterpicks: [],
       };
@@ -128,7 +135,7 @@ export async function save(data: ConfigData): Promise<void> {
         await backend.mkdir(configDir);
       }
 
-      await Backend.instance().writeFile(root + ACTIVE_CONFIG_FILE, json);
+      await Backend.instance().writeFile(root + location, json);
       resolve();
     } catch (e) {
       reject(e);

@@ -17,6 +17,7 @@ export default function StageListBox(props: {
   options: string[];
   onUpdate: (stages: Stage[]) => void;
   onHover?: (stage: Stage) => void;
+  disabled?: boolean;
 }) {
   const [stages, setStages] = useState(props.stages);
 
@@ -65,12 +66,13 @@ export default function StageListBox(props: {
                 props.onUpdate(newSelected);
                 setStages(newSelected);
               }}
+              disabled={props.disabled}
             />
           ))
         ) : (
           <div />
         )}
-        {props.stages.length < MAX_STAGES ? (
+        {props.stages.length < MAX_STAGES && !props.disabled ? (
           <FocusButton
             className="hover-color"
             text="+"
@@ -120,13 +122,14 @@ function StageListItem(props: {
   onRemove: () => void;
   selected: Stage;
   onHover?: (stage: Stage) => void;
+  disabled?: boolean;
 }) {
   return (
     <div>
       <FocusCombo
         className="hover-color"
         style={{
-          width: '90%',
+          width: props.disabled ? '100%' : '90%',
           color: 'white',
           fontSize: 'large',
           paddingTop: 3,
@@ -140,25 +143,28 @@ function StageListItem(props: {
           }
         }}
         options={props.options}
+        disabled={props.disabled}
       />
-      <FocusButton
-        className="hover-color"
-        style={{
-          width: '10%',
-          color: 'pink',
-          fontWeight: 'bold',
-          fontSize: 'large',
-          paddingTop: 3,
-          paddingBottom: 1,
-        }}
-        text="X"
-        onFocus={() => {
-          if (props.onHover) {
-            props.onHover(props.selected);
-          }
-        }}
-        onClick={props.onRemove}
-      />
+      {!props.disabled && (
+        <FocusButton
+          className="hover-color"
+          style={{
+            width: '10%',
+            color: 'pink',
+            fontWeight: 'bold',
+            fontSize: 'large',
+            paddingTop: 3,
+            paddingBottom: 1,
+          }}
+          text="X"
+          onFocus={() => {
+            if (props.onHover) {
+              props.onHover(props.selected);
+            }
+          }}
+          onClick={props.onRemove}
+        />
+      )}
     </div>
   );
 }

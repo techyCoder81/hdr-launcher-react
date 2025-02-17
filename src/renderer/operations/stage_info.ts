@@ -82,7 +82,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Mushroom Kingdom',
   },
   Mario_CastleDx: {
-    display_name: "Bowser's Castle",
+    display_name: "Bowser's Kingdom",
   },
   Mario_Rainbow: {
     display_name: 'Rainbow Cruise',
@@ -133,7 +133,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Brinstar Depths',
   },
   Yoshi_Story: {
-    display_name: "Yoshi's Island (Brawl)",
+    display_name: "Super Happy Tree",
   },
   Fzero_Bigblue: {
     display_name: 'Big Blue',
@@ -160,7 +160,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Norfair',
   },
   Metroid_Orpheon: {
-    display_name: 'Frigate Orpheon',
+    display_name: 'Metroid Lab',
   },
   Yoshi_Island: {
     display_name: "Yoshi's Island",
@@ -352,7 +352,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'New Donk City',
   },
   Zelda_Tower: {
-    display_name: 'Great Plateau Tower',
+    display_name: 'Poké Floats',
   },
   Spla_Parking: {
     display_name: 'Moray Towers',
@@ -392,7 +392,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Mishima Dojo',
   },
   Trail_Castle: {
-    display_name: 'Hallow Bastion',
+    display_name: 'Hollow Bastion',
   },
   BattleFieldS: {
     display_name: 'Duel Battlefield',
