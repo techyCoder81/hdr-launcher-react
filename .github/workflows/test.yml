@@ -29,7 +29,7 @@ jobs:
 
     # upload built web files
     - name: Upload frontend artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend
         path: frontend
@@ -42,7 +42,7 @@ jobs:
     steps:
     - name: checkout version
       uses: actions/checkout@v4.1.4
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       name: frontend
 
     - run: ls -lart
