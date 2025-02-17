@@ -102,7 +102,8 @@
     "react-remark": "^2.1.0",
     "react-router-dom": "^6.3.0",
     "react-twitter-embed": "^4.0.4",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "xdg-portable": "^10.6.0"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
