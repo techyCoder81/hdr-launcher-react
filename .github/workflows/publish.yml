@@ -80,7 +80,7 @@ jobs:
   build_the_plugin:
     runs-on: ubuntu-20.04
     container: 
-      image: hewdrawremix/hewdraw-builder:latest
+      image: wuboyth/skyline-plugin-builder:latest
     needs: build_frontend
     steps:
     - name: checkout version
