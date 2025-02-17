@@ -41,6 +41,10 @@ export default function App() {
           }
         />
         <Route
+          path={Pages.STAGE_CONFIG_REFRESH}
+          element={<Navigate to={Pages.STAGE_CONFIG} />}
+        />
+        <Route
           path={Pages.STAGE_CONFIG}
           element={
             <ErrorBoundary fallback={<ErrorPage />}>

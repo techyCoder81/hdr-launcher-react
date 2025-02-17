@@ -16,6 +16,18 @@ export const FocusCombo = React.forwardRef<
     disabled?: boolean;
   }
 >((props, ref) => {
+
+  let options = props.options.map((option) => (
+    <option value={option} key={option}>
+      {option}
+    </option>
+  ));
+  let disabledOption = [
+    <option value={props.forcedValue} key={props.forcedValue}>
+      {props.forcedValue}
+    </option>
+  ];
+
   return (
     <select
       style={props.style}
@@ -41,13 +53,9 @@ export const FocusCombo = React.forwardRef<
           props.onFocus();
         }
       }}
-      onChange={props.onChange}
+      onChange={props.disabled ? undefined : props.onChange}
     >
-      {props.options.map((option) => (
-        <option value={option} key={option}>
-          {option}
-        </option>
-      ))}
+      {props.disabled ? disabledOption : options}
     </select>
   );
 });

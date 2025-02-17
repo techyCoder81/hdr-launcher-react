@@ -85,7 +85,7 @@ export default function StageConfigMenu() {
                   );
                   await save(ACTIVE_CONFIG_FILE, newConfig); 
                   setConfig(newConfig);
-                  navigate(0);
+                  navigate(Pages.STAGE_CONFIG_REFRESH);
                 })
               } else {
                 // load the stagelist from the backup file
@@ -98,7 +98,7 @@ export default function StageConfigMenu() {
                   );
                   await save(ACTIVE_CONFIG_FILE, newConfig); 
                   setConfig(newConfig);
-                  navigate(0);
+                  navigate(Pages.STAGE_CONFIG_REFRESH);
                 })
               }
             }}
