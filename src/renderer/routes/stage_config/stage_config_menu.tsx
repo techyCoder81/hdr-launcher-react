@@ -22,8 +22,10 @@ export default function StageConfigMenu() {
 
     loadConfigData(ACTIVE_CONFIG_FILE)
       .then(async (data) => {
+        let enabled = data.enabled;
         if (data.useOfficial) {
           data = await loadConfigData(OFFICIAL_STAGE_CONFIG);
+          data.enabled = enabled;
         }
         setConfig(data);
       })
@@ -78,8 +80,8 @@ export default function StageConfigMenu() {
                 await save(BACKUP_STAGE_CONFIG, config);
                 loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
                   const newConfig = new ConfigData(
-                    data.enabled,
-                    data.useOfficial,
+                    config.enabled,
+                    true,
                     data.starters,
                     data.counterpicks
                   );
@@ -91,7 +93,7 @@ export default function StageConfigMenu() {
                 // load the stagelist from the backup file
                 loadConfigData(BACKUP_STAGE_CONFIG).then(async (data) => {
                   const newConfig = new ConfigData(
-                    data.enabled,
+                    config.enabled,
                     false,
                     data.starters,
                     data.counterpicks
