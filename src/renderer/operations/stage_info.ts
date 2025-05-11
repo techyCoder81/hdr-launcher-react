@@ -160,7 +160,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Norfair',
   },
   Metroid_Orpheon: {
-    display_name: 'Metroid Lab',
+    display_name: 'Frigate Husk',
   },
   Yoshi_Island: {
     display_name: "Yoshi's Island",
