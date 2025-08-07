@@ -24,7 +24,9 @@ export default class Config {
     Config.createFile();
 
     // read the file
-    return JSON.parse(fs.readFileSync(Config.configFilePath(), 'utf-8')) as Config;
+    return JSON.parse(
+      fs.readFileSync(Config.configFilePath(), 'utf-8')
+    ) as Config;
   }
 
   private static saveConfig(config: Config) {

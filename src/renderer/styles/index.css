@@ -378,8 +378,8 @@ p {
   border-color: var(--main-button-border-hover-color);
 }
 
-p img{
-  max-width:400px;
+p img {
+  max-width: 400px;
 }
 
 .inline {

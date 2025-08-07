@@ -12,17 +12,16 @@ const BACKGROUND_COLOR = 'var(--main-button-bg-color)';
 const LEGACY_CONFIG_FILE =
   'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml';
 
-export default function StageListBox(props: {
-  category: Categories;
-}) {
-  const {initialized, stages, setHoveredStage, pages, setPage, currentPage} = useStageConfig();
+export default function StageListBox(props: { category: Categories }) {
+  const { initialized, stages, setHoveredStage, pages, setPage, currentPage } =
+    useStageConfig();
   const page = pages[currentPage];
-  const propName = props.category === "Starter" ? "starters" : "counterpicks";
+  const propName = props.category === 'Starter' ? 'starters' : 'counterpicks';
   const selectedStates = page[propName];
   const disabled = page.useOfficial;
   const getOptions = useCallback(() => {
     return stages.map((stage) => stage?.display_name);
-  }, [initialized, stages])
+  }, [initialized, stages]);
   const options = getOptions();
 
   return (
@@ -58,8 +57,8 @@ export default function StageListBox(props: {
                 selectedStates[idx] = stage;
                 const newPage: Page = {
                   ...page,
-                  [propName]: selectedStates
-                }
+                  [propName]: selectedStates,
+                };
                 setPage(currentPage, newPage);
               }}
               onHover={setHoveredStage}
@@ -73,8 +72,8 @@ export default function StageListBox(props: {
                 });
                 const newPage: Page = {
                   ...page,
-                  [propName]: newSelected
-                }
+                  [propName]: newSelected,
+                };
                 setPage(currentPage, newPage);
               }}
               disabled={disabled}
@@ -109,9 +108,9 @@ export default function StageListBox(props: {
               newSelected.push(firstAvailable);
               const newPage: Page = {
                 ...page,
-                [propName]: newSelected
-              }
-                setPage(currentPage, newPage);
+                [propName]: newSelected,
+              };
+              setPage(currentPage, newPage);
             }}
             onFocus={() => {}}
           />

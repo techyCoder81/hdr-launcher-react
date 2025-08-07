@@ -2,8 +2,10 @@ import { Backend } from './backend';
 import { Stage, StageInfo } from './stage_info';
 
 export const ACTIVE_CONFIG_FILE = 'ultimate/hdr-config/tourney_mode.json';
-export const BACKUP_STAGE_CONFIG = 'ultimate/hdr-config/tourney_mode_backup.json';
-export const OFFICIAL_STAGE_CONFIG = 'ultimate/mods/hdr-stages/tourney_mode_official.json';
+export const BACKUP_STAGE_CONFIG =
+  'ultimate/hdr-config/tourney_mode_backup.json';
+export const OFFICIAL_STAGE_CONFIG =
+  'ultimate/mods/hdr-stages/tourney_mode_official.json';
 const CONFIG_PATH = 'ultimate/hdr-config/';
 
 // require() all of the stage previews
@@ -37,7 +39,7 @@ async function loadStageList(data: any): Promise<StageList> {
   const stageList: StageList = {
     starters: [],
     counterpicks: [],
-  }
+  };
   // load starters
   const starters: string[] = data?.starters ?? [];
   for (const nameId of starters) {
@@ -72,17 +74,18 @@ async function getOfficialStageList(): Promise<StageList> {
       const root = await backend.getSdRoot();
       if (!(await backend.fileExists(root + OFFICIAL_STAGE_CONFIG))) {
         resolve({
-          starters:[],
-          counterpicks:[],
+          starters: [],
+          counterpicks: [],
         });
         return;
       }
 
-      await backend.readFile(root + OFFICIAL_STAGE_CONFIG)
+      await backend
+        .readFile(root + OFFICIAL_STAGE_CONFIG)
         .then(async (json) => {
           const data = JSON.parse(json);
           const stageList = await loadStageList(data);
-          resolve(stageList)
+          resolve(stageList);
         })
         .catch((e) => reject(e));
     } catch (e) {
@@ -92,9 +95,9 @@ async function getOfficialStageList(): Promise<StageList> {
 }
 
 async function loadPages(data: any): Promise<Page[]> {
-  const pages: Page[] = []
+  const pages: Page[] = [];
   for (let i = 0; i < data.pages.length; i++) {
-    const name = data.pages[i]?.name ?? "Page " + i;
+    const name = data.pages[i]?.name ?? 'Page ' + i;
     const useOfficial = data.pages[i]?.useOfficial ?? false;
     let stageList;
     if (useOfficial) {
@@ -105,7 +108,7 @@ async function loadPages(data: any): Promise<Page[]> {
     pages.push({
       name,
       useOfficial,
-      ...stageList
+      ...stageList,
     });
   }
   return pages;
@@ -127,7 +130,8 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
       }
 
       // load the config from the input file
-      await backend.readFile(root + location)
+      await backend
+        .readFile(root + location)
         .then(async (json) => {
           const data = JSON.parse(json);
           const enabled: boolean = data.enabled ?? false;
@@ -135,7 +139,7 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
           resolve({
             enabled: enabled,
             pages: pages,
-          })
+          });
         })
         .catch((e) => reject(e));
     } catch (e) {
@@ -144,7 +148,10 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
   });
 }
 
-export async function saveStageConfig(location: string, stageConfig: StageConfig): Promise<void> {
+export async function saveStageConfig(
+  location: string,
+  stageConfig: StageConfig
+): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
@@ -155,10 +162,10 @@ export async function saveStageConfig(location: string, stageConfig: StageConfig
           return {
             ...page,
             starters: page.starters.map((stage) => stage.name_id),
-            counterpicks: page.counterpicks.map((stage) => stage.name_id)
-          }
-        })
-      }
+            counterpicks: page.counterpicks.map((stage) => stage.name_id),
+          };
+        }),
+      };
 
       const json = JSON.stringify(config);
       const configDir = root + CONFIG_PATH;

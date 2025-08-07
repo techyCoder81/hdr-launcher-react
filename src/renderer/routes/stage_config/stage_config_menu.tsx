@@ -2,7 +2,14 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
 import { Pages } from 'renderer/constants';
-import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, OFFICIAL_STAGE_CONFIG, Page, loadStageConfig, saveStageConfig } from 'renderer/operations/stage_config';
+import {
+  ACTIVE_CONFIG_FILE,
+  BACKUP_STAGE_CONFIG,
+  OFFICIAL_STAGE_CONFIG,
+  Page,
+  loadStageConfig,
+  saveStageConfig,
+} from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
@@ -24,8 +31,8 @@ export default function StageConfigMenu() {
     setEnabled,
     pages,
     setPages,
-    setCurrentPage
-  } = useStageConfig()
+    setCurrentPage,
+  } = useStageConfig();
 
   useEffect(() => {
     if (initialized) {
@@ -35,13 +42,13 @@ export default function StageConfigMenu() {
     loadStageConfig(ACTIVE_CONFIG_FILE)
       .then(async (stageConfig) => {
         setEnabled(stageConfig.enabled);
-        setHoveredStage(null)
+        setHoveredStage(null);
         setPages(stageConfig.pages);
         setCurrentPage(0);
         new StageInfo()
           .list()
           .then((list) => {
-            setStages(list)
+            setStages(list);
             setInitialized(true);
           })
           .catch((e) => alert(`failed to set stage options: ${e}`));
@@ -81,12 +88,12 @@ export default function StageConfigMenu() {
             onClick={() => {
               saveStageConfig(ACTIVE_CONFIG_FILE, {
                 enabled,
-                pages
+                pages,
               })
-              .then(() => {
-                navigate(Pages.MAIN_MENU);
-              })
-              .catch((e) => alert(`failed to save stage config: ${e}`));
+                .then(() => {
+                  navigate(Pages.MAIN_MENU);
+                })
+                .catch((e) => alert(`failed to save stage config: ${e}`));
             }}
             className="simple-button-bigger"
             onFocus={() => {}}
@@ -103,12 +110,8 @@ export default function StageConfigMenu() {
             <StagePager />
           </div>
           <div style={{ width: '25%' }}>
-            <StageListBox
-              category="Starter"
-            />
-            <StageListBox
-              category="Counterpick"
-            />
+            <StageListBox category="Starter" />
+            <StageListBox category="Counterpick" />
           </div>
           <div style={{ width: '60%', height: '100%' }}>
             <div style={{ margin: 10, height: '80%' }}>

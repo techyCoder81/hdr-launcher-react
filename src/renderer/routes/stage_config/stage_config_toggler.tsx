@@ -7,10 +7,10 @@ interface StageConfigTogglerProps {
   autofocus?: boolean;
 }
 
-export default function StageConfigToggler({ 
-  className = "simple-button-bigger", 
+export default function StageConfigToggler({
+  className = 'simple-button-bigger',
   onFocus,
-  autofocus = false
+  autofocus = false,
 }: StageConfigTogglerProps) {
   const { initialized, enabled, setEnabled } = useStageConfig();
 
@@ -20,7 +20,7 @@ export default function StageConfigToggler({
   };
 
   if (!initialized) {
-    return (<div />);
+    return <div />;
   }
 
   return (

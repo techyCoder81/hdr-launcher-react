@@ -12,7 +12,7 @@ const BACKGROUND_COLOR = 'var(--main-button-bg-color)';
 export default function StagePager() {
   const {
     initialized,
-    pages, 
+    pages,
     addPage,
     setPage,
     removePage,
@@ -44,12 +44,7 @@ export default function StagePager() {
           Pages
         </h2>
         {initialized ? (
-          pages.map((entry, idx) => (
-            <PageItem
-              idx={idx}
-              onHover={() => {}}
-            />
-          ))
+          pages.map((entry, idx) => <PageItem idx={idx} onHover={() => {}} />)
         ) : (
           <div />
         )}
@@ -85,16 +80,8 @@ export default function StagePager() {
  * @param props.page the current page
  * @returns void
  */
-function PageItem(props: {
-  idx: number;
-  onHover?: (page: Page) => void;
-}) {
-  const {
-    pages,
-    removePage,
-    currentPage,
-    setCurrentPage,
-  } = useStageConfig();
+function PageItem(props: { idx: number; onHover?: (page: Page) => void }) {
+  const { pages, removePage, currentPage, setCurrentPage } = useStageConfig();
   const disabled = pages.length <= 1;
   return (
     <div>
