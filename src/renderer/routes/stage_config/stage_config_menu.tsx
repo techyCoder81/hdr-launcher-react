@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
 import { Pages } from 'renderer/constants';
-import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, OFFICIAL_STAGE_CONFIG, Page, StageConfig, loadStageConfig, saveStageConfig } from 'renderer/operations/stage_config';
+import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, OFFICIAL_STAGE_CONFIG, Page, loadStageConfig, saveStageConfig } from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
@@ -16,21 +16,6 @@ export default function StageConfigMenu() {
   const [hoveredStage, setHoveredStage] = useState(null as Stage | null);
   const [stages, setStages] = useState(null as string[] | null);
   const {initialized, setInitialized, enabled, setEnabled, pages, setPages, currentPage, setCurrentPage} = useStageConfig()
-  
-  const addNewPage = () => {
-    const newPage = {
-      name: `Page ${pages.length + 1}`,
-      useOfficial: false,
-      starters: [],
-      counterpicks: []
-    };
-    setPages([...pages, newPage]);
-  };
-  
-  const removePage = (index: number) => {
-    const newPages = pages.filter((_, i) => i !== index);
-    setPages(newPages);
-  };
 
   useEffect(() => {
     if (initialized) {
@@ -64,20 +49,48 @@ export default function StageConfigMenu() {
     <FullScreenDiv>
       <div id="header-bar" className="border-bottom" style={{}}>
         <FocusButton
-          text="Back"
-          onClick={async () => {
-            if (initialized) {
-              await saveStageConfig(ACTIVE_CONFIG_FILE, {
-                enabled,
-                pages,
-              });
-            }
+          text="Cancel"
+          onClick={() => {
+            setInitialized(false);
             navigate(Pages.MAIN_MENU);
           }}
           className="simple-button-bigger"
           onFocus={() => {}}
           autofocus
         />
+        {initialized ? (
+          <FocusButton
+            text="Save & Exit"
+            onClick={() => {
+              saveStageConfig(ACTIVE_CONFIG_FILE, {
+                enabled,
+                pages
+              })
+              .then(() => {
+                navigate(Pages.MAIN_MENU);
+              })
+              .catch((e) => alert(`failed to save stage config: ${e}`));
+            }}
+            className="simple-button-bigger"
+            onFocus={() => {}}
+            autofocus
+          />
+        ) : (
+          <div />
+        )}
+        {initialized ? (
+          <FocusButton
+            text="Reload"
+            onClick={() => {
+              setInitialized(false);
+            }}
+            className="simple-button-bigger"
+            onFocus={() => {}}
+            autofocus
+          />
+        ) : (
+          <div />
+        )}
         {initialized ? (
           <StageConfigToggler />
         ) : (
@@ -99,10 +112,6 @@ export default function StageConfigMenu() {
                 const newPages = [...pages]
                 newPages[0] = newPage;
                 setPages(newPages);
-                await saveStageConfig(ACTIVE_CONFIG_FILE, {
-                  enabled,
-                  pages: newPages,
-                });
               }}
               onHover={(stage) => setHoveredStage(stage)}
               disabled={page.useOfficial}
@@ -119,10 +128,6 @@ export default function StageConfigMenu() {
                 const newPages = [...pages]
                 newPages[0] = newPage;
                 setPages(newPages);
-                await saveStageConfig(ACTIVE_CONFIG_FILE, {
-                  enabled,
-                  pages: newPages,
-                });
               }}
               onHover={(stage) => setHoveredStage(stage)}
               disabled={page.useOfficial}

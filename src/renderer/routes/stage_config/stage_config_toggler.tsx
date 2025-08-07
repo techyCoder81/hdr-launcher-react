@@ -1,5 +1,3 @@
-import React from 'react';
-import { ACTIVE_CONFIG_FILE, saveStageConfig } from 'renderer/operations/stage_config';
 import { useStageConfig } from './stage_config_provider';
 import FocusTimer from 'renderer/operations/focus_singleton';
 
@@ -19,17 +17,6 @@ export default function StageConfigToggler({
   const handleToggle = async (): Promise<void> => {
     const newEnabled = !enabled;
     setEnabled(newEnabled);
-    
-    try {
-      await saveStageConfig(ACTIVE_CONFIG_FILE, {
-        enabled: newEnabled,
-        pages,
-      });
-    } catch (error) {
-      // If save fails, revert the state
-      setEnabled(enabled);
-      alert(`Failed to save config: ${error}`);
-    }
   };
 
   return (
