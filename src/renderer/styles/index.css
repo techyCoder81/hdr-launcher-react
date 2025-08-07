@@ -363,6 +363,11 @@ p {
   border-color: var(--main-button-border-hover-color);
 }
 
+.hover-color-selected {
+  background-color: var(--main-button-bg-hover-color);
+  border-color: var(--main-button-border-color);
+}
+
 .hover-color {
   background-color: var(--main-button-bg-color);
 }

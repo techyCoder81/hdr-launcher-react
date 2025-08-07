@@ -15,7 +15,7 @@ interface StageConfigContextType {
   setPages: (pages: Page[]) => void;
   addPage: (page?: Page) => void;
   setPage: (idx: number, page: Page) => void;
-  removePage: () => void;
+  removePage: (idx: number) => void;
   currentPage: number;
   setCurrentPage: (currentPage: number) => void;
 }
@@ -42,28 +42,44 @@ export const StageConfigProvider: React.FC<StageConfigProviderProps> = ({
   const addPage = useCallback((page?: Page) => {
     const newPages = [...pages]
     newPages.push(page ?? {
-      name: "Page " + newPages.length,
+      name: "Page " + (newPages.length + 1),
       useOfficial: false,
       starters: [],
       counterpicks: []
     })
     setPages(newPages);
+    setCurrentPage(newPages.length - 1);
   },
-  [initialized, pages, setPages])
+  [initialized, pages, setPages, currentPage, setCurrentPage])
 
-  const removePage = useCallback(() => {
+  const removePage = useCallback((idx: number) => {
     const newPages = [...pages]
-    newPages.pop()
+    newPages.splice(idx, 1);
+    if (newPages.length <= 0) {
+      return;
+    }
     setPages(newPages);
+
+    let newCurrentPage = currentPage;
+    if (idx <= currentPage) {
+      newCurrentPage = currentPage - 1;
+    }
+    if (newCurrentPage < 0) {
+      newCurrentPage = 0;
+    }
+    if (newCurrentPage >= newPages.length) {
+      newCurrentPage = newPages.length - 1;
+    }
+    setCurrentPage(newCurrentPage);
   },
-  [initialized, pages, setPages])
+  [initialized, pages, setPages, currentPage, setCurrentPage])
 
   const setPage = useCallback((idx: number, page: Page) => {
     const newPages = [...pages]
     newPages[idx] = page;
     setPages(newPages);
   },
-  [initialized, pages, setPages])
+  [initialized, pages, setPages, currentPage, setCurrentPage])
 
   const value: StageConfigContextType = {
     initialized,

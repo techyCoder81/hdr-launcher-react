@@ -10,6 +10,7 @@ import StageListBox from './stage_list_box';
 import { StagePreview } from './stage_preview';
 import { useStageConfig } from './stage_config_provider';
 import StageConfigToggler from './stage_config_toggler';
+import StagePager from './stage_list_pager';
 
 export default function StageConfigMenu() {
   const navigate = useNavigate();
@@ -98,10 +99,10 @@ export default function StageConfigMenu() {
       </div>
       {initialized && stages ? (
         <div id="main-content" className="stage-config-body">
-          <div style={{ width: '10%' }}>
-            
+          <div style={{ width: '15%' }}>
+            <StagePager />
           </div>
-          <div style={{ width: '30%' }}>
+          <div style={{ width: '25%' }}>
             <StageListBox
               category="Starter"
             />
