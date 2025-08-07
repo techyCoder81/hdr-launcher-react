@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FocusButton } from 'renderer/components/buttons/focus_button';
 import { FocusCombo } from 'renderer/components/buttons/focus_combo';
 import { Backend } from 'renderer/operations/backend';
-import {} from 'renderer/operations/stage_config';
+import { Page } from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
+import { useStageConfig } from './stage_config_provider';
 
 type Categories = 'Starter' | 'Counterpick';
 const MAX_STAGES = 7;
@@ -13,16 +14,19 @@ const LEGACY_CONFIG_FILE =
 
 export default function StageListBox(props: {
   category: Categories;
-  stages: Stage[];
-  options: string[];
-  onUpdate: (stages: Stage[]) => void;
-  onHover?: (stage: Stage) => void;
-  disabled?: boolean;
 }) {
-  const [stages, setStages] = useState(props.stages);
+  const {initialized, stages, setHoveredStage, pages, setPage, currentPage} = useStageConfig();
+  const page = pages[currentPage];
+  const propName = props.category === "Starter" ? "starters" : "counterpicks";
+  const selectedStates = page[propName];
+  const disabled = page.useOfficial;
+  const getOptions = useCallback(() => {
+    return stages.map((stage) => stage?.display_name);
+  }, [initialized, stages])
+  const options = getOptions();
 
   return (
-    <div style={{ height: '300px', position: 'relative', padding: 0 }}>
+    <div style={{ height: '269px', position: 'relative', padding: 0 }}>
       <div
         className="thick-border"
         style={{
@@ -43,36 +47,43 @@ export default function StageListBox(props: {
         >
           {props.category}s
         </h2>
-        {props.options ? (
-          stages.map((entry, idx) => (
+        {options ? (
+          selectedStates.map((entry, idx) => (
             <StageListItem
-              options={props.options}
+              options={options}
               selected={entry}
               onChange={async (item) => {
                 const info = new StageInfo();
                 const stage = await info.getByDisplay(item.target.value);
-                props.stages[idx] = stage;
-                props.onUpdate(props.stages);
+                selectedStates[idx] = stage;
+                const newPage: Page = {
+                  ...page,
+                  [propName]: selectedStates
+                }
+                setPage(currentPage, newPage);
               }}
-              onHover={props.onHover}
+              onHover={setHoveredStage}
               onRemove={() => {
                 const newSelected: Stage[] = [];
                 console.info(`ignoring: ${idx}`);
-                props.stages.forEach((entry, thisIdx) => {
+                selectedStates.forEach((entry, thisIdx) => {
                   if (idx != thisIdx) {
                     newSelected.push(entry);
                   }
                 });
-                props.onUpdate(newSelected);
-                setStages(newSelected);
+                const newPage: Page = {
+                  ...page,
+                  [propName]: newSelected
+                }
+                setPage(currentPage, newPage);
               }}
-              disabled={props.disabled}
+              disabled={disabled}
             />
           ))
         ) : (
           <div />
         )}
-        {props.stages.length < MAX_STAGES && !props.disabled ? (
+        {selectedStates.length < MAX_STAGES && !disabled ? (
           <FocusButton
             className="hover-color"
             text="+"
@@ -94,10 +105,13 @@ export default function StageListBox(props: {
                   await info.list()
                 )[0]?.display_name
               );
-              props.stages.forEach((entry) => newSelected.push(entry));
+              selectedStates.forEach((entry) => newSelected.push(entry));
               newSelected.push(firstAvailable);
-              props.onUpdate(newSelected);
-              setStages(newSelected);
+              const newPage: Page = {
+                ...page,
+                [propName]: newSelected
+              }
+                setPage(currentPage, newPage);
             }}
             onFocus={() => {}}
           />

@@ -12,12 +12,16 @@ export default function StageConfigToggler({
   onFocus,
   autofocus = false
 }: StageConfigTogglerProps) {
-  const { enabled, setEnabled, pages } = useStageConfig();
+  const { initialized, enabled, setEnabled } = useStageConfig();
 
   const handleToggle = async (): Promise<void> => {
     const newEnabled = !enabled;
     setEnabled(newEnabled);
   };
+
+  if (!initialized) {
+    return (<div />);
+  }
 
   return (
     <button

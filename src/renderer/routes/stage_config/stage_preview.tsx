@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Backend } from 'renderer/operations/backend';
 import logo from '../../../../assets/logo_full.png';
 import { StageInfo, Stage } from '../../operations/stage_info';
+import { useStageConfig } from './stage_config_provider';
 
-export function StagePreview(props: { stage: Stage }) {
+export function StagePreview() {
+  const { hoveredStage } = useStageConfig();
   const info = new StageInfo();
 
   const labelStyle = {
@@ -38,7 +40,7 @@ export function StagePreview(props: { stage: Stage }) {
     left: -45,
   };
 
-  if (props.stage === null) {
+  if (hoveredStage === null) {
     return (
       <div className="image preview">
         <img src={logo} alt="Logo" />
@@ -47,13 +49,13 @@ export function StagePreview(props: { stage: Stage }) {
   }
 
   return (
-    <div className="image preview" key={props.stage?.display_name}>
+    <div className="image preview" key={hoveredStage?.display_name}>
       <div style={{ left: 0, top: 0, position: 'absolute' }}>
-        <div style={labelStyle}>{props.stage?.display_name}</div>
+        <div style={labelStyle}>{hoveredStage?.display_name}</div>
         <br />
-        {/* <div style={detailsStyle}>Top Blastzone: {props.stage.blastzones.top}</div><br/>
-        <div style={detailsStyle}>Side Blastzone: {props.stage.blastzones.side}</div><br/>
-        <div style={detailsStyle}>Bottom Blastzone: {props.stage.blastzones.bottom}</div><br/> */}
+        {/* <div style={detailsStyle}>Top Blastzone: {hoveredStage.blastzones.top}</div><br/>
+        <div style={detailsStyle}>Side Blastzone: {hoveredStage.blastzones.side}</div><br/>
+        <div style={detailsStyle}>Bottom Blastzone: {hoveredStage.blastzones.bottom}</div><br/> */}
       </div>
       <img
         style={{
@@ -63,7 +65,7 @@ export function StagePreview(props: { stage: Stage }) {
           top: 0,
           left: 0,
         }}
-        src={`/static/stage_2_${props.stage?.name_id.toLowerCase()}.jpg`}
+        src={`/static/stage_2_${hoveredStage?.name_id.toLowerCase()}.jpg`}
         alt="Preview"
         onError={({ currentTarget }) => {
           currentTarget.onerror = null; // prevents looping
