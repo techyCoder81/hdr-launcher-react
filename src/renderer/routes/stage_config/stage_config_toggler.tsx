@@ -1,0 +1,66 @@
+import React from 'react';
+import { ACTIVE_CONFIG_FILE, saveStageConfig } from 'renderer/operations/stage_config';
+import { useStageConfig } from './stage_config_provider';
+import FocusTimer from 'renderer/operations/focus_singleton';
+
+interface StageConfigTogglerProps {
+  className?: string;
+  onFocus?: () => void;
+  autofocus?: boolean;
+}
+
+export default function StageConfigToggler({ 
+  className = "simple-button-bigger", 
+  onFocus,
+  autofocus = false
+}: StageConfigTogglerProps) {
+  const { enabled, setEnabled, pages } = useStageConfig();
+
+  const handleToggle = async (): Promise<void> => {
+    const newEnabled = !enabled;
+    setEnabled(newEnabled);
+    
+    try {
+      await saveStageConfig(ACTIVE_CONFIG_FILE, {
+        enabled: newEnabled,
+        pages,
+      });
+    } catch (error) {
+      // If save fails, revert the state
+      setEnabled(enabled);
+      alert(`Failed to save config: ${error}`);
+    }
+  };
+
+  return (
+    <button
+      className={className}
+      autoFocus={autofocus}
+      onMouseMove={(e) => e.currentTarget.focus()}
+      onMouseEnter={(e) => e.currentTarget.focus()}
+      onMouseLeave={(e) => e.currentTarget.blur()}
+      onBlur={(e) => {
+        // Same focus behavior as FocusCheckbox
+        if (!FocusTimer.request()) {
+          e.currentTarget.focus();
+        }
+      }}
+      onFocus={() => {
+        if (onFocus) {
+          onFocus();
+        }
+      }}
+      onClick={() => {
+        handleToggle().catch((e) => console.error('Toggle failed:', e));
+      }}
+    >
+      Enabled&nbsp;
+      <input
+        className="focus-check"
+        type="checkbox"
+        readOnly
+        checked={enabled} // Directly use context state - no internal state management!
+      />
+    </button>
+  );
+}

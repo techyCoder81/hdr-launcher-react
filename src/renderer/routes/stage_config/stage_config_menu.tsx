@@ -1,43 +1,64 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
 import { Pages } from 'renderer/constants';
-import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, ConfigData, loadConfigData, OFFICIAL_STAGE_CONFIG, save } from 'renderer/operations/stage_config';
+import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, OFFICIAL_STAGE_CONFIG, Page, StageConfig, loadStageConfig, saveStageConfig } from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
 import StageListBox from './stage_list_box';
 import { StagePreview } from './stage_preview';
+import { useStageConfig } from './stage_config_provider';
+import StageConfigToggler from './stage_config_toggler';
 
 export default function StageConfigMenu() {
   const navigate = useNavigate();
   const [hoveredStage, setHoveredStage] = useState(null as Stage | null);
-  const [config, setConfig] = useState(null as null | ConfigData);
-  const [options, setOptions] = useState(null as null | string[]);
+  const [stages, setStages] = useState(null as string[] | null);
+  const {initialized, setInitialized, enabled, setEnabled, pages, setPages, currentPage, setCurrentPage} = useStageConfig()
+  
+  const addNewPage = () => {
+    const newPage = {
+      name: `Page ${pages.length + 1}`,
+      useOfficial: false,
+      starters: [],
+      counterpicks: []
+    };
+    setPages([...pages, newPage]);
+  };
+  
+  const removePage = (index: number) => {
+    const newPages = pages.filter((_, i) => i !== index);
+    setPages(newPages);
+  };
 
   useEffect(() => {
-    if (config !== null) {
+    if (initialized) {
       return;
     }
 
-    loadConfigData(ACTIVE_CONFIG_FILE)
-      .then(async (data) => {
-        let enabled = data.enabled;
-        if (data.useOfficial) {
-          data = await loadConfigData(OFFICIAL_STAGE_CONFIG);
-          data.enabled = enabled;
-        }
-        setConfig(data);
+    loadStageConfig(ACTIVE_CONFIG_FILE)
+      .then(async (stageConfig) => {
+        setEnabled(stageConfig.enabled);
+        setPages(stageConfig.pages);
+        setCurrentPage(0);
+        setInitialized(true);
       })
       .catch((e) => alert(`failed to preload stage config: ${e}`));
-  }, []);
+  }, [initialized, enabled, pages]);
 
   useEffect(() => {
     new StageInfo()
       .list()
-      .then((list) => setOptions(list.map((stage) => stage?.display_name)))
+      .then((list) => setStages(list.map((stage) => stage?.display_name)))
       .catch((e) => alert(`failed to set new options: ${e}`));
-  }, [config]);
+  }, [initialized, enabled, pages]);
+
+  const page = pages[0] ?? {
+    name: "Page 1",
+    starters: [],
+    counterpicks:[],
+  };
 
   return (
     <FullScreenDiv>
@@ -45,8 +66,11 @@ export default function StageConfigMenu() {
         <FocusButton
           text="Back"
           onClick={async () => {
-            if (config !== null) {
-              save(ACTIVE_CONFIG_FILE, config);
+            if (initialized) {
+              await saveStageConfig(ACTIVE_CONFIG_FILE, {
+                enabled,
+                pages,
+              });
             }
             navigate(Pages.MAIN_MENU);
           }}
@@ -54,102 +78,54 @@ export default function StageConfigMenu() {
           onFocus={() => {}}
           autofocus
         />
-        {config ? (
-          <FocusCheckbox
-            text="Enabled"
-            onClick={async () => {
-              config.enabled = !config.enabled;
-              save(ACTIVE_CONFIG_FILE, config);
-            }}
-            className="simple-button-bigger"
-            onFocus={() => {}}
-            checkStatus={async () => {
-              return config.enabled;
-            }}
-          />
-        ) : (
-          <div />
-        )}
-        {config ? (
-          <FocusCheckbox
-            text="Use Seasonal Stagelist"
-            onClick={async () => {
-              config.useOfficial = !config.useOfficial;
-              if (config.useOfficial === true) {
-                // save the current stagelist to the backup file, then load the official stagelist
-                await save(BACKUP_STAGE_CONFIG, config);
-                loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
-                  const newConfig = new ConfigData(
-                    config.enabled,
-                    true,
-                    data.starters,
-                    data.counterpicks
-                  );
-                  await save(ACTIVE_CONFIG_FILE, newConfig); 
-                  setConfig(newConfig);
-                  navigate(Pages.STAGE_CONFIG_REFRESH);
-                })
-              } else {
-                // load the stagelist from the backup file
-                loadConfigData(BACKUP_STAGE_CONFIG).then(async (data) => {
-                  const newConfig = new ConfigData(
-                    config.enabled,
-                    false,
-                    data.starters,
-                    data.counterpicks
-                  );
-                  await save(ACTIVE_CONFIG_FILE, newConfig); 
-                  setConfig(newConfig);
-                  navigate(Pages.STAGE_CONFIG_REFRESH);
-                })
-              }
-            }}
-            className="simple-button-bigger"
-            onFocus={() => {}}
-            checkStatus={async () => {
-              return config.useOfficial;
-            }}
-          />
+        {initialized ? (
+          <StageConfigToggler />
         ) : (
           <div />
         )}
       </div>
-      {config && options ? (
+      {initialized && stages ? (
         <div id="main-content" className="stage-config-body">
           <div style={{ width: '40%' }}>
             <StageListBox
               category="Starter"
-              stages={config.starters}
-              options={options}
-              onUpdate={(stages) => {
-                const newConfig = new ConfigData(
-                  config.enabled,
-                  config.useOfficial,
-                  stages,
-                  config.counterpicks
-                );
-                save(ACTIVE_CONFIG_FILE, newConfig);
-                setConfig(newConfig);
+              stages={page.starters}
+              options={stages}
+              onUpdate={async (stages) => {
+                const newPage: Page = {
+                  ...page,
+                  starters: stages
+                }
+                const newPages = [...pages]
+                newPages[0] = newPage;
+                setPages(newPages);
+                await saveStageConfig(ACTIVE_CONFIG_FILE, {
+                  enabled,
+                  pages: newPages,
+                });
               }}
               onHover={(stage) => setHoveredStage(stage)}
-              disabled={config.useOfficial}
+              disabled={page.useOfficial}
             />
             <StageListBox
               category="Counterpick"
-              stages={config.counterpicks}
-              options={options}
-              onUpdate={(stages) => {
-                const newConfig = new ConfigData(
-                  config.enabled,
-                  config.useOfficial,
-                  config.starters,
-                  stages
-                );
-                save(ACTIVE_CONFIG_FILE, newConfig);
-                setConfig(newConfig);
+              stages={page.counterpicks}
+              options={stages}
+              onUpdate={async (stages) => {
+                const newPage: Page = {
+                  ...page,
+                  counterpicks: stages
+                }
+                const newPages = [...pages]
+                newPages[0] = newPage;
+                setPages(newPages);
+                await saveStageConfig(ACTIVE_CONFIG_FILE, {
+                  enabled,
+                  pages: newPages,
+                });
               }}
               onHover={(stage) => setHoveredStage(stage)}
-              disabled={config.useOfficial}
+              disabled={page.useOfficial}
             />
           </div>
           <div style={{ width: '60%', height: '100%' }}>
