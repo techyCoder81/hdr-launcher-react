@@ -32,6 +32,7 @@ export interface Page extends StageList {
 export interface StageConfig {
   enabled: boolean;
   pages: Page[];
+  officialStageList?: StageList;
 }
 
 async function loadStageList(data: any): Promise<StageList> {
@@ -67,16 +68,13 @@ async function loadStageList(data: any): Promise<StageList> {
   return stageList;
 }
 
-async function getOfficialStageList(): Promise<StageList> {
-  return new Promise<StageList>(async (resolve, reject) => {
+async function loadOfficialStageList(): Promise<StageList | null> {
+  return new Promise<StageList | null>(async (resolve, reject) => {
     try {
       const backend = Backend.instance();
       const root = await backend.getSdRoot();
       if (!(await backend.fileExists(root + OFFICIAL_STAGE_CONFIG))) {
-        resolve({
-          starters: [],
-          counterpicks: [],
-        });
+        resolve(null);
         return;
       }
 
@@ -99,12 +97,7 @@ async function loadPages(data: any): Promise<Page[]> {
   for (let i = 0; i < data.pages.length; i++) {
     const name = data.pages[i]?.name ?? 'Page ' + i;
     const useOfficial = data.pages[i]?.useOfficial ?? false;
-    let stageList;
-    if (useOfficial) {
-      stageList = await getOfficialStageList();
-    } else {
-      stageList = await loadStageList(data.pages[i]);
-    }
+    const stageList = await loadStageList(data.pages[i]);
     pages.push({
       name,
       useOfficial,
@@ -136,9 +129,11 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
           const data = JSON.parse(json);
           const enabled: boolean = data.enabled ?? false;
           const pages: Page[] = await loadPages(data);
+          const officialStageList = await loadOfficialStageList();
           resolve({
             enabled: enabled,
             pages: pages,
+            officialStageList: officialStageList ?? undefined,
           });
         })
         .catch((e) => reject(e));

@@ -13,11 +13,20 @@ const LEGACY_CONFIG_FILE =
   'ultimate/mods/hdr-stages/ui/param/database/ui_stage_db.prcxml';
 
 export default function StageListBox(props: { category: Categories }) {
-  const { initialized, stages, setHoveredStage, pages, setPage, currentPage } =
-    useStageConfig();
+  const {
+    initialized,
+    stages,
+    setHoveredStage,
+    pages,
+    setPage,
+    currentPage,
+    officialStageList,
+  } = useStageConfig();
   const page = pages[currentPage];
   const propName = props.category === 'Starter' ? 'starters' : 'counterpicks';
-  const selectedStates = page[propName];
+  const selectedStages = !page.useOfficial
+    ? page[propName]
+    : officialStageList?.[propName] ?? [];
   const disabled = page.useOfficial;
   const getOptions = useCallback(() => {
     return stages.map((stage) => stage?.display_name);
@@ -47,17 +56,17 @@ export default function StageListBox(props: { category: Categories }) {
           {props.category}s
         </h2>
         {options ? (
-          selectedStates.map((entry, idx) => (
+          selectedStages.map((entry, idx) => (
             <StageListItem
               options={options}
               selected={entry}
               onChange={async (item) => {
                 const info = new StageInfo();
                 const stage = await info.getByDisplay(item.target.value);
-                selectedStates[idx] = stage;
+                selectedStages[idx] = stage;
                 const newPage: Page = {
                   ...page,
-                  [propName]: selectedStates,
+                  [propName]: selectedStages,
                 };
                 setPage(currentPage, newPage);
               }}
@@ -65,7 +74,7 @@ export default function StageListBox(props: { category: Categories }) {
               onRemove={() => {
                 const newSelected: Stage[] = [];
                 console.info(`ignoring: ${idx}`);
-                selectedStates.forEach((entry, thisIdx) => {
+                selectedStages.forEach((entry, thisIdx) => {
                   if (idx != thisIdx) {
                     newSelected.push(entry);
                   }
@@ -82,7 +91,7 @@ export default function StageListBox(props: { category: Categories }) {
         ) : (
           <div />
         )}
-        {selectedStates.length < MAX_STAGES && !disabled ? (
+        {selectedStages.length < MAX_STAGES && !disabled ? (
           <FocusButton
             className="hover-color"
             text="+"
@@ -104,7 +113,7 @@ export default function StageListBox(props: { category: Categories }) {
                   await info.list()
                 )[0]?.display_name
               );
-              selectedStates.forEach((entry) => newSelected.push(entry));
+              selectedStages.forEach((entry) => newSelected.push(entry));
               newSelected.push(firstAvailable);
               const newPage: Page = {
                 ...page,

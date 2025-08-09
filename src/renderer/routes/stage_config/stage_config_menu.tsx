@@ -18,6 +18,7 @@ import { StagePreview } from './stage_preview';
 import { useStageConfig } from './stage_config_provider';
 import StageConfigToggler from './stage_config_toggler';
 import StagePager from './stage_list_pager';
+import StagePageOptions from './stage_list_page_options';
 
 export default function StageConfigMenu() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function StageConfigMenu() {
     pages,
     setPages,
     setCurrentPage,
+    setOfficialStageList,
   } = useStageConfig();
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function StageConfigMenu() {
         setHoveredStage(null);
         setPages(stageConfig.pages);
         setCurrentPage(0);
+        setOfficialStageList(stageConfig.officialStageList ?? null);
         new StageInfo()
           .list()
           .then((list) => {
@@ -108,13 +111,14 @@ export default function StageConfigMenu() {
         <div id="main-content" className="stage-config-body">
           <div style={{ width: '15%' }}>
             <StagePager />
+            <StagePageOptions />
           </div>
           <div style={{ width: '25%' }}>
             <StageListBox category="Starter" />
             <StageListBox category="Counterpick" />
           </div>
           <div style={{ width: '60%', height: '100%' }}>
-            <div style={{ margin: 10, height: '80%' }}>
+            <div style={{ margin: 8, height: '91%' }}>
               <StagePreview />
             </div>
           </div>

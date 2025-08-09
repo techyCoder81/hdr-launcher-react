@@ -10,15 +10,8 @@ const MAX_PAGES = 8;
 const BACKGROUND_COLOR = 'var(--main-button-bg-color)';
 
 export default function StagePager() {
-  const {
-    initialized,
-    pages,
-    addPage,
-    setPage,
-    removePage,
-    currentPage,
-    setCurrentPage,
-  } = useStageConfig();
+  const { initialized, pages, addPage, currentPage, setHoveredStage } =
+    useStageConfig();
   const page = pages[currentPage];
 
   return (
@@ -64,6 +57,7 @@ export default function StagePager() {
             }}
             onClick={async () => {
               addPage();
+              setHoveredStage(null);
             }}
             onFocus={() => {}}
           />
@@ -81,7 +75,8 @@ export default function StagePager() {
  * @returns void
  */
 function PageItem(props: { idx: number; onHover?: (page: Page) => void }) {
-  const { pages, removePage, currentPage, setCurrentPage } = useStageConfig();
+  const { pages, removePage, currentPage, setCurrentPage, setHoveredStage } =
+    useStageConfig();
   const disabled = pages.length <= 1;
   return (
     <div>
@@ -96,7 +91,10 @@ function PageItem(props: { idx: number; onHover?: (page: Page) => void }) {
           paddingTop: 3,
           paddingBottom: 3,
         }}
-        onClick={() => setCurrentPage(props.idx)}
+        onClick={() => {
+          setCurrentPage(props.idx);
+          setHoveredStage(null);
+        }}
         onFocus={() => {}}
       />
       {!disabled && (
@@ -116,7 +114,10 @@ function PageItem(props: { idx: number; onHover?: (page: Page) => void }) {
               props.onHover(pages[props.idx]);
             }
           }}
-          onClick={() => removePage(props.idx)}
+          onClick={() => {
+            removePage(props.idx);
+            setHoveredStage(null);
+          }}
         />
       )}
     </div>

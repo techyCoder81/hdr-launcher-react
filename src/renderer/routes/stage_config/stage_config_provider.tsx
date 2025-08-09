@@ -5,7 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react';
-import { Page } from 'renderer/operations/stage_config';
+import { Page, StageList } from 'renderer/operations/stage_config';
 import { Stage } from 'renderer/operations/stage_info';
 
 interface StageConfigContextType {
@@ -24,6 +24,8 @@ interface StageConfigContextType {
   removePage: (idx: number) => void;
   currentPage: number;
   setCurrentPage: (currentPage: number) => void;
+  officialStageList: StageList | null;
+  setOfficialStageList: (stageList: StageList | null) => void;
 }
 
 // Create the context with undefined as default (we'll handle this in the hook)
@@ -44,6 +46,9 @@ export const StageConfigProvider: React.FC<StageConfigProviderProps> = ({
   const [enabled, setEnabled] = useState<boolean>(false);
   const [pages, setPages] = useState<Page[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
+  const [officialStageList, setOfficialStageList] = useState<StageList | null>(
+    null
+  );
 
   const addPage = useCallback(
     (page?: Page) => {
@@ -111,6 +116,8 @@ export const StageConfigProvider: React.FC<StageConfigProviderProps> = ({
     removePage,
     currentPage,
     setCurrentPage,
+    officialStageList,
+    setOfficialStageList,
   };
 
   return (
