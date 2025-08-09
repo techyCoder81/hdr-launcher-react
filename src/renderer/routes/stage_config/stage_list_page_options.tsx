@@ -10,7 +10,21 @@ export default function StagePageOptions() {
   const page = pages[currentPage];
 
   const defaultPreset = 'Use Preset List?';
-  const presetListNames = ['HDR Seasonal'];
+  const presetListOptions = ['HDR Seasonal'];
+
+  const defaultName = 'Change Page Name';
+  const pageNameOptions = [
+    `Page ${currentPage + 1}`,
+    '1v1',
+    'Singles',
+    '2v2',
+    'Doubles',
+    'Gentleman',
+    'Bracket',
+    'Friendlies',
+    'Casual',
+    ...presetListOptions,
+  ];
 
   return (
     <div style={{ height: '237px', position: 'relative', padding: 0 }}>
@@ -34,9 +48,26 @@ export default function StagePageOptions() {
         >
           Options
         </h2>
-        <SpecialListSelector
-          options={[defaultPreset, ...presetListNames]}
-          selected={page.useOfficial ? presetListNames[0] : defaultPreset}
+        <PageDropdown
+          options={[defaultName, ...pageNameOptions]}
+          selected={defaultName}
+          onChange={async (e) => {
+            const newName = e.target.value;
+            if (newName === defaultName) {
+              return;
+            }
+            const newPage = {
+              ...page,
+              name: newName,
+            };
+            setPage(currentPage, newPage);
+          }}
+          onRemove={() => {}}
+          showClear={false}
+        />
+        <PageDropdown
+          options={[defaultPreset, ...presetListOptions]}
+          selected={page.useOfficial ? presetListOptions[0] : defaultPreset}
           onChange={async (e) => {
             const newPage = {
               ...page,
@@ -60,7 +91,7 @@ export default function StagePageOptions() {
   );
 }
 
-function SpecialListSelector(props: {
+function PageDropdown(props: {
   options: string[];
   onChange: (item: { target: { value: string } }) => void;
   onRemove: () => void;
