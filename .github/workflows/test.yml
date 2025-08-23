@@ -55,4 +55,9 @@ jobs:
         && cd ..
       env:
         HOME: /root
+    - name: Upload plugin
+      uses: actions/upload-artifact@v4.3.3
+      with:
+        name: plugin
+        path: switch\target\aarch64-skyline-switch\release\libhdr_launcher_react.nro
 
