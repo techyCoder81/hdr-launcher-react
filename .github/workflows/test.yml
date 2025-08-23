@@ -60,4 +60,4 @@ jobs:
       uses: actions/upload-artifact@v4.3.3
       with:
         name: plugin
-        path: switch\target\aarch64-skyline-switch\release\
+        path: switch/target/aarch64-skyline-switch/release
