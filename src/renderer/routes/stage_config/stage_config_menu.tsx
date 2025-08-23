@@ -71,6 +71,7 @@ export default function StageConfigMenu() {
           className="simple-button-bigger"
           onFocus={() => {}}
           autofocus
+          style={{margin: "4px 2px 4px 4px"}}
         />
         {initialized ? (
           <FocusButton
@@ -81,6 +82,7 @@ export default function StageConfigMenu() {
             className="simple-button-bigger"
             onFocus={() => {}}
             autofocus
+          style={{margin: "4px 2px 4px 4px"}}
           />
         ) : (
           <div />
@@ -101,6 +103,7 @@ export default function StageConfigMenu() {
             className="simple-button-bigger"
             onFocus={() => {}}
             autofocus
+          style={{margin: "4px 2px 4px 4px"}}
           />
         ) : (
           <div />

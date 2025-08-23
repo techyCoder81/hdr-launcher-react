@@ -36,36 +36,43 @@ export interface StageConfig {
 }
 
 async function loadStageList(data: any): Promise<StageList> {
-  const info = new StageInfo();
-  const stageList: StageList = {
-    starters: [],
-    counterpicks: [],
-  };
-  // load starters
-  const starters: string[] = data?.starters ?? [];
-  for (const nameId of starters) {
-    try {
-      let stage = await info.getById(nameId);
-      stage ||= (await info.list())[0]; // default to the first stage if the named stage could not be loaded
-      stageList.starters.push(stage);
-    } catch (e) {
-      console.error(`Error loading stage ${nameId}: ${e}`);
+  try {
+    const info = new StageInfo();
+    const stageList: StageList = {
+      starters: [],
+      counterpicks: [],
+    };
+    // load starters
+    const starters: string[] = data?.starters ?? [];
+    for (const nameId of starters) {
+      try {
+        let stage = await info.getById(nameId);
+        stage ||= (await info.list())[0]; // default to the first stage if the named stage could not be loaded
+        stageList.starters.push(stage);
+      } catch (e) {
+        console.error(`Error loading stage ${nameId}: ${e}`);
+      }
     }
-  }
 
-  // load counterpicks
-  const counterpicks: string[] = data?.counterpicks ?? [];
-  for (const nameId of counterpicks) {
-    try {
-      let stage = await info.getById(nameId);
-      stage ||= (await info.list())[0]; // default to the first stage if the named stage could not be loaded
-      stageList.counterpicks.push(stage);
-    } catch (e) {
-      console.error(`Error loading stage ${nameId}: ${e}`);
+    // load counterpicks
+    const counterpicks: string[] = data?.counterpicks ?? [];
+    for (const nameId of counterpicks) {
+      try {
+        let stage = await info.getById(nameId);
+        stage ||= (await info.list())[0]; // default to the first stage if the named stage could not be loaded
+        stageList.counterpicks.push(stage);
+      } catch (e) {
+        console.error(`Error loading stage ${nameId}: ${e}`);
+      }
     }
-  }
 
-  return stageList;
+    return stageList;
+  } catch {
+    return {
+      starters: [],
+      counterpicks: [],
+    };
+  }
 }
 
 async function loadOfficialStageList(): Promise<StageList | null> {
@@ -93,18 +100,29 @@ async function loadOfficialStageList(): Promise<StageList | null> {
 }
 
 async function loadPages(data: any): Promise<Page[]> {
-  const pages: Page[] = [];
-  for (let i = 0; i < data.pages.length; i++) {
-    const name = data.pages[i]?.name ?? 'Page ' + i;
-    const useOfficial = data.pages[i]?.useOfficial ?? false;
-    const stageList = await loadStageList(data.pages[i]);
-    pages.push({
-      name,
-      useOfficial,
-      ...stageList,
-    });
+  try {
+    const pages: Page[] = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const name = data.pages[i]?.name ?? 'Page ' + i;
+      const useOfficial = data.pages[i]?.useOfficial ?? false;
+      const stageList = await loadStageList(data.pages[i]);
+      pages.push({
+        name,
+        useOfficial,
+        ...stageList,
+      });
+    }
+    return pages;
+  } catch {
+    return [
+      {
+        name: 'Page 1',
+        useOfficial: false,
+        starters: [],
+        counterpicks: []
+      }
+    ];
   }
-  return pages;
 }
 
 export async function loadStageConfig(location: string): Promise<StageConfig> {
@@ -115,9 +133,11 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
 
       // if the config doesn't already exist, default to empty
       if (!(await backend.fileExists(root + location))) {
+        const officialStageList = await loadOfficialStageList();
         resolve({
           enabled: false,
           pages: [],
+          officialStageList: officialStageList ?? undefined,
         });
         return;
       }

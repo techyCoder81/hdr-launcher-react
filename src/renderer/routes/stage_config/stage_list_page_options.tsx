@@ -12,7 +12,7 @@ export default function StagePageOptions() {
   const defaultPreset = 'Use Preset List?';
   const presetListOptions = ['HDR Seasonal'];
 
-  const defaultName = 'Change Page Name';
+  const defaultName = 'Change Name';
   const pageNameOptions = [
     `Page ${currentPage + 1}`,
     '1v1',
@@ -27,7 +27,7 @@ export default function StagePageOptions() {
   ];
 
   return (
-    <div style={{ height: '237px', position: 'relative', padding: 0 }}>
+    <div style={{ height: '269px', position: 'relative', padding: 0 }}>
       <div
         className="thick-border"
         style={{
@@ -35,7 +35,7 @@ export default function StagePageOptions() {
           top: '2.5%',
           left: '2.5%',
           height: '95%',
-          width: '95%',
+          width: '97.5%',
         }}
       >
         <h2

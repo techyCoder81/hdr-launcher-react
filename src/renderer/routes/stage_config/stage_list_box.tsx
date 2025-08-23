@@ -34,7 +34,7 @@ export default function StageListBox(props: { category: Categories }) {
   const options = getOptions();
 
   return (
-    <div style={{ height: '269px', position: 'relative', padding: 0 }}>
+    <div style={{ height: '300px', position: 'relative', padding: 0 }}>
       <div
         className="thick-border"
         style={{
@@ -42,7 +42,7 @@ export default function StageListBox(props: { category: Categories }) {
           top: '2.5%',
           left: '2.5%',
           height: '95%',
-          width: '95%',
+          width: '97.5%',
         }}
       >
         <h2

@@ -15,7 +15,7 @@ export default function StagePager() {
   const page = pages[currentPage];
 
   return (
-    <div style={{ height: '300px', position: 'relative', padding: 0 }}>
+    <div style={{ height: '331px', position: 'relative', padding: 0 }}>
       <div
         className="thick-border"
         style={{
@@ -23,7 +23,7 @@ export default function StagePager() {
           top: '2.5%',
           left: '2.5%',
           height: '95%',
-          width: '95%',
+          width: '97.5%',
         }}
       >
         <h2

@@ -44,6 +44,7 @@ export default function StageConfigToggler({
       onClick={() => {
         handleToggle().catch((e) => console.error('Toggle failed:', e));
       }}
+      style={{margin: "4px 2px 4px 4px"}}
     >
       Enabled&nbsp;
       <input
