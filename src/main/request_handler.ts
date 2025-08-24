@@ -815,9 +815,7 @@ async function handleInner(
     case 'exit_session':
       // play the game
       // resolve(new Responses.OkOrError(true, "starting the game...", request.id));
-      let command = path.normalize(
-        `${Config.getRyuPath()}`
-      );
+      let command = path.normalize(`${Config.getRyuPath()}`);
       if (process.platform == 'win32') {
         command = `cmd /C ""${Config.getRyuPath()}""`;
       }

@@ -1,164 +1,128 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FocusCheckbox } from 'renderer/components/buttons/focus_checkbox';
 import { Pages } from 'renderer/constants';
-import { ACTIVE_CONFIG_FILE, BACKUP_STAGE_CONFIG, ConfigData, loadConfigData, OFFICIAL_STAGE_CONFIG, save } from 'renderer/operations/stage_config';
+import {
+  ACTIVE_CONFIG_FILE,
+  BACKUP_STAGE_CONFIG,
+  OFFICIAL_STAGE_CONFIG,
+  Page,
+  loadStageConfig,
+  saveStageConfig,
+} from 'renderer/operations/stage_config';
 import { Stage, StageInfo } from 'renderer/operations/stage_info';
 import { FocusButton } from '../../components/buttons/focus_button';
 import { FullScreenDiv } from '../../components/fullscreen_div';
 import StageListBox from './stage_list_box';
 import { StagePreview } from './stage_preview';
+import { useStageConfig } from './stage_config_provider';
+import StageConfigToggler from './stage_config_toggler';
+import StagePager from './stage_list_pager';
+import StagePageOptions from './stage_list_page_options';
 
 export default function StageConfigMenu() {
   const navigate = useNavigate();
-  const [hoveredStage, setHoveredStage] = useState(null as Stage | null);
-  const [config, setConfig] = useState(null as null | ConfigData);
-  const [options, setOptions] = useState(null as null | string[]);
+  const {
+    initialized,
+    setInitialized,
+    stages,
+    setStages,
+    setHoveredStage,
+    enabled,
+    setEnabled,
+    pages,
+    setPages,
+    setCurrentPage,
+    setOfficialStageList,
+  } = useStageConfig();
 
   useEffect(() => {
-    if (config !== null) {
+    if (initialized) {
       return;
     }
 
-    loadConfigData(ACTIVE_CONFIG_FILE)
-      .then(async (data) => {
-        let enabled = data.enabled;
-        if (data.useOfficial) {
-          data = await loadConfigData(OFFICIAL_STAGE_CONFIG);
-          data.enabled = enabled;
-        }
-        setConfig(data);
+    loadStageConfig(ACTIVE_CONFIG_FILE)
+      .then(async (stageConfig) => {
+        setEnabled(stageConfig.enabled);
+        setHoveredStage(null);
+        setPages(stageConfig.pages);
+        setCurrentPage(0);
+        setOfficialStageList(stageConfig.officialStageList ?? null);
+        new StageInfo()
+          .list()
+          .then((list) => {
+            setStages(list);
+            setInitialized(true);
+          })
+          .catch((e) => alert(`failed to set stage options: ${e}`));
       })
       .catch((e) => alert(`failed to preload stage config: ${e}`));
-  }, []);
-
-  useEffect(() => {
-    new StageInfo()
-      .list()
-      .then((list) => setOptions(list.map((stage) => stage?.display_name)))
-      .catch((e) => alert(`failed to set new options: ${e}`));
-  }, [config]);
+  }, [initialized, enabled, pages]);
 
   return (
     <FullScreenDiv>
       <div id="header-bar" className="border-bottom" style={{}}>
         <FocusButton
-          text="Back"
-          onClick={async () => {
-            if (config !== null) {
-              save(ACTIVE_CONFIG_FILE, config);
-            }
+          text="Cancel"
+          onClick={() => {
+            setInitialized(false);
             navigate(Pages.MAIN_MENU);
           }}
           className="simple-button-bigger"
           onFocus={() => {}}
           autofocus
+          style={{margin: "4px 2px 4px 4px"}}
         />
-        {config ? (
-          <FocusCheckbox
-            text="Enabled"
-            onClick={async () => {
-              config.enabled = !config.enabled;
-              save(ACTIVE_CONFIG_FILE, config);
+        {initialized ? (
+          <FocusButton
+            text="Reset"
+            onClick={() => {
+              setInitialized(false);
             }}
             className="simple-button-bigger"
             onFocus={() => {}}
-            checkStatus={async () => {
-              return config.enabled;
-            }}
+            autofocus
+          style={{margin: "4px 2px 4px 4px"}}
           />
         ) : (
           <div />
         )}
-        {config ? (
-          <FocusCheckbox
-            text="Use Seasonal Stagelist"
-            onClick={async () => {
-              config.useOfficial = !config.useOfficial;
-              if (config.useOfficial === true) {
-                // save the current stagelist to the backup file, then load the official stagelist
-                await save(BACKUP_STAGE_CONFIG, config);
-                loadConfigData(OFFICIAL_STAGE_CONFIG).then(async (data) => {
-                  const newConfig = new ConfigData(
-                    config.enabled,
-                    true,
-                    data.starters,
-                    data.counterpicks
-                  );
-                  await save(ACTIVE_CONFIG_FILE, newConfig); 
-                  setConfig(newConfig);
-                  navigate(Pages.STAGE_CONFIG_REFRESH);
+        {initialized ? (
+          <FocusButton
+            text="Save & Exit"
+            onClick={() => {
+              saveStageConfig(ACTIVE_CONFIG_FILE, {
+                enabled,
+                pages,
+              })
+                .then(() => {
+                  navigate(Pages.MAIN_MENU);
                 })
-              } else {
-                // load the stagelist from the backup file
-                loadConfigData(BACKUP_STAGE_CONFIG).then(async (data) => {
-                  const newConfig = new ConfigData(
-                    config.enabled,
-                    false,
-                    data.starters,
-                    data.counterpicks
-                  );
-                  await save(ACTIVE_CONFIG_FILE, newConfig); 
-                  setConfig(newConfig);
-                  navigate(Pages.STAGE_CONFIG_REFRESH);
-                })
-              }
+                .catch((e) => alert(`failed to save stage config: ${e}`));
             }}
             className="simple-button-bigger"
             onFocus={() => {}}
-            checkStatus={async () => {
-              return config.useOfficial;
-            }}
+            autofocus
+          style={{margin: "4px 2px 4px 4px"}}
           />
         ) : (
           <div />
         )}
+        <StageConfigToggler />
       </div>
-      {config && options ? (
+      {initialized && stages ? (
         <div id="main-content" className="stage-config-body">
-          <div style={{ width: '40%' }}>
-            <StageListBox
-              category="Starter"
-              stages={config.starters}
-              options={options}
-              onUpdate={(stages) => {
-                const newConfig = new ConfigData(
-                  config.enabled,
-                  config.useOfficial,
-                  stages,
-                  config.counterpicks
-                );
-                save(ACTIVE_CONFIG_FILE, newConfig);
-                setConfig(newConfig);
-              }}
-              onHover={(stage) => setHoveredStage(stage)}
-              disabled={config.useOfficial}
-            />
-            <StageListBox
-              category="Counterpick"
-              stages={config.counterpicks}
-              options={options}
-              onUpdate={(stages) => {
-                const newConfig = new ConfigData(
-                  config.enabled,
-                  config.useOfficial,
-                  config.starters,
-                  stages
-                );
-                save(ACTIVE_CONFIG_FILE, newConfig);
-                setConfig(newConfig);
-              }}
-              onHover={(stage) => setHoveredStage(stage)}
-              disabled={config.useOfficial}
-            />
+          <div style={{ width: '15%' }}>
+            <StagePager />
+            <StagePageOptions />
+          </div>
+          <div style={{ width: '25%' }}>
+            <StageListBox category="Starter" />
+            <StageListBox category="Counterpick" />
           </div>
           <div style={{ width: '60%', height: '100%' }}>
-            <div style={{ margin: 10, height: '80%' }}>
-              {hoveredStage !== null ? (
-                <StagePreview stage={hoveredStage} />
-              ) : (
-                <div />
-              )}
+            <div style={{ margin: 8, height: '91%' }}>
+              <StagePreview />
             </div>
           </div>
         </div>

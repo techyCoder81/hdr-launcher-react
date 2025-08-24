@@ -166,7 +166,7 @@ async function findEmulator() {
     // show instructions to the user
     const response = dialog.showMessageBoxSync(mainWindow, {
       title: 'Instructions',
-      message: 'Please select your emulator\'s executable.',
+      message: "Please select your emulator's executable.",
       buttons: ['ok', 'cancel'],
     });
 
@@ -179,14 +179,14 @@ async function findEmulator() {
     if (os.platform() == 'win32') {
       // let the user point us to emulator on windows
       selectedPath = dialog.showOpenDialogSync(mainWindow, {
-        title: 'Please select your emulator\'s executable',
+        title: "Please select your emulator's executable",
         properties: ['openFile'],
         filters: [{ name: 'Emulator Executables', extensions: ['exe'] }],
       });
     } else {
       // let the user point us to emulator on linux
       selectedPath = dialog.showOpenDialogSync(mainWindow, {
-        title: 'Please select your emulator\'s executable',
+        title: "Please select your emulator's executable",
         properties: ['openFile'],
       });
     }
@@ -225,7 +225,7 @@ async function findSdcard() {
 
   let configDir = '';
   const selectedPath = dialog.showOpenDialogSync(mainWindow, {
-    title: 'Please select your emulator\'s SD Card directory',
+    title: "Please select your emulator's SD Card directory",
     properties: ['openDirectory'],
   });
   if (selectedPath === undefined) {

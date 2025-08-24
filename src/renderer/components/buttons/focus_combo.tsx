@@ -16,7 +16,6 @@ export const FocusCombo = React.forwardRef<
     disabled?: boolean;
   }
 >((props, ref) => {
-
   let options = props.options.map((option) => (
     <option value={option} key={option}>
       {option}
@@ -25,7 +24,7 @@ export const FocusCombo = React.forwardRef<
   let disabledOption = [
     <option value={props.forcedValue} key={props.forcedValue}>
       {props.forcedValue}
-    </option>
+    </option>,
   ];
 
   return (
@@ -36,7 +35,7 @@ export const FocusCombo = React.forwardRef<
       autoFocus={props.autofocus}
       defaultValue={props.defaultValue}
       value={props.forcedValue}
-      onMouseDown={props.disabled ? ((e) => e.preventDefault()) : undefined}
+      onMouseDown={props.disabled ? (e) => e.preventDefault() : undefined}
       onMouseMove={(e) => e.currentTarget.focus()}
       onMouseEnter={(e) => e.currentTarget.focus()}
       onMouseLeave={(e) => e.currentTarget.blur()}

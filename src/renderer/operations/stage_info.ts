@@ -50,7 +50,9 @@ export class StageInfo {
 
 export const stageInfo: Record<string, { display_name: string }> = {
   // Random: { display_name: 'Random (All)', },
-  // RandomNormal: { display_name: 'Normal Random', },
+  RandomNormal: { 
+    display_name: 'Random', 
+  },
   BattleField: {
     display_name: 'Battlefield',
   },
@@ -103,7 +105,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Brinstar',
   },
   Yoshi_Yoster: {
-    display_name: "Dinosaur Land",
+    display_name: 'Dinosaur Land',
   },
   Yoshi_CartBoard: {
     display_name: "Yoshi's Story",
@@ -133,7 +135,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Brinstar Depths',
   },
   Yoshi_Story: {
-    display_name: "Super Happy Tree",
+    display_name: 'Super Happy Tree',
   },
   Fzero_Bigblue: {
     display_name: 'Big Blue',

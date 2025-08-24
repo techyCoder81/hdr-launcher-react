@@ -18,6 +18,7 @@ import Main from './routes/menus/main';
 import { FocusButton } from './components/buttons/focus_button';
 import { NavigateButton } from './components/buttons/navigate_button';
 import { LogPopout } from './components/logging/log_popout';
+import { StageConfigProvider } from './routes/stage_config/stage_config_provider';
 
 export default function App() {
   useEffect(() => {
@@ -48,7 +49,9 @@ export default function App() {
           path={Pages.STAGE_CONFIG}
           element={
             <ErrorBoundary fallback={<ErrorPage />}>
-              <StageConfigMenu />
+              <StageConfigProvider>
+                <StageConfigMenu />
+              </StageConfigProvider>
             </ErrorBoundary>
           }
         />
