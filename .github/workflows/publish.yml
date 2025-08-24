@@ -109,7 +109,6 @@ jobs:
       id: upload1
       continue-on-error: true
       uses: ncipollo/release-action@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with:
         name: "${{ github.event.inputs.release_name }}"
         artifacts: hdr-launcher.nro,checksum.txt
