@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: Checkout git repo
         uses: actions/checkout@v3
+      - name: Check for tag
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: |
+          echo "Error: Publish workflow can only be executed against a tag, but it was triggered by: ${{ github.ref }}"
+          exit 1
 
       - name: Install Node and NPM
         uses: actions/setup-node@v4.0.3
@@ -108,6 +113,7 @@ jobs:
     - name: upload plugin
       id: upload1
       continue-on-error: true
+      if: startsWith(github.ref, 'refs/tags/')
       uses: ncipollo/release-action@v1
       with:
         name: "${{ github.event.inputs.release_name }}"
