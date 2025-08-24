@@ -112,6 +112,14 @@ async function loadPages(data: any): Promise<Page[]> {
         ...stageList,
       });
     }
+    if (pages.length === 0) {
+      pages.push({
+        name: 'Page 1',
+        useOfficial: false,
+        starters: [],
+        counterpicks: []
+      });
+    }
     return pages;
   } catch {
     return [
@@ -136,7 +144,14 @@ export async function loadStageConfig(location: string): Promise<StageConfig> {
         const officialStageList = await loadOfficialStageList();
         resolve({
           enabled: false,
-          pages: [],
+          pages: [
+            {
+              name: 'Page 1',
+              useOfficial: false,
+              starters: [],
+              counterpicks: []
+            }
+          ],
           officialStageList: officialStageList ?? undefined,
         });
         return;
