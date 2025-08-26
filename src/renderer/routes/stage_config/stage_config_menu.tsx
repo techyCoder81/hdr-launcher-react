@@ -62,31 +62,6 @@ export default function StageConfigMenu() {
   return (
     <FullScreenDiv>
       <div id="header-bar" className="border-bottom" style={{}}>
-        <FocusButton
-          text="Cancel"
-          onClick={() => {
-            setInitialized(false);
-            navigate(Pages.MAIN_MENU);
-          }}
-          className="simple-button-bigger"
-          onFocus={() => {}}
-          autofocus
-          style={{margin: "4px 2px 4px 4px"}}
-        />
-        {initialized ? (
-          <FocusButton
-            text="Reset"
-            onClick={() => {
-              setInitialized(false);
-            }}
-            className="simple-button-bigger"
-            onFocus={() => {}}
-            autofocus
-          style={{margin: "4px 2px 4px 4px"}}
-          />
-        ) : (
-          <div />
-        )}
         {initialized ? (
           <FocusButton
             text="Save & Exit"
@@ -106,9 +81,33 @@ export default function StageConfigMenu() {
           style={{margin: "4px 2px 4px 4px"}}
           />
         ) : (
-          <div />
+          <FocusButton
+            text="Cancel"
+            onClick={() => {
+              setInitialized(false);
+              navigate(Pages.MAIN_MENU);
+            }}
+            className="simple-button-bigger"
+            onFocus={() => {}}
+            autofocus
+            style={{margin: "4px 2px 4px 4px"}}
+          />
         )}
         <StageConfigToggler />
+        {initialized ? (
+          <FocusButton
+            text="Reset"
+            onClick={() => {
+              setInitialized(false);
+            }}
+            className="simple-button-bigger"
+            onFocus={() => {}}
+            autofocus
+          style={{margin: "4px 2px 4px 4px"}}
+          />
+        ) : (
+          <div />
+        )}
       </div>
       {initialized && stages ? (
         <div id="main-content" className="stage-config-body">
