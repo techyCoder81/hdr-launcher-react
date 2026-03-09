@@ -88,6 +88,22 @@ export default class OptionsMenu extends AbstractMenu<{
             )
           }
         />
+        <FocusCheckbox
+          className="smaller-main-button"
+          onClick={async () => {
+            const enabled = await config.getBoolean('unlock_menu_music');
+            await config.setBoolean('unlock_menu_music', !enabled);
+          }}
+          checkStatus={async () => {
+            return config.getBoolean('unlock_menu_music');
+          }}
+          text={'Unlock Menu Music (!)\u00A0'}
+          onFocus={() =>
+            this.props.setInfo(
+              'WARNING: Potentially bannable operation!'
+            )
+          }
+        />
         {super.render()}
       </div>
     );
