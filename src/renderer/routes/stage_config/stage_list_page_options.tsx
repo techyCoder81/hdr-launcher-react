@@ -1,6 +1,7 @@
 import { FocusButton } from 'renderer/components/buttons/focus_button';
 import { FocusCombo } from 'renderer/components/buttons/focus_combo';
 import { useStageConfig } from './stage_config_provider';
+import { DSR } from 'renderer/operations/stage_config';
 
 const MAX_PAGES = 8;
 const BACKGROUND_COLOR = 'var(--main-button-bg-color)';
@@ -11,6 +12,8 @@ export default function StagePageOptions() {
 
   const defaultPreset = 'Use Preset List?';
   const presetListOptions = ['HDR Seasonal'];
+  const defaultBans = 'Bans: Unset';
+  const defaultDsr = 'DSR: Unset';
 
   const defaultName = 'Change Name';
   const pageNameOptions = [
@@ -25,6 +28,8 @@ export default function StagePageOptions() {
     'Casual',
     ...presetListOptions,
   ];
+  const banOptions = ['1', '2', '3', '4'];
+  const dsrOptions = [DSR.None, DSR.DSR, DSR.mDSR];
 
   return (
     <div style={{ height: '269px', position: 'relative', padding: 0 }}>
@@ -85,6 +90,40 @@ export default function StagePageOptions() {
             setHoveredStage(null);
           }}
           showClear={page.useOfficial}
+        />
+        <PageDropdown
+          options={[
+            page.bans ? 'Bans: ' + page.bans : defaultBans,
+            ...banOptions,
+          ]}
+          selected={defaultBans}
+          onChange={async (e) => {
+            const newPage = {
+              ...page,
+              bans: isNaN(Number(e.target.value)) ? page.bans : Number(e.target.value),
+            };
+            setPage(currentPage, newPage);
+            setHoveredStage(null);
+          }}
+          onRemove={() => {}}
+          showClear={false}
+        />
+        <PageDropdown
+          options={[
+            page.dsr ? 'DSR: ' + page.dsr : defaultDsr,
+            ...dsrOptions
+          ]}
+          selected={defaultBans}
+          onChange={async (e) => {
+            const newPage = {
+              ...page,
+              dsr: DSR[e.target.value as keyof typeof DSR],
+            };
+            setPage(currentPage, newPage);
+            setHoveredStage(null);
+          }}
+          onRemove={() => {}}
+          showClear={false}
         />
       </div>
     </div>

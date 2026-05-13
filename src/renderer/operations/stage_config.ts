@@ -27,6 +27,14 @@ export interface StageList {
 export interface Page extends StageList {
   name: string;
   useOfficial: boolean;
+  bans?: number;
+  dsr?: DSR;
+}
+
+export enum DSR {
+  None = "None",
+  DSR = "DSR",
+  mDSR = "mDSR"
 }
 
 export interface StageConfig {
@@ -105,10 +113,14 @@ async function loadPages(data: any): Promise<Page[]> {
     for (let i = 0; i < data.pages.length; i++) {
       const name = data.pages[i]?.name ?? 'Page ' + i;
       const useOfficial = data.pages[i]?.useOfficial ?? false;
+      const bans = data.pages[i]?.bans;
+      const dsr = data.pages[i]?.dsr;
       const stageList = await loadStageList(data.pages[i]);
       pages.push({
         name,
         useOfficial,
+        bans,
+        dsr,
         ...stageList,
       });
     }
