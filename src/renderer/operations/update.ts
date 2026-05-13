@@ -1,6 +1,7 @@
 import { Progress } from 'nx-request-api';
 import { Backend } from './backend';
 import { getInstallType, getRepoName } from './install';
+import path from 'path';
 
 export async function isAvailable(
   progressCallback?: (p: Progress) => void
@@ -204,6 +205,21 @@ export async function handleDeletions(
         (p: Progress) => reportProgress(p)
       );
 
+      // check for hdr-launcher.nro and delete it if we're on emulator
+      const platform = await backend.getPlatform();
+      const nroPath = path.join('atmosphere', 'contents', '01006A800016E000', 'romfs', 'skyline', 'plugins', 'hdr-launcher.nro');
+      try {
+        if (platform === "Emulator") {
+          const exists = await backend.fileExists(sdroot + nroPath);
+          if (exists) {
+            await backend.deleteFile(sdroot + nroPath);
+            console.debug('hdr-launcher.nro deleted successfully');
+          }
+        }
+      } catch (e) {
+        console.error(`Failed to detect/delete file: ${nroPath}`);
+      }
+
       const str = await backend.readFile(deletions_file);
       const entries = JSON.parse(str);
       let count = 0;
@@ -242,6 +258,7 @@ export async function handleDeletions(
         }
         count += 1;
       }
+
       console.info('done deleting removed files.');
       resolve('done deleting files.');
     } catch (e) {

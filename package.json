@@ -96,6 +96,7 @@
     "md5-file": "^5.0.0",
     "nx-request-api": "^0.1.21",
     "open-file-explorer": "^1.0.2",
+    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
