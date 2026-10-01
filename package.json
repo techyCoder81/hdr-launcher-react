@@ -21,7 +21,7 @@
     "prepare": "husky install",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
-    "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
+    "start:main": "cross-env NODE_ENV=development electronmon .erb/scripts/dev-main.js",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest"
@@ -92,6 +92,7 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^5.2.3",
+    "extract-zip": "^2.0.1",
     "glob": "^9.3.1",
     "md5-file": "^5.0.0",
     "nx-request-api": "^0.1.21",
@@ -102,7 +103,6 @@
     "react-remark": "^2.1.0",
     "react-router-dom": "^6.3.0",
     "react-twitter-embed": "^4.0.4",
-    "request": "^2.88.2",
     "xdg-portable": "^10.6.0"
   },
   "devDependencies": {
@@ -129,7 +129,7 @@
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "detect-port": "^1.3.0",
-    "electron": "^22.0.0",
+    "electron": "^44.5.1",
     "electron-builder": "^22.10.3",
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "^1.2.1",
@@ -160,7 +160,7 @@
     "react-test-renderer": "^18.2.0",
     "rimraf": "^3.0.2",
     "sass": "^1.54.4",
-    "sass-loader": "^13.0.2",
+    "sass-loader": "^17.0.1",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.5",
     "ts-jest": "^28.0.8",

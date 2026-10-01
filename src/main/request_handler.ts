@@ -18,8 +18,9 @@ import * as net from 'net';
 import { mainWindow } from './main';
 import Config from './config';
 import * as os from 'os';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 
-const webrequest = require('request');
 const explorer = require('open-file-explorer');
 
 function readDirAll(dir: string, tree: Responses.DirTree, depth: number) {
@@ -236,36 +237,28 @@ async function handleInner(
         out = fs.createWriteStream(location, { mode: 0o777 });
         console.debug('created write stream');
 
-        const req = webrequest({
+        const res = await fetch(url, {
           method: 'GET',
-          uri: url,
           headers: { 'User-Agent': 'HDR Launcher' },
         });
-
-        let current = 0;
-        let total = 0;
-        let complete = false;
-
-        let outcome: Responses.OkOrError | null = null;
-        req.on('response', function (data: any) {
-          console.info(`status code: ${data.statusCode}`);
-          if (data.statusCode > 300) {
-            console.error('download failed due to bad status code.');
-            if (out != null && !out.destroyed) {
-              out.close();
-            }
-            outcome = new Responses.OkOrError(
+        console.info(`status code: ${res.status}`);
+        if (!res.ok || res.body == null) {
+          console.error('download failed due to bad status code.');
+          out.destroy();
+          resolve(
+            new Responses.OkOrError(
               false,
-              `download failed with status code: ${data.statusCode}`,
+              `download failed with status code: ${res.status}`,
               request.id
-            );
-            complete = true;
-          }
-          total = data.headers['content-length'];
-        });
+            )
+          );
+          break;
+        }
 
-        const counter = 0;
-        req.on('data', function (chunk: any) {
+        const total = Number(res.headers.get('content-length'));
+        let current = 0;
+        const body = Readable.fromWeb(res.body as any);
+        body.on('data', function (chunk: Buffer) {
           current += chunk.length;
           mainWindow?.webContents.send(
             'progress',
@@ -277,28 +270,11 @@ async function handleInner(
           );
         });
 
-        req.on('end', function () {
-          if (out != null && !out.destroyed) {
-            out.close();
-          }
-          if (outcome == null) {
-            resolve(
-              new Responses.OkOrError(
-                true,
-                'download finished successfully',
-                request.id
-              )
-            );
-          } else {
-            resolve(outcome);
-          }
-        });
-
-        req.on('error', function (e: any) {
+        try {
+          await pipeline(body, out);
+        } catch (e: any) {
           console.log(`Error: ${e.message}`);
-          if (out != null && !out.destroyed) {
-            out.close();
-          }
+          out.destroy();
           resolve(
             new Responses.OkOrError(
               false,
@@ -306,9 +282,16 @@ async function handleInner(
               request.id
             )
           );
-        });
+          break;
+        }
 
-        req.pipe(out);
+        resolve(
+          new Responses.OkOrError(
+            true,
+            'download finished successfully',
+            request.id
+          )
+        );
 
         break;
       } catch (e) {

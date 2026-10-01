@@ -109,6 +109,13 @@ const configuration: webpack.Configuration = {
     minimizer: [
       new TerserPlugin({
         parallel: true,
+        // the Switch's browser cannot parse modern syntax (e.g. `??`), which
+        // newer versions of terser will otherwise emit when minifying.
+        terserOptions: {
+          ecma: 5,
+          compress: { ecma: 5 },
+          format: { ecma: 5 },
+        },
       }),
       new CssMinimizerPlugin(),
     ],

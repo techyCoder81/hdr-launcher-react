@@ -32,11 +32,7 @@ export default class Menu extends React.PureComponent {
   };
 
   switchTo(menu: MenuType) {
-    this.setState({
-      currentMenu: menu,
-      version: this.state.version,
-      info: this.state.info,
-    });
+    this.setState({ currentMenu: menu });
     this.loadVersion();
 
     // assign button actions for switch
@@ -56,11 +52,7 @@ export default class Menu extends React.PureComponent {
 
   setVersion(version: string) {
     console.debug(`setting version: ${version}`);
-    this.setState({
-      currentMenu: this.state.currentMenu,
-      version,
-      info: this.state.info,
-    });
+    this.setState({ version });
   }
 
   loadVersion() {
@@ -74,11 +66,7 @@ export default class Menu extends React.PureComponent {
   }
 
   setInfo(info: string) {
-    this.setState({
-      currentMenu: this.state.currentMenu,
-      version: this.state.version,
-      info,
-    });
+    this.setState({ info });
   }
 
   getMenu() {
