@@ -48,12 +48,16 @@ export default class ToolsMenu extends AbstractMenu<{
             onClick={() => this.props.switchTo(MenuType.MainMenu)}
             onFocus={() => this.props.setInfo('Return to the Main menu')}
           />
-          <ScrollFocusButton
-            text={`Open ${Backend.isSwitch() ? 'Arcadia' : 'Mod Folder'}\u00A0`}
-            className="smaller-main-button"
-            onClick={() => Backend.instance().openModManager()}
-            onFocus={() => this.props.setInfo('Open the Mod Manager')}
-          />
+          {Backend.isNode() ? (
+            <ScrollFocusButton
+              text="Open Mod Folder&nbsp;"
+              className="smaller-main-button"
+              onClick={() => Backend.instance().openModManager()}
+              onFocus={() => this.props.setInfo('Open the Mod Manager')}
+            />
+          ) : (
+            <div />
+          )}
           <ScrollFocusButton
             text="Verify Files&nbsp;"
             className="smaller-main-button"
