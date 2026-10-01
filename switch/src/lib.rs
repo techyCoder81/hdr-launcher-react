@@ -244,12 +244,6 @@ pub fn main() {
         println!("session is open");
         RequestEngine::new(session)
             .register_defaults()
-            .register("open_mod_manager", None, |context| {
-                context.shutdown();
-                try_open_arcropolis();
-                unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
-                //unreachable
-            })
             .register("relaunch_application", None, |_| {
                 unsafe { skyline::nn::oe::RequestToRelaunchApplication(); }
             })
@@ -370,22 +364,4 @@ pub fn main() {
 
     // End thread so match can actually start
     browser_thread.join();
-}
-
-/// tries to open the main arcropolis configuration ui
-pub fn try_open_arcropolis() {
-    let exists = Path::new("sd:/atmosphere/contents/01006A800016E000/romfs/skyline/plugins/libarcropolis.nro").exists();
-    if !exists {
-        println!("Error: We cannot open arcrop because you do not have arcropolis!");
-        skyline_web::DialogOk::ok("Error: Cannot open arcropolis menu because you do not have arcropolis!");
-        return;
-    }
-    let api_version = arcropolis_api::get_api_version();
-    println!("opening arcrop menu...");
-    if api_version.major >= 1 && api_version.minor >= 7 {
-        arcropolis_api::show_main_menu();
-    } else {
-        println!("Error: We cannot open arcrop because arcrop is out of date!");
-        skyline_web::DialogOk::ok("Error: Cannot open arcropolis menu because your arcropolis is out of date! You may want to update in the launcher.");
-    }
 }
