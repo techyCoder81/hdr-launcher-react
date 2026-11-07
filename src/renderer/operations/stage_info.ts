@@ -156,7 +156,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Wario Land',
   },
   Zelda_Oldin: {
-    display_name: 'Bridge of Elden',
+    display_name: 'Royal Sanctum',
   },
   Metroid_Norfair: {
     display_name: 'Norfair',
@@ -237,7 +237,7 @@ export const stageInfo: Record<string, { display_name: string }> = {
     display_name: 'Spirit Tracks',
   },
   Kirby_Gameboy: {
-    display_name: 'Dreamland GB',
+    display_name: 'Butter Building',
   },
   Poke_Unova: {
     display_name: 'Unova Pokémon League',
